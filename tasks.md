@@ -278,9 +278,3 @@ T8.1 (Log) + T8.3 (Trail) → T10.2 (Testes Integração)
 | T8.x | Fase 8 | Logs, Trail e Delegação |
 | T9.x | Fase 9 | Localização e Tempos |
 | T10.x | Fase 10 | Testes e Implantação |
-
----
-
-*Documento revisado em: 2026-09-07*
-*Baseado na especificação: Sistema de Automação de Carregamentos para um Porto*
-*Ajustes realizados: inclusão de T3.10 (registro de chegada de navios pelo Supervisor), inclusão de T5.5 (procedimentos de emergência pelo Inspetor), ajuste em T3.6 (referência de tempo de uso definida pelo Supervisor), ajuste em T4.1 (atributos da carga definidos pelo Supervisor), remoção de dúvida em T2.1, renumerada sugestão de manutenção preventiva para T5.6.*
