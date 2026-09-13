@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {"darkMode":"class","theme":{"extend":{"colors":{"inverse-primary":"#b1c6fb","surface-dim":"#dcd9d9","nexus-white":"#FFFFFF","tertiary-fixed-dim":"#e5c375","secondary-fixed-dim":"#bcc7de","secondary":"#545f73","nexus-text":"#222222","surface-bright":"#fcf9f8","on-surface-variant":"#44474f","primary-fixed":"#d9e2ff","surface-container":"#f0eded","tertiary":"#543f00","surface-tint":"#495e8c","on-secondary-fixed":"#111c2d","surface-container-highest":"#e5e2e1","surface-variant":"#e5e2e1","inverse-surface":"#303030","outline":"#757780","nexus-500":"#445987","nexus-900":"#1E293B","tertiary-fixed":"#ffdf99","on-primary":"#ffffff","secondary-container":"#d5e0f8","danger":"#C62828","primary-container":"#445987","tertiary-container":"#6f5612","warning":"#D97706","on-tertiary-container":"#f0cd7e","on-primary-fixed":"#001a43","nexus-border":"#E1E5ED","surface-container-low":"#f6f3f2","on-tertiary-fixed":"#251a00","on-secondary-container":"#586377","on-surface":"#1b1c1c","success":"#2E7D32","on-secondary":"#ffffff","surface":"#fcf9f8","on-primary-container":"#bfd1ff","on-secondary-fixed-variant":"#3c475a","error":"#ba1a1a","background":"#fcf9f8","error-container":"#ffdad6","on-primary-fixed-variant":"#314673","nexus-bg":"#F5F7FA","secondary-fixed":"#d8e3fb","surface-container-high":"#eae7e7","on-tertiary-fixed-variant":"#5a4300","on-background":"#1b1c1c","primary-fixed-dim":"#b1c6fb","inverse-on-surface":"#f3f0ef","on-tertiary":"#ffffff","on-error-container":"#93000a","primary":"#2c416e","surface-container-lowest":"#ffffff","on-error":"#ffffff","outline-variant":"#c5c6d0"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"space-xl":"2rem","space-xs":"0.25rem","margin-md":"1.5rem","gutter":"1rem","space-sm":"0.5rem","gutter-lg":"1.5rem","space-lg":"1.5rem","space-md":"1rem","margin-lg":"2rem","margin":"1rem"},"fontFamily":{"display":["Montserrat"],"h1":["Montserrat"],"caption":["Inter"],"mono-lg":["JetBrains Mono"],"body-sm":["Inter"],"mono-data":["JetBrains Mono"],"body-medium":["Inter"],"body-bold":["Inter"],"h2":["Montserrat"],"body":["Inter"],"h4":["Montserrat"],"h3":["Montserrat"]},"fontSize":{"display":["32px",{"lineHeight":"40px","fontWeight":"700"}],"h1":["28px",{"lineHeight":"36px","fontWeight":"700"}],"caption":["12px",{"lineHeight":"16px","fontWeight":"500"}],"mono-lg":["16px",{"lineHeight":"22px","fontWeight":"500"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"mono-data":["14px",{"lineHeight":"20px","fontWeight":"500"}],"body-medium":["16px",{"lineHeight":"24px","fontWeight":"500"}],"body-bold":["16px",{"lineHeight":"24px","fontWeight":"600"}],"h2":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body":["16px",{"lineHeight":"24px","fontWeight":"400"}],"h4":["18px",{"lineHeight":"24px","fontWeight":"600"}],"h3":["20px",{"lineHeight":"28px","fontWeight":"600"}]}}}}</script></head><body class="bg-nexus-bg font-body text-nexus-text antialiased"><aside class="fixed left-0 top-0 h-full w-[240px] bg-nexus-900 text-surface-container-highest z-50 flex flex-col justify-between select-none shadow-[0_1px_8px_rgba(0,0,0,0.15)]"><div class="flex flex-col h-full"><div class="h-16 px-space-md border-b border-secondary/30 flex items-center gap-space-sm bg-nexus-900"><img alt="logo_porto.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Whvmk1QUVf-i9xC7ANd-s_QDITq_ZkpbA0qNhl4UKWIouSlc9V6-qK3hfXj8EZ8_0AaSTjVekSkYwyte0Sf8SsgLL2t3JQ842UwJ7Uf9Kv0iqX7zg4ziKUeolmTRoC_2_iNgmEZk9MOlRoSPxrYnqDCIfNuVMLTiNcBCkBGzQzyr9pKSizMGMuaqeoURWLGoeoxF7l-U2jjIn_Iu1gPjpnrSqCmiWk9ZEYdtjmU7eIDdZi81oNaCh59SSb5OS-BeotFpgHC8O-Yg"/><div class="flex flex-col min-w-0"><span class="font-h4 text-h4 tracking-tight text-nexus-white truncate">NexusPort</span><span class="font-caption text-caption text-secondary-fixed-dim uppercase tracking-wider truncate">Operação Portuária</span></div></div><div class="flex-1 overflow-y-auto px-space-sm py-space-md space-y-space-md"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Visão Geral</span><a class="flex items-center justify-between px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="dashboard-operacional" href="#"><div class="flex items-center gap-space-sm min-w-0"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">monitoring</span><span class="font-body-sm text-body-sm truncate">Dashboard Operacional</span></div><span class="px-1.5 py-0.5 rounded bg-success/20 text-success font-caption text-[10px] font-bold">AO VIVO</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="fila-de-liberacao" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">verified</span><span class="font-body-sm text-body-sm truncate">Fila de Liberação</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Operação de Cargas</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="cargas-e-patio" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">grid_view</span><span class="font-body-sm text-body-sm truncate">Cargas &amp; Pátio</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="checklist-de-inspecao" href="#"><div class="flex items-center gap-space-sm min-w-0"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">fact_check</span><span class="font-body-sm text-body-sm truncate">Checklist Inspeção</span></div><span class="material-symbols-outlined text-[16px] text-secondary-fixed-dim group-hover:text-nexus-white" title="Atalho Leitor QR">qr_code_scanner</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="vinculacao-conteineres-navios" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">link</span><span class="font-body-sm text-body-sm truncate">Vinculação Contêineres</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Frota &amp; Ativos</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="navios-imo" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">directions_boat</span><span class="font-body-sm text-body-sm truncate">Navios (IMO)</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="conteineres" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">inventory_2</span><span class="font-body-sm text-body-sm truncate">Contêineres</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="guindastes-e-manutencoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">precision_manufacturing</span><span class="font-body-sm text-body-sm truncate">Guindastes &amp; Manutenção</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Governança &amp; Auditoria</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="trail-de-decisoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">history_edu</span><span class="font-body-sm text-body-sm truncate">Trail de Decisões</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="logs-de-alteracoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">rule</span><span class="font-body-sm text-body-sm truncate">Logs de Alterações</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="relatorios-e-produtividade" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">query_stats</span><span class="font-body-sm text-body-sm truncate">Relatórios Operacionais</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Administração</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="pessoas-e-acessos" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">badge</span><span class="font-body-sm text-body-sm truncate">Pessoas &amp; Acessos</span></a></nav></div><div class="p-space-sm border-t border-secondary/30 bg-nexus-900/80"><div class="flex items-center justify-between px-space-xs py-1.5 text-secondary-fixed-dim font-caption text-[11px]"><span class="font-mono-data">v4.2-OPR</span><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-success inline-block"></span>Servidor Conectado</span></div></div></div></aside><div class="pl-[240px]"><header class="fixed top-0 left-[240px] right-0 h-16 bg-nexus-white border-b border-nexus-border z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-lg min-w-0"><div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary min-w-0"><span class="material-symbols-outlined text-[18px] text-outline">anchor</span><span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider truncate">NexusPort</span><span class="text-outline">/</span><span class="font-body-medium text-body-medium text-nexus-text font-semibold truncate">Terminal Marítimo</span></div><div class="hidden xl:flex items-center gap-2 pl-space-md border-l border-nexus-border"><span class="w-2.5 h-2.5 rounded-full bg-success animate-pulse"></span><span class="font-caption text-caption text-on-surface-variant font-medium">Status Operacional: <strong class="text-success font-semibold">Normal</strong></span><span class="text-outline text-caption">•</span><span class="font-mono-data text-caption text-secondary font-semibold">8 NAVIOS NO BERÇO</span></div></div><div class="flex items-center gap-space-md"><a class="hidden sm:flex items-center gap-space-xs px-space-md py-2 bg-nexus-bg border border-nexus-border hover:border-nexus-500 rounded text-nexus-500 font-body-bold text-body-sm transition-colors" data-path="checklist-de-inspecao" href="#"><span class="material-symbols-outlined text-[18px]">qr_code_scanner</span><span>Escanear QR</span></a><div class="h-7 w-[1px] bg-nexus-border hidden sm:block"></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[18px]">person</span></div><div class="flex flex-col text-left"><div class="flex items-center gap-1.5"><span class="font-mono-data text-caption text-nexus-text font-semibold text-[13px]">CÓD: #OP-8842</span><span class="w-1.5 h-1.5 rounded-full bg-success" title="Operador Ativo"></span></div><span class="font-caption text-caption text-secondary text-[11px] leading-tight truncate max-w-[150px]">Supervisor / Gerente Operacional</span></div></div><a class="p-2 text-outline hover:text-danger rounded hover:bg-surface-container transition-colors flex items-center" data-path="login" href="#" title="Sair do Sistema"><span class="material-symbols-outlined text-[20px]">logout</span></a></div></header><main class="relative pt-16 bg-nexus-bg min-h-screen w-full px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<!-- Dynamic Operational Metric Banner / Quick Security Feedback -->
+<div class="hidden mb-space-md p-space-md rounded bg-surface-container-lowest shadow-sm flex items-center justify-between transition-all duration-300" id="security-banner">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded bg-success/15 flex items-center justify-center text-success">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div>
+<p class="font-body-bold text-body-bold text-nexus-900" id="banner-title">Credencial Auditada com Sucesso</p>
+<p class="font-caption text-caption text-secondary" id="banner-subtitle">Chave criptográfica #T2.8 emitida e sincronizada com as catracas do cais.</p>
+</div>
+</div>
+<button class="text-secondary hover:text-nexus-900 p-1" onclick="document.getElementById('security-banner').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-lg">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-caption text-caption text-nexus-500 uppercase tracking-widest font-bold">Módulo Regulatório RN 15 • T3.1 / T3.2 / T2.8</span>
+</div>
+<h1 class="font-h1 text-h1 text-nexus-900 tracking-tight">Gestão de Pessoas &amp; Acessos</h1>
+<p class="font-body text-body text-secondary mt-1">Controle de operadores, técnicos, visitantes e emissão de credenciais (Técnico em Portos)</p>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-space-sm">
+<button class="h-10 px-space-md rounded bg-surface-container-lowest shadow-sm hover:bg-surface-container text-nexus-900 font-body-bold text-body-sm flex items-center gap-2 transition-colors" onclick="openModal('visitante-modal')">
+<span class="material-symbols-outlined text-[18px] text-nexus-500">person_add</span>
+<span>+ Registrar Visitante</span>
+</button>
+<button class="h-10 px-space-md rounded bg-nexus-500 hover:bg-primary text-on-primary font-body-bold text-body-sm flex items-center gap-2 shadow-sm transition-colors" onclick="openModal('funcionario-modal')">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+<span>+ Novo Funcionário</span>
+</button>
+</div>
+</div>
+<!-- Tab Navigation Selector -->
+<div class="flex items-center gap-space-lg mb-space-md">
+<button class="pb-3 flex items-center gap-2 text-nexus-900 font-body-bold text-body transition-all relative" id="tab-btn-funcionarios" onclick="switchTab('funcionarios')">
+<span>Funcionários Portuários</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-primary font-mono-data text-caption font-semibold">148</span>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-nexus-500 rounded-full" id="indicator-funcionarios"></div>
+</button>
+<button class="pb-3 flex items-center gap-2 text-secondary hover:text-nexus-900 font-body-medium text-body transition-all relative" id="tab-btn-visitantes" onclick="switchTab('visitantes')">
+<span>Visitantes Ativos Hoje</span>
+<span class="px-2 py-0.5 rounded-full bg-warning/15 text-warning font-mono-data text-caption font-semibold">6</span>
+<div class="hidden absolute bottom-0 left-0 right-0 h-0.5 bg-nexus-500 rounded-full" id="indicator-visitantes"></div>
+</button>
+</div>
+<!-- Main View Area: Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Tab 1: Funcionários Table (Primary Column) -->
+<div class="lg:col-span-8 flex flex-col space-y-space-md" id="view-funcionarios">
+<!-- Operational Filter Bar -->
+<div class="bg-surface-container-lowest p-space-md rounded shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="relative w-full sm:w-80">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-space-md py-2 text-body-sm font-body bg-nexus-bg rounded outline-none focus:ring-2 focus:ring-nexus-500 text-nexus-text" id="filter-search" onkeyup="filterStaff()" placeholder="Buscar por nome, matrícula ou tag..." type="text"/>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+<span class="font-caption text-caption text-secondary">Zona Operacional:</span>
+<span class="font-caption text-caption font-mono-data px-2.5 py-1 rounded bg-surface-container-high text-nexus-900">BERÇOS 01-04 • PÁTIO D</span>
+</div>
+</div>
+<!-- Employees Table Card -->
+<div class="bg-surface-container-lowest rounded shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-nexus-900 text-surface-container-highest font-caption text-caption uppercase tracking-wider">
+<th class="py-3 px-space-md">Operador / Função</th>
+<th class="py-3 px-space-md">Matrícula</th>
+<th class="py-3 px-space-md">Código Único (NFC/QR)</th>
+<th class="py-3 px-space-md">Status</th>
+<th class="py-3 px-space-md text-right">Governança (T2.8)</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm" id="staff-table-body">
+<!-- Marcos Mendes -->
+<tr class="hover:bg-surface-container-low transition-colors staff-row">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-caption">MM</div>
+<div>
+<div class="font-body-bold text-body-sm text-nexus-900 staff-name">Marcos Mendes</div>
+<div class="font-caption text-caption text-secondary">Inspetor de Operações</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md font-mono-data text-secondary staff-reg">10482</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono-data text-nexus-900 font-bold px-2 py-1 bg-surface-container rounded inline-flex items-center gap-1.5 code-tag">
+<span class="material-symbols-outlined text-[14px] text-success">key</span>
+                      #OP-8842
+                    </span>
+<span class="text-[10px] font-mono-data text-outline">v3</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-caption font-bold bg-success/10 text-success">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                    Ativo
+                  </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<button class="px-space-sm py-1.5 bg-surface-container-low hover:bg-primary hover:text-on-primary text-nexus-500 rounded font-body-bold text-caption transition-all inline-flex items-center gap-1.5" onclick="invalidateAndRegenerate('#OP-8842', 'Marcos Mendes')" title="Regra T2.8 / Invalidação Segura">
+<span class="material-symbols-outlined text-[16px]">sync_lock</span>
+<span>Gerar Novo Código</span>
+</button>
+</td>
+</tr>
+<!-- Carlos Silveira -->
+<tr class="hover:bg-surface-container-low transition-colors staff-row">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-caption">CS</div>
+<div>
+<div class="font-body-bold text-body-sm text-nexus-900 staff-name">Carlos Silveira</div>
+<div class="font-caption text-caption text-secondary">Supervisor de Doca</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md font-mono-data text-secondary staff-reg">08841</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono-data text-nexus-900 font-bold px-2 py-1 bg-surface-container rounded inline-flex items-center gap-1.5 code-tag">
+<span class="material-symbols-outlined text-[14px] text-success">key</span>
+                      #SP-1022
+                    </span>
+<span class="text-[10px] font-mono-data text-outline">v1</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-caption font-bold bg-success/10 text-success">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                    Ativo
+                  </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<button class="px-space-sm py-1.5 bg-surface-container-low hover:bg-primary hover:text-on-primary text-nexus-500 rounded font-body-bold text-caption transition-all inline-flex items-center gap-1.5" onclick="invalidateAndRegenerate('#SP-1022', 'Carlos Silveira')" title="Regra T2.8 / Invalidação Segura">
+<span class="material-symbols-outlined text-[16px]">sync_lock</span>
+<span>Gerar Novo Código</span>
+</button>
+</td>
+</tr>
+<!-- Juliana Paes -->
+<tr class="hover:bg-surface-container-low transition-colors staff-row">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-caption">JP</div>
+<div>
+<div class="font-body-bold text-body-sm text-nexus-900 staff-name">Juliana Paes</div>
+<div class="font-caption text-caption text-secondary">Conferente de Carga</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md font-mono-data text-secondary staff-reg">12093</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono-data text-nexus-900 font-bold px-2 py-1 bg-surface-container rounded inline-flex items-center gap-1.5 code-tag">
+<span class="material-symbols-outlined text-[14px] text-success">key</span>
+                      #CF-3211
+                    </span>
+<span class="text-[10px] font-mono-data text-outline">v2</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-caption font-bold bg-success/10 text-success">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                    Ativo
+                  </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<button class="px-space-sm py-1.5 bg-surface-container-low hover:bg-primary hover:text-on-primary text-nexus-500 rounded font-body-bold text-caption transition-all inline-flex items-center gap-1.5" onclick="invalidateAndRegenerate('#CF-3211', 'Juliana Paes')" title="Regra T2.8 / Invalidação Segura">
+<span class="material-symbols-outlined text-[16px]">sync_lock</span>
+<span>Gerar Novo Código</span>
+</button>
+</td>
+</tr>
+<!-- Roberto Vasconcelos -->
+<tr class="hover:bg-surface-container-low transition-colors staff-row">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-caption">RV</div>
+<div>
+<div class="font-body-bold text-body-sm text-nexus-900 staff-name">Roberto Vasconcelos</div>
+<div class="font-caption text-caption text-secondary">Estivador</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md font-mono-data text-secondary staff-reg">15402</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono-data text-nexus-900 font-bold px-2 py-1 bg-surface-container rounded inline-flex items-center gap-1.5 code-tag">
+<span class="material-symbols-outlined text-[14px] text-success">key</span>
+                      #ET-5501
+                    </span>
+<span class="text-[10px] font-mono-data text-outline">v1</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-caption font-bold bg-success/10 text-success">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                    Ativo
+                  </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<button class="px-space-sm py-1.5 bg-surface-container-low hover:bg-primary hover:text-on-primary text-nexus-500 rounded font-body-bold text-caption transition-all inline-flex items-center gap-1.5" onclick="invalidateAndRegenerate('#ET-5501', 'Roberto Vasconcelos')" title="Regra T2.8 / Invalidação Segura">
+<span class="material-symbols-outlined text-[16px]">sync_lock</span>
+<span>Gerar Novo Código</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-space-md py-3 bg-surface-container-lowest flex items-center justify-between text-secondary font-caption text-caption">
+<span>Exibindo 4 de 148 técnicos portuários credenciados</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-success"></span>
+<span>Protocolo ISPS Code Nível 1 Normal</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab 2 / Sidebar: Visitantes Ativos Compacto -->
+<div class="lg:col-span-4 flex flex-col space-y-space-md" id="view-visitantes">
+<!-- Section Header -->
+<div class="bg-surface-container-lowest p-space-md rounded shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-nexus-500">passkey</span>
+<h2 class="font-h4 text-h4 text-nexus-900">Visitantes Ativos Hoje</h2>
+</div>
+<span class="px-2 py-0.5 rounded bg-warning/20 text-warning font-mono-data text-caption font-bold">6 NO TERMINAL</span>
+</div>
+<!-- Visitor Card 1: Engenheiro Naval Lloyd's -->
+<div class="bg-surface-container-lowest p-space-md rounded shadow-sm hover:shadow-md transition-shadow relative">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-warning animate-pulse"></span>
+<span class="font-body-bold text-body-sm text-nexus-900">Engenheiro Naval</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container text-secondary font-mono-data text-caption">08:30 BRT</span>
+</div>
+<p class="font-body-sm text-body-sm text-nexus-900 mb-1 font-medium">Lloyd's Register</p>
+<div class="space-y-1.5 text-caption font-caption text-secondary">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">badge</span>
+<span>Doc: <strong class="font-mono-data text-nexus-900 font-normal">334.821.091-00</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">directions_boat</span>
+<span>Motivo: <strong class="text-nexus-900 font-medium">Vistoria Casco MV Santos Star</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">pin_drop</span>
+<span>Acesso Autorizado: <strong>Berço 02 (Doca Sul)</strong></span>
+</div>
+</div>
+<div class="mt-space-md pt-2 flex items-center justify-between">
+<span class="font-mono-data text-caption text-outline">TAG #VIS-9021</span>
+<button class="text-danger hover:text-on-error-container font-body-bold text-caption flex items-center gap-1" onclick="inactivateVisitor('TAG #VIS-9021', 'Lloyd\'s Register')">
+<span class="material-symbols-outlined text-[16px]">logout</span>
+<span>Registrar Saída</span>
+</button>
+</div>
+</div>
+<!-- Visitor Card 2: Técnico Refrigeração Thermo King -->
+<div class="bg-surface-container-lowest p-space-md rounded shadow-sm hover:shadow-md transition-shadow relative">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-warning animate-pulse"></span>
+<span class="font-body-bold text-body-sm text-nexus-900">Técnico Refrigeração</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container text-secondary font-mono-data text-caption">09:15 BRT</span>
+</div>
+<p class="font-body-sm text-body-sm text-nexus-900 mb-1 font-medium">Thermo King Brasil</p>
+<div class="space-y-1.5 text-caption font-caption text-secondary">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">badge</span>
+<span>Doc: <strong class="font-mono-data text-nexus-900 font-normal">512.940.118-23</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">ac_unit</span>
+<span>Motivo: <strong class="text-nexus-900 font-medium">Calibração Tomadas Pátio D</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">pin_drop</span>
+<span>Acesso Autorizado: <strong>Pátio Reefer D-12/D-16</strong></span>
+</div>
+</div>
+<div class="mt-space-md pt-2 flex items-center justify-between">
+<span class="font-mono-data text-caption text-outline">TAG #VIS-9022</span>
+<button class="text-danger hover:text-on-error-container font-body-bold text-caption flex items-center gap-1" onclick="inactivateVisitor('TAG #VIS-9022', 'Thermo King')">
+<span class="material-symbols-outlined text-[16px]">logout</span>
+<span>Registrar Saída</span>
+</button>
+</div>
+</div>
+<!-- Quick Compliance Badge Notice -->
+<div class="p-space-md rounded bg-surface-container-low flex items-start gap-space-sm text-secondary">
+<span class="material-symbols-outlined text-nexus-500 text-[20px] mt-0.5">security</span>
+<div class="font-caption text-caption leading-relaxed">
+<strong class="text-nexus-900 font-bold block mb-0.5">Protocolo ISPS • RN 15</strong>
+          Crachás provisórios expiram automaticamente após 12 horas. Saídas devem ser carimbadas na guarita de contenção.
+        </div>
+</div>
+</div>
+</div>
+<!-- Modal: Invalidação e Geração de Novo Código (T2.8) -->
+<div class="fixed inset-0 bg-nexus-900/60 z-50 hidden flex items-center justify-center p-space-md backdrop-blur-xs" id="modal-regenerate">
+<div class="bg-surface-container-lowest rounded-xl max-w-md w-full shadow-2xl p-space-lg flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-danger">
+<span class="material-symbols-outlined text-[24px]">key_off</span>
+<h3 class="font-h3 text-h3 text-nexus-900">Invalidação Segura (T2.8)</h3>
+</div>
+<button class="text-outline hover:text-nexus-900" onclick="closeModal('modal-regenerate')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-space-md rounded bg-error-container/40 text-on-error-container font-body-sm text-body-sm">
+<p class="font-semibold mb-1">Atenção Técnico em Portos:</p>
+<p>O código anterior <span class="font-mono-data font-bold bg-white px-1 py-0.5 rounded text-danger" id="modal-old-code">#CODE</span> será permanentemente revogado nos coletores e nas catracas físicas do porto.</p>
+</div>
+<div class="space-y-space-xs">
+<label class="font-caption text-caption text-secondary uppercase font-bold">Colaborador</label>
+<p class="font-body-bold text-body-bold text-nexus-900" id="modal-staff-name">Nome do Operador</p>
+</div>
+<div class="space-y-space-xs">
+<label class="font-caption text-caption text-secondary uppercase font-bold">Motivo da Emissão</label>
+<select class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="regenerate-reason">
+<option value="perda">Perda / Extravio do Crachá Físico</option>
+<option value="danificado">Dano no Chip RFID / QR Ilegível</option>
+<option value="rotina">Renovação Periódica de Segurança (RN 15)</option>
+<option value="troca">Mudança de Turno / Perfil Operacional</option>
+</select>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-sm">
+<button class="px-space-md py-2 text-secondary hover:text-nexus-900 font-body-bold text-body-sm" onclick="closeModal('modal-regenerate')">Cancelar</button>
+<button class="px-space-md py-2 rounded bg-danger hover:bg-red-800 text-on-error font-body-bold text-body-sm flex items-center gap-1.5 shadow-sm" onclick="confirmRegenerateCode()">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+<span>Confirmar e Gerar</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal: Registrar Visitante (T3.2) -->
+<div class="fixed inset-0 bg-nexus-900/60 z-50 hidden flex items-center justify-center p-space-md backdrop-blur-xs" id="visitante-modal">
+<div class="bg-surface-container-lowest rounded-xl max-w-lg w-full shadow-2xl p-space-lg flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-nexus-500">badge</span>
+<h3 class="font-h3 text-h3 text-nexus-900">Registrar Novo Visitante</h3>
+</div>
+<button class="text-outline hover:text-nexus-900" onclick="closeModal('visitante-modal')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="space-y-space-sm">
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Nome Completo</label>
+<input class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="vis-nome" placeholder="Ex: Felipe Amorim" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">CPF / Passaporte</label>
+<input class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="vis-doc" placeholder="000.000.000-00" type="text"/>
+</div>
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Empresa / Órgão</label>
+<input class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="vis-empresa" placeholder="Ex: Receita Federal / ANVISA" type="text"/>
+</div>
+</div>
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Motivo / Operação Vinculada</label>
+<input class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="vis-motivo" placeholder="Ex: Despacho Aduaneiro Bloco C" type="text"/>
+</div>
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Área Liberada</label>
+<select class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="vis-area">
+<option value="cais">Berços e Cais de Atracação</option>
+<option value="patio">Pátio de Contêineres (Seco/Reefer)</option>
+<option value="armazem">Armazéns Alfandegados</option>
+<option value="admin">Apenas Prédio Administrativo</option>
+</select>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-sm">
+<button class="px-space-md py-2 text-secondary hover:text-nexus-900 font-body-bold text-body-sm" onclick="closeModal('visitante-modal')">Cancelar</button>
+<button class="px-space-md py-2 rounded bg-nexus-500 hover:bg-primary text-on-primary font-body-bold text-body-sm flex items-center gap-1.5 shadow-sm" onclick="submitNewVisitor()">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span>Emitir Credencial QR</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal: Novo Funcionário (T3.1) -->
+<div class="fixed inset-0 bg-nexus-900/60 z-50 hidden flex items-center justify-center p-space-md backdrop-blur-xs" id="funcionario-modal">
+<div class="bg-surface-container-lowest rounded-xl max-w-lg w-full shadow-2xl p-space-lg flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-nexus-500">engineering</span>
+<h3 class="font-h3 text-h3 text-nexus-900">Novo Funcionário Portuário</h3>
+</div>
+<button class="text-outline hover:text-nexus-900" onclick="closeModal('funcionario-modal')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="space-y-space-sm">
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Nome Completo</label>
+<input class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="func-nome" placeholder="Nome do portuário" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Matrícula</label>
+<input class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="func-mat" placeholder="Ex: 18490" type="text"/>
+</div>
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Cargo / Função</label>
+<select class="w-full p-2.5 rounded bg-nexus-bg font-body-sm text-nexus-900 outline-none focus:ring-2 focus:ring-nexus-500" id="func-cargo">
+<option>Inspetor de Operações</option>
+<option>Supervisor de Doca</option>
+<option>Conferente de Carga</option>
+<option>Estivador</option>
+<option>Operador de Guindaste / STS</option>
+</select>
+</div>
+</div>
+<div>
+<label class="font-caption text-caption text-secondary uppercase font-bold block mb-1">Perfil de Acesso no Terminal</label>
+<div class="grid grid-cols-2 gap-2 pt-1 font-body-sm text-secondary">
+<label class="flex items-center gap-2">
+<input checked="" class="rounded text-nexus-500" type="checkbox"/>
+<span>Acesso a Berços (ISPS 1)</span>
+</label>
+<label class="flex items-center gap-2">
+<input checked="" class="rounded text-nexus-500" type="checkbox"/>
+<span>Leitor de QR Operacional</span>
+</label>
+<label class="flex items-center gap-2">
+<input class="rounded text-nexus-500" type="checkbox"/>
+<span>Controle de Pátio / Gate</span>
+</label>
+<label class="flex items-center gap-2">
+<input class="rounded text-nexus-500" type="checkbox"/>
+<span>Subida em Guindaste STS</span>
+</label>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-sm">
+<button class="px-space-md py-2 text-secondary hover:text-nexus-900 font-body-bold text-body-sm" onclick="closeModal('funcionario-modal')">Cancelar</button>
+<button class="px-space-md py-2 rounded bg-nexus-500 hover:bg-primary text-on-primary font-body-bold text-body-sm flex items-center gap-1.5 shadow-sm" onclick="submitNewEmployee()">
+<span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+<span>Cadastrar &amp; Gerar Chave T2.8</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Inline Script for Interactivity -->
+<script>
+    let activeTarget = { code: '', name: '' };
+
+    function switchTab(tab) {
+      const btnFunc = document.getElementById('tab-btn-funcionarios');
+      const btnVis = document.getElementById('tab-btn-visitantes');
+      const indFunc = document.getElementById('indicator-funcionarios');
+      const indVis = document.getElementById('indicator-visitantes');
+      const viewFunc = document.getElementById('view-funcionarios');
+      const viewVis = document.getElementById('view-visitantes');
+
+      if (tab === 'funcionarios') {
+        btnFunc.className = "pb-3 flex items-center gap-2 text-nexus-900 font-body-bold text-body transition-all relative";
+        btnVis.className = "pb-3 flex items-center gap-2 text-secondary hover:text-nexus-900 font-body-medium text-body transition-all relative";
+        indFunc.classList.remove('hidden');
+        indVis.classList.add('hidden');
+        viewFunc.classList.remove('hidden');
+        viewVis.className = "lg:col-span-4 flex flex-col space-y-space-md";
+      } else {
+        btnVis.className = "pb-3 flex items-center gap-2 text-nexus-900 font-body-bold text-body transition-all relative";
+        btnFunc.className = "pb-3 flex items-center gap-2 text-secondary hover:text-nexus-900 font-body-medium text-body transition-all relative";
+        indVis.classList.remove('hidden');
+        indFunc.classList.add('hidden');
+        // If user wants sole focus on mobile or prioritized view:
+        viewFunc.classList.add('hidden');
+        viewVis.className = "lg:col-span-12 flex flex-col space-y-space-md max-w-4xl";
+      }
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function invalidateAndRegenerate(code, name) {
+      activeTarget.code = code;
+      activeTarget.name = name;
+      document.getElementById('modal-old-code').innerText = code;
+      document.getElementById('modal-staff-name').innerText = name;
+      openModal('modal-regenerate');
+    }
+
+    function confirmRegenerateCode() {
+      const randomId = Math.floor(1000 + Math.random() * 9000);
+      const prefix = activeTarget.code.substring(0, 4);
+      const newGeneratedCode = prefix + randomId;
+
+      // Update table rows visually
+      const rows = document.querySelectorAll('#staff-table-body tr');
+      rows.forEach(row => {
+        if (row.querySelector('.staff-name') && row.querySelector('.staff-name').innerText.includes(activeTarget.name)) {
+          const codeSpan = row.querySelector('.code-tag');
+          if (codeSpan) {
+            codeSpan.innerHTML = `<span class="material-symbols-outlined text-[14px] text-success">key</span> ${newGeneratedCode}`;
+          }
+        }
+      });
+
+      closeModal('modal-regenerate');
+      
+      // Trigger notification banner
+      const banner = document.getElementById('security-banner');
+      document.getElementById('banner-title').innerText = `Código Atualizado para ${activeTarget.name}`;
+      document.getElementById('banner-subtitle').innerText = `O código antigo ${activeTarget.code} foi revogado com sucesso. Nova chave de segurança: ${newGeneratedCode} (T2.8).`;
+      banner.classList.remove('hidden');
+    }
+
+    function inactivateVisitor(tag, org) {
+      const banner = document.getElementById('security-banner');
+      document.getElementById('banner-title').innerText = `Saída Registrada: ${org} (${tag})`;
+      document.getElementById('banner-subtitle').innerText = `A credencial provisória foi desativada no controle de catracas da Portaria Principal.`;
+      banner.classList.remove('hidden');
+    }
+
+    function filterStaff() {
+      const input = document.getElementById('filter-search').value.toLowerCase();
+      const rows = document.querySelectorAll('.staff-row');
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? '' : 'none';
+      });
+    }
+
+    function submitNewEmployee() {
+      const name = document.getElementById('func-nome').value || 'Novo Operador';
+      const reg = document.getElementById('func-mat').value || '19821';
+      const cargo = document.getElementById('func-cargo').value;
+      const randomId = Math.floor(1000 + Math.random() * 9000);
+      const newCode = '#OP-' + randomId;
+
+      const tbody = document.getElementById('staff-table-body');
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-surface-container-low transition-colors staff-row';
+      tr.innerHTML = `
+        <td class="py-4 px-space-md">
+          <div class="flex items-center gap-space-sm">
+            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-caption">${name.substring(0, 2).toUpperCase()}</div>
+            <div>
+              <div class="font-body-bold text-body-sm text-nexus-900 staff-name">${name}</div>
+              <div class="font-caption text-caption text-secondary">${cargo}</div>
+            </div>
+          </div>
+        </td>
+        <td class="py-4 px-space-md font-mono-data text-secondary staff-reg">${reg}</td>
+        <td class="py-4 px-space-md">
+          <div class="flex items-center gap-2">
+            <span class="font-mono-data text-nexus-900 font-bold px-2 py-1 bg-surface-container rounded inline-flex items-center gap-1.5 code-tag">
+              <span class="material-symbols-outlined text-[14px] text-success">key</span>
+              ${newCode}
+            </span>
+            <span class="text-[10px] font-mono-data text-outline">v1</span>
+          </div>
+        </td>
+        <td class="py-4 px-space-md">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-caption font-bold bg-success/10 text-success">
+            <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+            Ativo
+          </span>
+        </td>
+        <td class="py-4 px-space-md text-right">
+          <button onclick="invalidateAndRegenerate('${newCode}', '${name}')" class="px-space-sm py-1.5 bg-surface-container-low hover:bg-primary hover:text-on-primary text-nexus-500 rounded font-body-bold text-caption transition-all inline-flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">sync_lock</span>
+            <span>Gerar Novo Código</span>
+          </button>
+        </td>
+      `;
+      tbody.prepend(tr);
+      closeModal('funcionario-modal');
+
+      const banner = document.getElementById('security-banner');
+      document.getElementById('banner-title').innerText = `Funcionário Credenciado: ${name}`;
+      document.getElementById('banner-subtitle').innerText = `Matrícula ${reg} cadastrada com a credencial única ${newCode}.`;
+      banner.classList.remove('hidden');
+    }
+
+    function submitNewVisitor() {
+      const nome = document.getElementById('vis-nome').value || 'Técnico Especialista';
+      const doc = document.getElementById('vis-doc').value || '123.456.789-00';
+      const empresa = document.getElementById('vis-empresa').value || 'Serviço Terceirizado';
+      const motivo = document.getElementById('vis-motivo').value || 'Inspeção Operacional';
+      const randomTag = '#VIS-' + Math.floor(1000 + Math.random() * 9000);
+
+      closeModal('visitante-modal');
+      const banner = document.getElementById('security-banner');
+      document.getElementById('banner-title').innerText = `Visitante Registrado: ${nome} (${empresa})`;
+      document.getElementById('banner-subtitle').innerText = `Tag provisória ${randomTag} gerada. Validade: 12 horas.`;
+      banner.classList.remove('hidden');
+    }
+  </script>
+</div></main></div></body></html>

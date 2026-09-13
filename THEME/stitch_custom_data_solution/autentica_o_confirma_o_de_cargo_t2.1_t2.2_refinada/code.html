@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusPort — Autenticação de Acesso Portuário</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            title: ['Montserrat', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            nexus: {
+              900: '#1E293B',
+              800: '#27354A',
+              700: '#334155',
+              500: '#445987',
+              hover: '#3A4A73',
+              active: '#30405F',
+              border: '#E1E5ED',
+              bg: '#F5F7FA',
+              text: '#222222',
+            },
+            status: {
+              success: '#2E7D32',
+              warning: '#D97706',
+              danger: '#C62828',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#1E293B] min-h-screen flex flex-col justify-between items-center text-nexus-text antialiased selection:bg-nexus-500 selection:text-white p-4 sm:p-6 md:p-8">
+<!-- Top bar / Terminal ID Header -->
+<header class="w-full max-w-5xl flex items-center justify-between text-xs text-slate-400 font-mono py-2 border-b border-slate-700/60">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="tracking-wide text-slate-300">TERMINAL PORTUÁRIO INTERNO</span>
+<span class="text-slate-500">|</span>
+<span class="text-slate-400">GATEWAY ID: NX-PRT-SANTOS-01</span>
+</div>
+<div class="hidden sm:flex items-center gap-4 text-slate-400">
+<span>FUSO: BRT (UTC-3)</span>
+<span class="text-slate-500">|</span>
+<span class="text-amber-400/90 font-sans font-medium">REDE RESTRITA — SEM ACESSO EXTERNO (RN 15)</span>
+</div>
+</header>
+<!-- Main Container -->
+<main class="w-full max-w-md my-auto py-8"> <!-- Clean Minimalist Authentication Card -->
+<div class="bg-white rounded-2xl shadow-2xl border border-nexus-border/80 p-8">
+<!-- Brand Header -->
+<div class="flex flex-col items-center text-center mb-8">
+<div class="w-16 h-16 rounded-xl overflow-hidden mb-3.5 shadow-sm border border-slate-200/80 flex items-center justify-center bg-slate-50">
+<img alt="NexusPort Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB05CM-xwyatjs5P8XSP_erSDMGG11Nic3pW9cmK6vNL0zi29Z456zyXwX9d0bB5IlrKHds0-OwPryrZ-WawMhpCvFVYC1RwniKwPeGjTgOb4yZbHnAZLeXuzFUvKbdOGu343m_9vTIWlpvud43vk4QsLjhc1hcQDe9u6XFxKhyGC8yToMcYFke8kb1KHN-6jpE_aEE7w-TIR5L724nvMCtohT6r5xhj1PJyTMr1bMRjD3AaPjZpcBOIE_sqc6BYUDk5w"/>
+</div>
+<h1 class="font-title font-bold text-2xl text-nexus-900 tracking-tight">Acesso ao Sistema</h1>
+<p class="text-xs text-slate-500 font-mono mt-1">Autenticação Individual Operacional · T2.1 / T2.2</p>
+</div>
+<!-- Form -->
+<form class="space-y-4" onsubmit="event.preventDefault();">
+<!-- Campo: Código Individual Único -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="block text-xs font-semibold uppercase tracking-wider text-slate-700" for="codigo-individual">
+              Código Individual Único
+            </label>
+<span class="text-[11px] font-mono text-slate-400">Ex: #0P-8842</span>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<input autofocus="" class="w-full pl-10 pr-20 py-2.5 bg-white border border-nexus-500 rounded-lg font-mono text-sm text-nexus-900 font-semibold focus:outline-none focus:ring-2 focus:ring-nexus-500/20 shadow-sm transition-colors" id="codigo-individual" name="codigo_individual" placeholder="Digite seu código..." type="text" value="SP-1022"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+<span class="inline-flex items-center gap-1 text-[11px] font-mono font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Ativo
+              </span>
+</div>
+</div>
+</div>
+<!-- Campo: Cargo Identificado (Somente Leitura) -->
+<div class="space-y-1.5 pt-1">
+<label class="block text-xs font-semibold uppercase tracking-wider text-slate-700">
+            Cargo Identificado
+          </label>
+<div class="p-3 bg-nexus-bg border border-nexus-border rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded bg-nexus-500/10 text-nexus-500 flex items-center justify-center font-mono font-bold text-xs border border-nexus-500/20">
+                SO
+              </span>
+<div>
+<p class="font-title font-bold text-sm text-nexus-900 leading-snug">
+                  Supervisor / Gerente de Operações
+                </p>
+<p class="text-[11px] text-slate-500 font-mono">Nível 3 · Gestão Operacional</p>
+</div>
+</div>
+<span class="text-[11px] font-mono text-slate-500 uppercase tracking-wide">Somente leitura</span>
+</div>
+</div>
+<!-- Botão Primário de Ação (48px de altura confortável) -->
+<div class="pt-3">
+<button class="w-full h-12 bg-nexus-500 hover:bg-nexus-hover text-white font-title font-bold text-sm rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer" type="button">
+<span>Confirmar e Entrar</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</button>
+</div>
+</form>
+</div>
+<!-- Rodapé Sutil de Segurança Portuária -->
+<div class="mt-6 text-center text-xs text-slate-400 font-mono flex items-center justify-center gap-2">
+<svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Terminal Portuário Santos · Acesso Seguro Criptografado</span>
+</div></main>
+<!-- Footer -->
+<footer class="w-full max-w-5xl py-4 border-t border-slate-700/60 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2 font-mono">
+<span>© 2026 NexusPort — Sistema de Automação de Carregamentos para Portos</span>
+<span>Uso Interno Exclusivo · Acesso Auditado por IP e Matrícula</span>
+</footer>
+</body>
+</html>

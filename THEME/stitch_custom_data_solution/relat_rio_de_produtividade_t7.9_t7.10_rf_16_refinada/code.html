@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {"darkMode":"class","theme":{"extend":{"colors":{"inverse-primary":"#b1c6fb","surface-dim":"#dcd9d9","nexus-white":"#FFFFFF","tertiary-fixed-dim":"#e5c375","secondary-fixed-dim":"#bcc7de","secondary":"#545f73","nexus-text":"#222222","surface-bright":"#fcf9f8","on-surface-variant":"#44474f","primary-fixed":"#d9e2ff","surface-container":"#f0eded","tertiary":"#543f00","surface-tint":"#495e8c","on-secondary-fixed":"#111c2d","surface-container-highest":"#e5e2e1","surface-variant":"#e5e2e1","inverse-surface":"#303030","outline":"#757780","nexus-500":"#445987","nexus-900":"#1E293B","tertiary-fixed":"#ffdf99","on-primary":"#ffffff","secondary-container":"#d5e0f8","danger":"#C62828","primary-container":"#445987","tertiary-container":"#6f5612","warning":"#D97706","on-tertiary-container":"#f0cd7e","on-primary-fixed":"#001a43","nexus-border":"#E1E5ED","surface-container-low":"#f6f3f2","on-tertiary-fixed":"#251a00","on-secondary-container":"#586377","on-surface":"#1b1c1c","success":"#2E7D32","on-secondary":"#ffffff","surface":"#fcf9f8","on-primary-container":"#bfd1ff","on-secondary-fixed-variant":"#3c475a","error":"#ba1a1a","background":"#fcf9f8","error-container":"#ffdad6","on-primary-fixed-variant":"#314673","nexus-bg":"#F5F7FA","secondary-fixed":"#d8e3fb","surface-container-high":"#eae7e7","on-tertiary-fixed-variant":"#5a4300","on-background":"#1b1c1c","primary-fixed-dim":"#b1c6fb","inverse-on-surface":"#f3f0ef","on-tertiary":"#ffffff","on-error-container":"#93000a","primary":"#2c416e","surface-container-lowest":"#ffffff","on-error":"#ffffff","outline-variant":"#c5c6d0"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"space-xl":"2rem","space-xs":"0.25rem","margin-md":"1.5rem","gutter":"1rem","space-sm":"0.5rem","gutter-lg":"1.5rem","space-lg":"1.5rem","space-md":"1rem","margin-lg":"2rem","margin":"1rem"},"fontFamily":{"display":["Montserrat"],"h1":["Montserrat"],"caption":["Inter"],"mono-lg":["JetBrains Mono"],"body-sm":["Inter"],"mono-data":["JetBrains Mono"],"body-medium":["Inter"],"body-bold":["Inter"],"h2":["Montserrat"],"body":["Inter"],"h4":["Montserrat"],"h3":["Montserrat"]},"fontSize":{"display":["32px",{"lineHeight":"40px","fontWeight":"700"}],"h1":["28px",{"lineHeight":"36px","fontWeight":"700"}],"caption":["12px",{"lineHeight":"16px","fontWeight":"500"}],"mono-lg":["16px",{"lineHeight":"22px","fontWeight":"500"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"mono-data":["14px",{"lineHeight":"20px","fontWeight":"500"}],"body-medium":["16px",{"lineHeight":"24px","fontWeight":"500"}],"body-bold":["16px",{"lineHeight":"24px","fontWeight":"600"}],"h2":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body":["16px",{"lineHeight":"24px","fontWeight":"400"}],"h4":["18px",{"lineHeight":"24px","fontWeight":"600"}],"h3":["20px",{"lineHeight":"28px","fontWeight":"600"}]}}}}</script></head><body class="bg-nexus-bg font-body text-nexus-text antialiased"><aside class="fixed left-0 top-0 h-full w-[240px] bg-nexus-900 text-surface-container-highest z-50 flex flex-col justify-between select-none shadow-[0_1px_8px_rgba(0,0,0,0.15)]"><div class="flex flex-col h-full"><div class="h-16 px-space-md border-b border-secondary/30 flex items-center gap-space-sm bg-nexus-900"><img alt="logo_porto.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Whvmk1QUVf-i9xC7ANd-s_QDITq_ZkpbA0qNhl4UKWIouSlc9V6-qK3hfXj8EZ8_0AaSTjVekSkYwyte0Sf8SsgLL2t3JQ842UwJ7Uf9Kv0iqX7zg4ziKUeolmTRoC_2_iNgmEZk9MOlRoSPxrYnqDCIfNuVMLTiNcBCkBGzQzyr9pKSizMGMuaqeoURWLGoeoxF7l-U2jjIn_Iu1gPjpnrSqCmiWk9ZEYdtjmU7eIDdZi81oNaCh59SSb5OS-BeotFpgHC8O-Yg"/><div class="flex flex-col min-w-0"><span class="font-h4 text-h4 tracking-tight text-nexus-white truncate">NexusPort</span><span class="font-caption text-caption text-secondary-fixed-dim uppercase tracking-wider truncate">Operação Portuária</span></div></div><div class="flex-1 overflow-y-auto px-space-sm py-space-md space-y-space-md"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Visão Geral</span><a class="flex items-center justify-between px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="dashboard-operacional" href="#"><div class="flex items-center gap-space-sm min-w-0"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">monitoring</span><span class="font-body-sm text-body-sm truncate">Dashboard Operacional</span></div><span class="px-1.5 py-0.5 rounded bg-success/20 text-success font-caption text-[10px] font-bold">AO VIVO</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="fila-de-liberacao" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">verified</span><span class="font-body-sm text-body-sm truncate">Fila de Liberação</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Operação de Cargas</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="cargas-e-patio" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">grid_view</span><span class="font-body-sm text-body-sm truncate">Cargas &amp; Pátio</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="checklist-de-inspecao" href="#"><div class="flex items-center gap-space-sm min-w-0"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">fact_check</span><span class="font-body-sm text-body-sm truncate">Checklist Inspeção</span></div><span class="material-symbols-outlined text-[16px] text-secondary-fixed-dim group-hover:text-nexus-white" title="Atalho Leitor QR">qr_code_scanner</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="vinculacao-conteineres-navios" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">link</span><span class="font-body-sm text-body-sm truncate">Vinculação Contêineres</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Frota &amp; Ativos</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="navios-imo" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">directions_boat</span><span class="font-body-sm text-body-sm truncate">Navios (IMO)</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="conteineres" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">inventory_2</span><span class="font-body-sm text-body-sm truncate">Contêineres</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="guindastes-e-manutencoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">precision_manufacturing</span><span class="font-body-sm text-body-sm truncate">Guindastes &amp; Manutenção</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Governança &amp; Auditoria</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="trail-de-decisoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">history_edu</span><span class="font-body-sm text-body-sm truncate">Trail de Decisões</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="logs-de-alteracoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">rule</span><span class="font-body-sm text-body-sm truncate">Logs de Alterações</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="relatorios-e-produtividade" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">query_stats</span><span class="font-body-sm text-body-sm truncate">Relatórios Operacionais</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Administração</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="pessoas-e-acessos" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">badge</span><span class="font-body-sm text-body-sm truncate">Pessoas &amp; Acessos</span></a></nav></div><div class="p-space-sm border-t border-secondary/30 bg-nexus-900/80"><div class="flex items-center justify-between px-space-xs py-1.5 text-secondary-fixed-dim font-caption text-[11px]"><span class="font-mono-data">v4.2-OPR</span><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-success inline-block"></span>Servidor Conectado</span></div></div></div></aside><div class="pl-[240px]"><header class="fixed top-0 left-[240px] right-0 h-16 bg-nexus-white border-b border-nexus-border z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-lg min-w-0"><div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary min-w-0"><span class="material-symbols-outlined text-[18px] text-outline">anchor</span><span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider truncate">NexusPort</span><span class="text-outline">/</span><span class="font-body-medium text-body-medium text-nexus-text font-semibold truncate">Terminal Marítimo</span></div><div class="hidden xl:flex items-center gap-2 pl-space-md border-l border-nexus-border"><span class="w-2.5 h-2.5 rounded-full bg-success animate-pulse"></span><span class="font-caption text-caption text-on-surface-variant font-medium">Status Operacional: <strong class="text-success font-semibold">Normal</strong></span><span class="text-outline text-caption">•</span><span class="font-mono-data text-caption text-secondary font-semibold">8 NAVIOS NO BERÇO</span></div></div><div class="flex items-center gap-space-md"><a class="hidden sm:flex items-center gap-space-xs px-space-md py-2 bg-nexus-bg border border-nexus-border hover:border-nexus-500 rounded text-nexus-500 font-body-bold text-body-sm transition-colors" data-path="checklist-de-inspecao" href="#"><span class="material-symbols-outlined text-[18px]">qr_code_scanner</span><span>Escanear QR</span></a><div class="h-7 w-[1px] bg-nexus-border hidden sm:block"></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[18px]">person</span></div><div class="flex flex-col text-left"><div class="flex items-center gap-1.5"><span class="font-mono-data text-caption text-nexus-text font-semibold text-[13px]">CÓD: #OP-8842</span><span class="w-1.5 h-1.5 rounded-full bg-success" title="Operador Ativo"></span></div><span class="font-caption text-caption text-secondary text-[11px] leading-tight truncate max-w-[150px]">Supervisor / Gerente Operacional</span></div></div><a class="p-2 text-outline hover:text-danger rounded hover:bg-surface-container transition-colors flex items-center" data-path="login" href="#" title="Sair do Sistema"><span class="material-symbols-outlined text-[20px]">logout</span></a></div></header><main class="relative pt-16 bg-nexus-bg min-h-screen w-full px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<!-- Dynamic Operational Scrim & Header -->
+<header class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg mb-space-xl">
+<div>
+<div class="flex items-center gap-space-sm mb-1">
+<span class="font-caption text-caption text-secondary uppercase tracking-widest">Auditoria de Desempenho Portuário</span>
+<span class="text-outline text-caption">•</span>
+<span class="font-mono-data text-caption text-nexus-500 font-semibold">REF: T7.9 / T7.10</span>
+</div>
+<h1 class="font-h1 text-h1 text-nexus-900 tracking-tight">Produtividade Operacional</h1>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Consolidação individual e setorial de movimentações no Terminal Marítimo.</p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Period Selector -->
+<div class="flex items-center gap-2 bg-nexus-white px-space-md py-2.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-nexus-500">calendar_month</span>
+<div class="flex flex-col">
+<span class="font-caption text-[10px] text-secondary uppercase font-semibold leading-none">Período Fiscal</span>
+<span class="font-body-bold text-body-sm text-nexus-text">Outubro / 2026</span>
+</div>
+</div>
+<!-- Turno / Setor Filter -->
+<div class="relative">
+<select class="appearance-none bg-nexus-white font-body-sm text-body-sm text-nexus-text pl-space-md pr-10 py-2.5 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-nexus-500 cursor-pointer" id="shiftFilter">
+<option value="all">Todos os Turnos (Geral)</option>
+<option value="t1">Turno 1 • 06:00 - 14:00 (Pátio &amp; Berço)</option>
+<option value="t2">Turno 2 • 14:00 - 22:00 (Cargas Pesadas)</option>
+<option value="t3">Turno 3 • 22:00 - 06:00 (Atracação Noturna)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-secondary pointer-events-none">expand_more</span>
+</div>
+<!-- Export Actions Dropdown / Trigger -->
+<div class="relative" id="exportContainer">
+<button class="flex items-center gap-2 bg-nexus-500 hover:bg-[#36476D] text-nexus-white font-body-bold text-body-sm px-space-lg py-2.5 rounded-lg shadow-sm transition-colors" id="exportBtn">
+<span class="material-symbols-outlined text-[18px]">ios_share</span>
+<span>Exportar Relatório</span>
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+<div class="hidden absolute right-0 mt-1 w-48 bg-nexus-white rounded-lg shadow-xl py-1 z-30" id="exportDropdown">
+<a class="flex items-center gap-2 px-4 py-2 font-body-sm text-body-sm text-nexus-text hover:bg-surface-container transition-colors" href="#" onclick="triggerExport('CSV')">
+<span class="material-symbols-outlined text-[18px] text-nexus-500">table_view</span>
+<span>Exportar em CSV</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 font-body-sm text-body-sm text-nexus-text hover:bg-surface-container transition-colors" href="#" onclick="triggerExport('PDF')">
+<span class="material-symbols-outlined text-[18px] text-danger">picture_as_pdf</span>
+<span>Exportar em PDF Assinado</span>
+</a>
+</div>
+</div>
+</div>
+</header>
+<!-- Inline Context Banner for Restricted View Mode -->
+<section class="bg-nexus-white rounded-lg p-space-md mb-space-lg shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">policy</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-body-bold text-body-sm text-nexus-900">Modo de Visualização: Supervisão de Terminal</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-caption text-[11px] text-secondary font-mono-data">Perfil: DIRETOR_OPER</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary truncate">Exibindo registros autenticados pela Capitania e Portaria Central com índice auditável.</p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs self-end sm:self-center">
+<span class="font-caption text-caption text-outline">Última consolidação:</span>
+<span class="font-mono-data text-caption text-nexus-text font-semibold">Hoje, 14:32 BRT</span>
+</div>
+</section>
+<!-- 3 Synthetic Metrics Top Cards -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-space-lg mb-space-xl">
+<!-- Card 1: Total Operations -->
+<div class="bg-nexus-white rounded-lg p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-caption text-caption text-secondary uppercase tracking-wider font-semibold">Volume Mensal Consolidado</span>
+<h2 class="font-display text-display text-nexus-900 mt-2 font-bold tracking-tight">4.820</h2>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container text-nexus-500 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-[24px]">swap_horiz</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between">
+<div class="flex items-center gap-1 text-success">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="font-mono-data text-caption font-semibold">+12.4%</span>
+<span class="font-caption text-caption text-secondary">vs. Setembro</span>
+</div>
+<span class="font-caption text-[11px] text-outline font-mono-data">Pátios A, B e Cais 4</span>
+</div>
+</div>
+<!-- Card 2: Average Dispatch Rate -->
+<div class="bg-nexus-white rounded-lg p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-caption text-caption text-secondary uppercase tracking-wider font-semibold">Taxa Média de Despacho</span>
+<div class="flex items-baseline gap-2 mt-2">
+<h2 class="font-display text-display text-nexus-900 font-bold tracking-tight">18,4</h2>
+<span class="font-body-sm text-body-sm text-secondary font-medium">min / carga</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container text-nexus-500 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-[24px]">timer</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between">
+<div class="flex items-center gap-1 text-success">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+<span class="font-mono-data text-caption font-semibold">-2.1 min</span>
+<span class="font-caption text-caption text-secondary">meta: ≤ 20 min</span>
+</div>
+<span class="font-caption text-[11px] text-success font-semibold bg-success/10 px-1.5 py-0.5 rounded">Dentro do SLA</span>
+</div>
+</div>
+<!-- Card 3: Technical Compliance Rate -->
+<div class="bg-nexus-white rounded-lg p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-caption text-caption text-secondary uppercase tracking-wider font-semibold">Conformidade Técnica</span>
+<div class="flex items-baseline gap-1 mt-2">
+<h2 class="font-display text-display text-nexus-900 font-bold tracking-tight">98.2</h2>
+<span class="font-h3 text-h3 text-nexus-500 font-bold">%</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container text-success group-hover:bg-success/20 transition-colors">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between">
+<div class="flex items-center gap-1 text-secondary">
+<span class="font-mono-data text-caption font-semibold text-nexus-900">86</span>
+<span class="font-caption text-caption">não-conformidades em 4.820</span>
+</div>
+<span class="font-caption text-[11px] text-secondary font-mono-data">Auditoria RF16</span>
+</div>
+</div>
+</section>
+<!-- Split Grid: Benchmark Minimalista + Tabela de Produtividade -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mb-space-xl items-start">
+<!-- Minimalist Role Productivity Benchmark (4 Cols) -->
+<div class="lg:col-span-4 bg-nexus-white rounded-lg p-space-lg shadow-sm flex flex-col">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<span class="font-caption text-caption text-secondary uppercase tracking-wider font-semibold">Distribuição por Cargo</span>
+<h3 class="font-h3 text-h3 text-nexus-900 font-semibold mt-0.5">Eficiência por Função</h3>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]">bar_chart</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mb-space-lg">
+        Média ponderada de conformidade e velocidade de ciclo operacional por função homologada.
+      </p>
+<!-- Minimal Bar List Chart -->
+<div class="flex flex-col gap-space-md">
+<!-- Conferente -->
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-body-bold text-body-sm text-nexus-900">Conferentes de Carga</span>
+<span class="font-mono-data text-caption text-nexus-500 font-semibold">99.1% ef.</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-nexus-500 rounded-full transition-all duration-500" style="width: 99.1%"></div>
+</div>
+<div class="flex justify-between items-center mt-1 text-[11px] text-secondary font-mono-data">
+<span>1.420 manifestos validados</span>
+<span>14,2 min/méd</span>
+</div>
+</div>
+<!-- Inspetor -->
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-body-bold text-body-sm text-nexus-900">Inspetores Técnicos (Avaria)</span>
+<span class="font-mono-data text-caption text-nexus-500 font-semibold">97.8% ef.</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-nexus-500/85 rounded-full transition-all duration-500" style="width: 97.8%"></div>
+</div>
+<div class="flex justify-between items-center mt-1 text-[11px] text-secondary font-mono-data">
+<span>890 checklists concluídos</span>
+<span>22,5 min/méd</span>
+</div>
+</div>
+<!-- Arrumador -->
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-body-bold text-body-sm text-nexus-900">Arrumadores de Pátio</span>
+<span class="font-mono-data text-caption text-nexus-500 font-semibold">96.4% ef.</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-nexus-500/70 rounded-full transition-all duration-500" style="width: 96.4%"></div>
+</div>
+<div class="flex justify-between items-center mt-1 text-[11px] text-secondary font-mono-data">
+<span>1.280 empilhamentos RTG</span>
+<span>16,1 min/méd</span>
+</div>
+</div>
+<!-- Estivador -->
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-body-bold text-body-sm text-nexus-900">Estivadores de Porão / Costado</span>
+<span class="font-mono-data text-caption text-nexus-500 font-semibold">98.5% ef.</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-nexus-500/55 rounded-full transition-all duration-500" style="width: 98.5%"></div>
+</div>
+<div class="flex justify-between items-center mt-1 text-[11px] text-secondary font-mono-data">
+<span>1.230 desatracamentos</span>
+<span>19,8 min/méd</span>
+</div>
+</div>
+</div>
+<!-- Quick Context Box -->
+<div class="mt-space-lg p-space-md bg-surface-container-low rounded-lg flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary">verified</span>
+<div class="flex flex-col">
+<span class="font-body-bold text-caption text-nexus-900">Critério RF16 Aplicado</span>
+<span class="font-caption text-[11px] text-secondary leading-tight">Descontados intervalos técnicos de maré e paradas programadas de guindaste.</span>
+</div>
+</div>
+</div>
+<!-- Main Table: Employee Productivity (8 Cols) -->
+<div class="lg:col-span-8 bg-nexus-white rounded-lg shadow-sm overflow-hidden flex flex-col">
+<div class="p-space-lg flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div>
+<h3 class="font-h3 text-h3 text-nexus-900 font-semibold">Detalhamento por Funcionário</h3>
+<p class="font-body-sm text-body-sm text-secondary mt-0.5">Amostra nominal de produtividade e taxa de atendimento às metas operacionais.</p>
+</div>
+<!-- Quick Filter Input -->
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">search</span>
+<input class="w-full bg-surface-container-low pl-9 pr-3 py-2 text-body-sm font-body-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-nexus-500 placeholder-outline text-nexus-text" id="employeeSearch" placeholder="Buscar operador ou matrícula..." type="text"/>
+</div>
+</div>
+<!-- Table Wrapper -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-nexus-900 text-surface-container-highest uppercase text-[11px] font-caption tracking-wider">
+<th class="py-3.5 px-space-lg font-semibold">Funcionário</th>
+<th class="py-3.5 px-space-md font-semibold">Cargo Operacional</th>
+<th class="py-3.5 px-space-md font-semibold text-right">Volume Executado</th>
+<th class="py-3.5 px-space-md font-semibold text-center">Eficiência</th>
+<th class="py-3.5 px-space-lg font-semibold text-center">Status SLA</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-nexus-border font-body-sm text-body-sm text-nexus-text" id="employeeTableBody">
+<!-- Row 1: Conferente -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-nexus-500/10 text-nexus-500 flex items-center justify-center font-body-bold text-caption">
+                    AL
+                  </div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-bold text-body-sm text-nexus-900 truncate">André Lourenço Silveira</span>
+<span class="font-mono-data text-caption text-secondary">MAT: #CF-4902</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="px-2 py-1 rounded bg-surface-container text-nexus-900 font-body-bold text-caption inline-block">
+                  Conferente Sênior
+                </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<div class="font-mono-data font-semibold text-nexus-900">412 cargas</div>
+<div class="font-caption text-[11px] text-secondary">Despacho: 13,8 min/méd</div>
+</td>
+<td class="py-4 px-space-md text-center">
+<span class="font-mono-data font-semibold text-success">99.4%</span>
+<div class="w-16 h-1.5 bg-surface-container rounded-full mx-auto mt-1 overflow-hidden">
+<div class="h-full bg-success rounded-full" style="width: 99.4%"></div>
+</div>
+</td>
+<td class="py-4 px-space-lg text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/15 text-success font-caption text-caption font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                  Superou Meta
+                </span>
+</td>
+</tr>
+<!-- Row 2: Inspetor -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-nexus-500/10 text-nexus-500 flex items-center justify-center font-body-bold text-caption">
+                    MC
+                  </div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-bold text-body-sm text-nexus-900 truncate">Mariana Castro Prado</span>
+<span class="font-mono-data text-caption text-secondary">MAT: #IN-8174</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="px-2 py-1 rounded bg-surface-container text-nexus-900 font-body-bold text-caption inline-block">
+                  Inspetor de Avarias
+                </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<div class="font-mono-data font-semibold text-nexus-900">286 vistorias</div>
+<div class="font-caption text-[11px] text-secondary">Tempo Laudo: 21 min</div>
+</td>
+<td class="py-4 px-space-md text-center">
+<span class="font-mono-data font-semibold text-success">98.1%</span>
+<div class="w-16 h-1.5 bg-surface-container rounded-full mx-auto mt-1 overflow-hidden">
+<div class="h-full bg-success rounded-full" style="width: 98.1%"></div>
+</div>
+</td>
+<td class="py-4 px-space-lg text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/15 text-success font-caption text-caption font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                  Em Conformidade
+                </span>
+</td>
+</tr>
+<!-- Row 3: Arrumador -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-nexus-500/10 text-nexus-500 flex items-center justify-center font-body-bold text-caption">
+                    RB
+                  </div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-bold text-body-sm text-nexus-900 truncate">Rodrigo Batista Santos</span>
+<span class="font-mono-data text-caption text-secondary">MAT: #AR-1033</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="px-2 py-1 rounded bg-surface-container text-nexus-900 font-body-bold text-caption inline-block">
+                  Arrumador Especialista
+                </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<div class="font-mono-data font-semibold text-nexus-900">354 estivagens</div>
+<div class="font-caption text-[11px] text-secondary">Ciclo RTG: 15,9 min</div>
+</td>
+<td class="py-4 px-space-md text-center">
+<span class="font-mono-data font-semibold text-nexus-500">97.0%</span>
+<div class="w-16 h-1.5 bg-surface-container rounded-full mx-auto mt-1 overflow-hidden">
+<div class="h-full bg-nexus-500 rounded-full" style="width: 97%"></div>
+</div>
+</td>
+<td class="py-4 px-space-lg text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/15 text-success font-caption text-caption font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                  Em Conformidade
+                </span>
+</td>
+</tr>
+<!-- Row 4: Estivador -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-nexus-500/10 text-nexus-500 flex items-center justify-center font-body-bold text-caption">
+                    FT
+                  </div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-bold text-body-sm text-nexus-900 truncate">Felipe Tavares Mendes</span>
+<span class="font-mono-data text-caption text-secondary">MAT: #ES-5520</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="px-2 py-1 rounded bg-surface-container text-nexus-900 font-body-bold text-caption inline-block">
+                  Estivador Portuário
+                </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<div class="font-mono-data font-semibold text-nexus-900">310 descarregamentos</div>
+<div class="font-caption text-[11px] text-secondary">Tempo Guindaste: 18,6 min</div>
+</td>
+<td class="py-4 px-space-md text-center">
+<span class="font-mono-data font-semibold text-warning">94.8%</span>
+<div class="w-16 h-1.5 bg-surface-container rounded-full mx-auto mt-1 overflow-hidden">
+<div class="h-full bg-warning rounded-full" style="width: 94.8%"></div>
+</div>
+</td>
+<td class="py-4 px-space-lg text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/15 text-warning font-caption text-caption font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
+                  Atenção SLA
+                </span>
+</td>
+</tr>
+<!-- Row 5: Inspetor -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-nexus-500/10 text-nexus-500 flex items-center justify-center font-body-bold text-caption">
+                    CV
+                  </div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-bold text-body-sm text-nexus-900 truncate">Cláudia Vieira Ribeiro</span>
+<span class="font-mono-data text-caption text-secondary">MAT: #IN-9011</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="px-2 py-1 rounded bg-surface-container text-nexus-900 font-body-bold text-caption inline-block">
+                  Inspetor de Lacres (RFB)
+                </span>
+</td>
+<td class="py-4 px-space-md text-right">
+<div class="font-mono-data font-semibold text-nexus-900">388 checagens</div>
+<div class="font-caption text-[11px] text-secondary">Liberação: 17,2 min</div>
+</td>
+<td class="py-4 px-space-md text-center">
+<span class="font-mono-data font-semibold text-success">98.9%</span>
+<div class="w-16 h-1.5 bg-surface-container rounded-full mx-auto mt-1 overflow-hidden">
+<div class="h-full bg-success rounded-full" style="width: 98.9%"></div>
+</div>
+</td>
+<td class="py-4 px-space-lg text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/15 text-success font-caption text-caption font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                  Superou Meta
+                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination Metadata -->
+<div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-sm text-caption font-caption text-secondary">
+<div>
+          Mostrando <span class="font-mono-data font-semibold text-nexus-900">5</span> de <span class="font-mono-data font-semibold text-nexus-900">42</span> operadores ativos do Terminal
+        </div>
+<div class="flex items-center gap-space-xs">
+<button class="px-2.5 py-1 bg-nexus-white rounded border border-nexus-border text-secondary hover:text-nexus-text disabled:opacity-50" disabled="">Anterior</button>
+<span class="px-2 font-mono-data font-semibold text-nexus-900">Pág. 1 / 9</span>
+<button class="px-2.5 py-1 bg-nexus-white rounded border border-nexus-border text-nexus-900 hover:bg-surface-container transition-colors">Próxima</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Operational Yard Photographic Anchor (Asset Integration) -->
+<section class="w-full bg-nexus-white rounded-lg p-space-lg shadow-sm mb-space-lg flex flex-col md:flex-row items-center gap-space-lg">
+<div class="w-full md:w-1/3 h-44 rounded-lg overflow-hidden relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="High quality industrial photo of a busy maritime shipping terminal at golden hour, featuring towering blue ship-to-shore gantry cranes handling standard shipping containers, clean concrete yard floor, organized stacks of steel containers, and safety personnel in high-visibility vests conducting inspections under clear atmospheric lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHetk1oZx0J2lKgYQ1Jhj84mizqqXV6iegGPDQFVTUQ3onMICs2DknFMPXSxZlnA55eNq_p26u3w6DcYWVb_mEY7icey4h0URNNrVoqpuJhMmJaogI7eeUT_tnyMAgce9RheQu0caBqWTfKDGTJPEoiXNeuI6joNirHiVsq8NHGc28zfiZbuiCihPnQxQ55kn1MefC5dfGv4xPVhN3DS1zpGaP5d-L0_WPaF4ulZd2191xtvVmmMCj"/>
+<div class="absolute inset-0 bg-gradient-to-t from-nexus-900/70 via-transparent to-transparent flex items-end p-3">
+<span class="font-caption text-[11px] text-surface-bright font-mono-data">Cais Sul • Pátio 3 Operante</span>
+</div>
+</div>
+<div class="w-full md:w-2/3 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-success"></span>
+<span class="font-caption text-caption text-secondary uppercase font-semibold">Integridade de Auditoria (RF16)</span>
+</div>
+<h4 class="font-h4 text-h4 text-nexus-900 font-semibold">Rastreamento de Desempenho e Cadeia de Custódia</h4>
+<p class="font-body-sm text-body-sm text-secondary mt-1.5 leading-relaxed">
+          Os volumes expressos neste relatório são reconciliados a cada troca de turno através do leitor óptico das gruas STS e carimbos de validação de contêineres lacrados. Nenhuma modificação retroativa é permitida sem chave de autorização da Diretoria Executiva do Porto.
+        </p>
+</div>
+<div class="mt-4 flex flex-wrap items-center gap-space-md pt-3">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-success">lock</span>
+<span class="font-mono-data text-caption text-nexus-900 font-medium">Hash SHA-256: 4f89...e21a</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-nexus-500">fingerprint</span>
+<span class="font-mono-data text-caption text-nexus-900 font-medium">Selo: OP-8842-VALID</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Logic for Export & Search Filter -->
+<script>
+    (function() {
+      const exportBtn = document.getElementById('exportBtn');
+      const exportDropdown = document.getElementById('exportDropdown');
+      const searchInput = document.getElementById('employeeSearch');
+      const tableBody = document.getElementById('employeeTableBody');
+
+      // Toggle Export Dropdown
+      if (exportBtn && exportDropdown) {
+        exportBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          exportDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function() {
+          if (!exportDropdown.classList.contains('hidden')) {
+            exportDropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      // Filter rows by employee name or matricula
+      if (searchInput && tableBody) {
+        searchInput.addEventListener('input', function(e) {
+          const query = e.target.value.toLowerCase().trim();
+          const rows = tableBody.querySelectorAll('tr');
+          rows.forEach(function(row) {
+            const text = row.innerText.toLowerCase();
+            if (text.includes(query)) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      // Export Simulation
+      window.triggerExport = function(format) {
+        if (exportDropdown) exportDropdown.classList.add('hidden');
+        const alertBox = document.createElement('div');
+        alertBox.className = 'fixed bottom-6 right-6 bg-nexus-900 text-surface-bright px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 z-50 transition-all font-body-sm text-body-sm';
+        alertBox.innerHTML = '<span class="material-symbols-outlined text-success text-[20px]">check_circle</span>' +
+                             '<span>Relatório gerado em <strong>' + format + '</strong>. Download iniciado.</span>';
+        document.body.appendChild(alertBox);
+        setTimeout(function() {
+          alertBox.style.opacity = '0';
+          setTimeout(function() { alertBox.remove(); }, 300);
+        }, 3000);
+      };
+    })();
+  </script>
+</div></main></div></body></html>

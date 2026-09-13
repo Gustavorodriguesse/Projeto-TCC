@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {"darkMode":"class","theme":{"extend":{"colors":{"inverse-primary":"#b1c6fb","surface-dim":"#dcd9d9","nexus-white":"#FFFFFF","tertiary-fixed-dim":"#e5c375","secondary-fixed-dim":"#bcc7de","secondary":"#545f73","nexus-text":"#222222","surface-bright":"#fcf9f8","on-surface-variant":"#44474f","primary-fixed":"#d9e2ff","surface-container":"#f0eded","tertiary":"#543f00","surface-tint":"#495e8c","on-secondary-fixed":"#111c2d","surface-container-highest":"#e5e2e1","surface-variant":"#e5e2e1","inverse-surface":"#303030","outline":"#757780","nexus-500":"#445987","nexus-900":"#1E293B","tertiary-fixed":"#ffdf99","on-primary":"#ffffff","secondary-container":"#d5e0f8","danger":"#C62828","primary-container":"#445987","tertiary-container":"#6f5612","warning":"#D97706","on-tertiary-container":"#f0cd7e","on-primary-fixed":"#001a43","nexus-border":"#E1E5ED","surface-container-low":"#f6f3f2","on-tertiary-fixed":"#251a00","on-secondary-container":"#586377","on-surface":"#1b1c1c","success":"#2E7D32","on-secondary":"#ffffff","surface":"#fcf9f8","on-primary-container":"#bfd1ff","on-secondary-fixed-variant":"#3c475a","error":"#ba1a1a","background":"#fcf9f8","error-container":"#ffdad6","on-primary-fixed-variant":"#314673","nexus-bg":"#F5F7FA","secondary-fixed":"#d8e3fb","surface-container-high":"#eae7e7","on-tertiary-fixed-variant":"#5a4300","on-background":"#1b1c1c","primary-fixed-dim":"#b1c6fb","inverse-on-surface":"#f3f0ef","on-tertiary":"#ffffff","on-error-container":"#93000a","primary":"#2c416e","surface-container-lowest":"#ffffff","on-error":"#ffffff","outline-variant":"#c5c6d0"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"space-xl":"2rem","space-xs":"0.25rem","margin-md":"1.5rem","gutter":"1rem","space-sm":"0.5rem","gutter-lg":"1.5rem","space-lg":"1.5rem","space-md":"1rem","margin-lg":"2rem","margin":"1rem"},"fontFamily":{"display":["Montserrat"],"h1":["Montserrat"],"caption":["Inter"],"mono-lg":["JetBrains Mono"],"body-sm":["Inter"],"mono-data":["JetBrains Mono"],"body-medium":["Inter"],"body-bold":["Inter"],"h2":["Montserrat"],"body":["Inter"],"h4":["Montserrat"],"h3":["Montserrat"]},"fontSize":{"display":["32px",{"lineHeight":"40px","fontWeight":"700"}],"h1":["28px",{"lineHeight":"36px","fontWeight":"700"}],"caption":["12px",{"lineHeight":"16px","fontWeight":"500"}],"mono-lg":["16px",{"lineHeight":"22px","fontWeight":"500"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"mono-data":["14px",{"lineHeight":"20px","fontWeight":"500"}],"body-medium":["16px",{"lineHeight":"24px","fontWeight":"500"}],"body-bold":["16px",{"lineHeight":"24px","fontWeight":"600"}],"h2":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body":["16px",{"lineHeight":"24px","fontWeight":"400"}],"h4":["18px",{"lineHeight":"24px","fontWeight":"600"}],"h3":["20px",{"lineHeight":"28px","fontWeight":"600"}]}}}}</script></head><body class="bg-nexus-bg font-body text-nexus-text antialiased"><aside class="fixed left-0 top-0 h-full w-[240px] bg-nexus-900 text-surface-container-highest z-50 flex flex-col justify-between select-none shadow-[0_1px_8px_rgba(0,0,0,0.15)]"><div class="flex flex-col h-full"><div class="h-16 px-space-md border-b border-secondary/30 flex items-center gap-space-sm bg-nexus-900"><img alt="logo_porto.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Whvmk1QUVf-i9xC7ANd-s_QDITq_ZkpbA0qNhl4UKWIouSlc9V6-qK3hfXj8EZ8_0AaSTjVekSkYwyte0Sf8SsgLL2t3JQ842UwJ7Uf9Kv0iqX7zg4ziKUeolmTRoC_2_iNgmEZk9MOlRoSPxrYnqDCIfNuVMLTiNcBCkBGzQzyr9pKSizMGMuaqeoURWLGoeoxF7l-U2jjIn_Iu1gPjpnrSqCmiWk9ZEYdtjmU7eIDdZi81oNaCh59SSb5OS-BeotFpgHC8O-Yg"/><div class="flex flex-col min-w-0"><span class="font-h4 text-h4 tracking-tight text-nexus-white truncate">NexusPort</span><span class="font-caption text-caption text-secondary-fixed-dim uppercase tracking-wider truncate">Operação Portuária</span></div></div><div class="flex-1 overflow-y-auto px-space-sm py-space-md space-y-space-md"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Visão Geral</span><a class="flex items-center justify-between px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="dashboard-operacional" href="#"><div class="flex items-center gap-space-sm min-w-0"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">monitoring</span><span class="font-body-sm text-body-sm truncate">Dashboard Operacional</span></div><span class="px-1.5 py-0.5 rounded bg-success/20 text-success font-caption text-[10px] font-bold">AO VIVO</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="fila-de-liberacao" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">verified</span><span class="font-body-sm text-body-sm truncate">Fila de Liberação</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Operação de Cargas</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="cargas-e-patio" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">grid_view</span><span class="font-body-sm text-body-sm truncate">Cargas &amp; Pátio</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="checklist-de-inspecao" href="#"><div class="flex items-center gap-space-sm min-w-0"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">fact_check</span><span class="font-body-sm text-body-sm truncate">Checklist Inspeção</span></div><span class="material-symbols-outlined text-[16px] text-secondary-fixed-dim group-hover:text-nexus-white" title="Atalho Leitor QR">qr_code_scanner</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="vinculacao-conteineres-navios" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">link</span><span class="font-body-sm text-body-sm truncate">Vinculação Contêineres</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Frota &amp; Ativos</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="navios-imo" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">directions_boat</span><span class="font-body-sm text-body-sm truncate">Navios (IMO)</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="conteineres" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">inventory_2</span><span class="font-body-sm text-body-sm truncate">Contêineres</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="guindastes-e-manutencoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">precision_manufacturing</span><span class="font-body-sm text-body-sm truncate">Guindastes &amp; Manutenção</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Governança &amp; Auditoria</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="trail-de-decisoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">history_edu</span><span class="font-body-sm text-body-sm truncate">Trail de Decisões</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="logs-de-alteracoes" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">rule</span><span class="font-body-sm text-body-sm truncate">Logs de Alterações</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="relatorios-e-produtividade" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">query_stats</span><span class="font-body-sm text-body-sm truncate">Relatórios Operacionais</span></a></nav><nav class="flex flex-col gap-space-xs" data-active-classes="bg-nexus-500 text-nexus-white font-body-bold"><span class="px-space-xs font-caption text-caption uppercase tracking-wider text-outline text-[11px]">Administração</span><a class="flex items-center gap-space-sm px-space-sm py-2 rounded text-surface-container-highest hover:bg-nexus-500/30 hover:text-nexus-white transition-colors group" data-path="pessoas-e-acessos" href="#"><span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim group-hover:text-nexus-white">badge</span><span class="font-body-sm text-body-sm truncate">Pessoas &amp; Acessos</span></a></nav></div><div class="p-space-sm border-t border-secondary/30 bg-nexus-900/80"><div class="flex items-center justify-between px-space-xs py-1.5 text-secondary-fixed-dim font-caption text-[11px]"><span class="font-mono-data">v4.2-OPR</span><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-success inline-block"></span>Servidor Conectado</span></div></div></div></aside><div class="pl-[240px]"><header class="fixed top-0 left-[240px] right-0 h-16 bg-nexus-white border-b border-nexus-border z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-lg min-w-0"><div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary min-w-0"><span class="material-symbols-outlined text-[18px] text-outline">anchor</span><span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider truncate">NexusPort</span><span class="text-outline">/</span><span class="font-body-medium text-body-medium text-nexus-text font-semibold truncate">Terminal Marítimo</span></div><div class="hidden xl:flex items-center gap-2 pl-space-md border-l border-nexus-border"><span class="w-2.5 h-2.5 rounded-full bg-success animate-pulse"></span><span class="font-caption text-caption text-on-surface-variant font-medium">Status Operacional: <strong class="text-success font-semibold">Normal</strong></span><span class="text-outline text-caption">•</span><span class="font-mono-data text-caption text-secondary font-semibold">8 NAVIOS NO BERÇO</span></div></div><div class="flex items-center gap-space-md"><a class="hidden sm:flex items-center gap-space-xs px-space-md py-2 bg-nexus-bg border border-nexus-border hover:border-nexus-500 rounded text-nexus-500 font-body-bold text-body-sm transition-colors" data-path="checklist-de-inspecao" href="#"><span class="material-symbols-outlined text-[18px]">qr_code_scanner</span><span>Escanear QR</span></a><div class="h-7 w-[1px] bg-nexus-border hidden sm:block"></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[18px]">person</span></div><div class="flex flex-col text-left"><div class="flex items-center gap-1.5"><span class="font-mono-data text-caption text-nexus-text font-semibold text-[13px]">CÓD: #OP-8842</span><span class="w-1.5 h-1.5 rounded-full bg-success" title="Operador Ativo"></span></div><span class="font-caption text-caption text-secondary text-[11px] leading-tight truncate max-w-[150px]">Supervisor / Gerente Operacional</span></div></div><a class="p-2 text-outline hover:text-danger rounded hover:bg-surface-container transition-colors flex items-center" data-path="login" href="#" title="Sair do Sistema"><span class="material-symbols-outlined text-[20px]">logout</span></a></div></header><main class="relative pt-16 bg-nexus-bg min-h-screen w-full px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<!-- Top Contextual Notification / Status Pill Indicator -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md mb-space-lg">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container text-nexus-500 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">warehouse</span>
+</span>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-secondary uppercase tracking-wider">Módulo de Armazenagem &amp; Pátio • T4.11 / T4.13</span>
+<span class="font-body-bold text-body-bold text-nexus-900">Ficha Técnica Unificada da Carga</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm text-secondary font-mono-data text-caption bg-surface-container-lowest px-space-md py-1.5 rounded-lg shadow-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-success"></span>
+<span>CONFORMIDADE RF 6 / RF 11 VERIFICADA</span>
+</div>
+</div>
+<!-- Main Unified Sheet Surface -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg sm:p-space-xl">
+<!-- Header Unit: ID, Status, Quick Actions -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg pb-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center gap-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h1 class="font-h1 text-h1 text-nexus-900 tracking-tight">CRG-2026-08942</h1>
+<span class="px-space-sm py-1 rounded bg-nexus-border text-nexus-900 font-mono-data text-caption font-semibold tracking-wide uppercase">
+              Armazenado
+            </span>
+<span class="px-space-sm py-1 rounded bg-secondary-container text-on-secondary-container font-caption text-caption font-medium">
+              Reefer Ativo
+            </span>
+</div>
+<span class="font-caption text-caption text-secondary mt-1">
+            Manifesto Digital Siscomex • Terminal 3 • Liberação Alfandegária Concluída
+          </span>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container-lowest text-nexus-500 font-body-bold text-body-sm shadow-sm hover:bg-surface-container transition-all group" id="btn-report-pdf" onclick="triggerReportFeedback()">
+<span class="material-symbols-outlined text-[18px] text-nexus-500 group-hover:scale-105 transition-transform">picture_as_pdf</span>
+<span>Gerar Relatório PDF A4 (RF 11)</span>
+</button>
+<div class="h-6 w-px bg-nexus-border hidden sm:block"></div>
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container text-nexus-900 font-body-bold text-body-sm shadow-sm hover:bg-surface-container-highest transition-colors" onclick="openActionModal('transfer')">
+<span class="material-symbols-outlined text-[18px] text-secondary">swap_horiz</span>
+<span>Transferir Posição</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-nexus-500 text-on-primary font-body-bold text-body-sm shadow-sm hover:bg-primary transition-colors" onclick="openActionModal('notify')">
+<span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+<span>Notificar Arrumador</span>
+</button>
+</div>
+</div>
+<!-- Inline Feedback Banner (Hidden by default, triggered by PDF or actions) -->
+<div class="hidden mb-space-lg p-space-md rounded-lg bg-surface-container-low transition-all" id="action-banner">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-success" id="action-banner-icon">check_circle</span>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-sm text-nexus-900" id="action-banner-title">Documento Gerado com Sucesso</span>
+<span class="font-caption text-caption text-secondary" id="action-banner-desc">O arquivo A4 em formato padrão RF 11 foi compilado com carimbo de integridade SHA-256.</span>
+</div>
+</div>
+<button class="text-secondary hover:text-nexus-900 p-1 rounded" onclick="closeActionBanner()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Subtle Navigation Tabs -->
+<div class="flex items-center gap-space-xl">
+<button class="pb-space-sm font-h4 text-body-bold text-nexus-500 transition-colors flex items-center gap-2" id="tab-btn-resumo" onclick="switchTab('resumo')">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Resumo &amp; Alocação</span>
+</button>
+<button class="pb-space-sm font-h4 text-body-bold text-secondary hover:text-nexus-900 transition-colors flex items-center gap-2" id="tab-btn-vinculos" onclick="switchTab('vinculos')">
+<span class="material-symbols-outlined text-[18px]">link</span>
+<span>Vínculos Logísticos</span>
+</button>
+<button class="pb-space-sm font-h4 text-body-bold text-secondary hover:text-nexus-900 transition-colors flex items-center gap-2" id="tab-btn-historico" onclick="switchTab('historico')">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span>Histórico</span>
+</button>
+</div>
+<!-- TAB 1: Resumo & Alocação (Active) -->
+<div class="mt-space-lg flex flex-col gap-space-xl" id="tab-resumo">
+<!-- 2-Block Strategic Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Bloco 1: Localização no Pátio (Col 1-6) -->
+<div class="lg:col-span-6 bg-surface-container-low rounded-xl p-space-lg flex flex-col justify-between shadow-sm">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption uppercase tracking-wider text-secondary font-semibold">Alocação Física Operacional</span>
+<span class="font-mono-data text-caption text-nexus-500 font-bold">SETOR-D // Q04-P02</span>
+</div>
+<div class="flex items-baseline gap-space-sm">
+<span class="font-display text-display text-nexus-900 font-bold tracking-tight">Setor D</span>
+<span class="text-secondary font-h3 text-h3 font-normal">/</span>
+<span class="font-h3 text-h3 text-nexus-900 font-semibold">Quadra 04</span>
+</div>
+<!-- Position Specification Pills -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs">
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<span class="font-caption text-caption text-secondary block">Camada &amp; Pilha</span>
+<span class="font-mono-lg text-mono-lg text-nexus-900 font-bold mt-0.5 block">Pilha 02 • Tier 3</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<span class="font-caption text-caption text-secondary block">Ponto Energizado</span>
+<span class="font-mono-lg text-mono-lg text-nexus-900 font-bold mt-0.5 block">Tomada Reefer #14</span>
+</div>
+</div>
+</div>
+<!-- Reefer Telemetry Status Bar -->
+<div class="mt-space-lg pt-space-md bg-surface-container-lowest/60 p-space-md rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+</span>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-sm text-nexus-900">Alimentação Elétrica Ativa</span>
+<span class="font-caption text-caption text-secondary">Tensão: 440V • 60Hz • Consumo estável</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs font-mono-data text-caption text-success font-semibold px-2 py-1 rounded bg-success/10">
+<span class="material-symbols-outlined text-[16px]">thermostat</span>
+<span>-18.4°C</span>
+</div>
+</div>
+</div>
+<!-- Bloco 2: Linha de Vinculação Logística (Col 7-12) -->
+<div class="lg:col-span-6 bg-surface-container-low rounded-xl p-space-lg flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="font-caption text-caption uppercase tracking-wider text-secondary font-semibold">Encadeamento Logístico Direto (RN 15)</span>
+<span class="font-caption text-caption font-mono-data text-secondary">SEQ: INT-2026-X</span>
+</div>
+<!-- Explicit Linear Chain Representation -->
+<div class="space-y-space-md relative">
+<!-- Step 1: Carga -->
+<div class="flex items-center gap-space-md bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-nexus-500 shrink-0">
+<span class="material-symbols-outlined text-[20px]">package_2</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-secondary">Origem Cadastral</span>
+<span class="font-caption text-caption text-success font-medium">Conferida</span>
+</div>
+<span class="font-mono-lg text-mono-lg text-nexus-900 font-bold truncate block">Carga CRG-2026-08942</span>
+</div>
+</div>
+<!-- Connection Indicator -->
+<div class="flex justify-center -my-2 relative z-10">
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+</div>
+</div>
+<!-- Step 2: Contêiner -->
+<div class="flex items-center gap-space-md bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-nexus-500 shrink-0">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-secondary">Unidade Intermodal</span>
+<span class="font-caption text-caption text-secondary font-mono-data">40ft HC RF</span>
+</div>
+<span class="font-mono-lg text-mono-lg text-nexus-900 font-bold truncate block">MEDU 410982-0</span>
+</div>
+</div>
+<!-- Connection Indicator -->
+<div class="flex justify-center -my-2 relative z-10">
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+</div>
+</div>
+<!-- Step 3: Navio -->
+<div class="flex items-center gap-space-md bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-nexus-900 shrink-0">
+<span class="material-symbols-outlined text-[20px]">directions_boat</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-secondary">Embarcação Vinculada (RN 1/RN 2)</span>
+<span class="px-2 py-0.5 rounded bg-success/15 text-success font-caption text-[11px] font-bold tracking-wide">
+                      OPERANTE
+                    </span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-body-bold text-body-bold text-nexus-900 truncate">MV Santos Star</span>
+<span class="font-mono-data text-caption text-secondary">IMO 9452011</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-space-md mt-space-md flex items-center justify-between text-secondary font-caption text-caption">
+<span>Berço Designado: <strong>B-03 Norte</strong></span>
+<span>ETA Embarque: <strong>18/Out - 14:00</strong></span>
+</div>
+</div>
+</div>
+<!-- Atributos Obrigatórios da Carga (RN 13) -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">list_alt</span>
+<h2 class="font-h3 text-h3 text-nexus-900">Atributos Regulamentares Obrigatórios</h2>
+<span class="font-caption text-caption text-secondary ml-space-xs">(RN 13)</span>
+</div>
+<span class="font-caption text-caption text-secondary">Pesagem e Cubagem Certificadas</span>
+</div>
+<!-- Elegant Key-Value Attributes List with distinct row backgrounds -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm">
+<dl class="divide-y-0">
+<!-- Row 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 px-space-lg py-space-md bg-surface-container-lowest items-center gap-space-xs">
+<dt class="md:col-span-4 font-body-medium text-body-sm text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">scale</span>
+<span>Peso Bruto Verificado (VGM)</span>
+</dt>
+<dd class="md:col-span-8 font-mono-lg text-mono-lg text-nexus-900 font-bold">
+                26.500 kg <span class="font-body-sm text-caption text-secondary font-normal ml-1">(Tolerância Aferida: 0.12%)</span>
+</dd>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 px-space-lg py-space-md bg-surface-container-low items-center gap-space-xs">
+<dt class="md:col-span-4 font-body-medium text-body-sm text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">view_in_ar</span>
+<span>Volume Declarado</span>
+</dt>
+<dd class="md:col-span-8 font-mono-lg text-mono-lg text-nexus-900 font-bold">
+                68,0 m³
+              </dd>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-1 md:grid-cols-12 px-space-lg py-space-md bg-surface-container-lowest items-center gap-space-xs">
+<dt class="md:col-span-4 font-body-medium text-body-sm text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">payments</span>
+<span>Valor Declarado para Despacho</span>
+</dt>
+<dd class="md:col-span-8 font-mono-lg text-mono-lg text-nexus-900 font-bold">
+                R$ 185.000,00 <span class="font-body-sm text-caption text-secondary font-normal ml-1">(BRL • Moeda Fiscal)</span>
+</dd>
+</div>
+<!-- Row 4 -->
+<div class="grid grid-cols-1 md:grid-cols-12 px-space-lg py-space-md bg-surface-container-low items-center gap-space-xs">
+<dt class="md:col-span-4 font-body-medium text-body-sm text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">category</span>
+<span>Natureza da Mercadoria</span>
+</dt>
+<dd class="md:col-span-8 font-body-bold text-body-medium text-nexus-900">
+                Frango Congelado em Cortes <span class="font-caption text-caption text-secondary font-mono-data ml-1">[NCM 0207.14.00]</span>
+</dd>
+</div>
+<!-- Row 5 -->
+<div class="grid grid-cols-1 md:grid-cols-12 px-space-lg py-space-md bg-surface-container-lowest items-center gap-space-xs">
+<dt class="md:col-span-4 font-body-medium text-body-sm text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">anchor</span>
+<span>Porto de Descarga (Destino Final)</span>
+</dt>
+<dd class="md:col-span-8 font-body-bold text-body-medium text-nexus-900 flex items-center gap-space-sm">
+<span>Roterdã — Holanda</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-nexus-900 font-mono-data text-caption font-semibold">NLRTM</span>
+</dd>
+</div>
+</dl>
+</div>
+</div>
+<!-- Operational Audit Stamp Bottom Strip -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm text-secondary font-caption text-caption">
+<div class="flex items-center gap-space-xs font-mono-data">
+<span class="material-symbols-outlined text-[16px] text-outline">verified_user</span>
+<span>AUDIT-ID: #8842-CONFIRM-T4</span>
+<span>•</span>
+<span>RESPONSÁVEL: OP-8842 (SUPERVISOR DE PÁTIO)</span>
+</div>
+<div class="font-mono-data">
+          REGISTRADO EM: 2026-10-16 09:42:18 BRT
+        </div>
+</div>
+</div>
+<!-- TAB 2: Vínculos Logísticos (Hidden state ready for switching) -->
+<div class="hidden mt-space-lg flex flex-col gap-space-lg" id="tab-vinculos">
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-sm">
+<h3 class="font-h3 text-h3 text-nexus-900 mb-space-sm">Detalhes de Conexões de Transporte</h3>
+<p class="font-body-sm text-body-sm text-secondary mb-space-lg">Mapeamento granular dos ativos de movimentação e transbordo relacionados à carga CRG-2026-08942.</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<span class="font-caption text-caption uppercase tracking-wider text-secondary">Cavalo Mecânico (Entrada)</span>
+<span class="font-mono-lg text-mono-lg text-nexus-900 font-bold block mt-1">PLACA: BRA-9X21</span>
+<span class="font-caption text-caption text-secondary">Transportadora TransLitoral • Gate 02</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<span class="font-caption text-caption uppercase tracking-wider text-secondary">RTG Designado (Pátio)</span>
+<span class="font-mono-lg text-mono-lg text-nexus-900 font-bold block mt-1">GUINDASTE RTG-08</span>
+<span class="font-caption text-caption text-success">Operador Certificado Ativo</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<span class="font-caption text-caption uppercase tracking-wider text-secondary">STS Prontidão (Berço)</span>
+<span class="font-mono-lg text-mono-lg text-nexus-900 font-bold block mt-1">PORTAINER STS-03</span>
+<span class="font-caption text-caption text-secondary">Janela Operacional: Bloco 2</span>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 3: Histórico (Hidden state ready for switching) -->
+<div class="hidden mt-space-lg flex flex-col gap-space-md" id="tab-historico">
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-sm">
+<h3 class="font-h3 text-h3 text-nexus-900 mb-space-md">Trilha Imutável de Eventos (Trail)</h3>
+<div class="space-y-space-sm">
+<div class="bg-surface-container-lowest p-space-md rounded-lg flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-md">
+<span class="font-mono-data text-caption text-secondary">16/10 09:42</span>
+<div>
+<span class="font-body-bold text-body-sm text-nexus-900 block">Conexão em Tomada Reefer #14 Concluída</span>
+<span class="font-caption text-caption text-secondary">Temperatura inicial: -18.0°C • Plugue inspecionado por OP-8842</span>
+</div>
+</div>
+<span class="font-mono-data text-caption text-success font-semibold">CONCLUÍDO</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-md">
+<span class="font-mono-data text-caption text-secondary">16/10 09:15</span>
+<div>
+<span class="font-body-bold text-body-sm text-nexus-900 block">Posicionamento no Pátio: Setor D, Quadra 04</span>
+<span class="font-caption text-caption text-secondary">Movimentado por RTG-08 da pista de espera ao empilhamento</span>
+</div>
+</div>
+<span class="font-mono-data text-caption text-secondary">SISTEMA</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-md">
+<span class="font-mono-data text-caption text-secondary">16/10 08:30</span>
+<div>
+<span class="font-body-bold text-body-sm text-nexus-900 block">Aferição de VGM Balança Rodoviária</span>
+<span class="font-caption text-caption text-secondary">Ticket #994812 — Peso Bruto 26.500 kg aprovado sem desvio</span>
+</div>
+</div>
+<span class="font-mono-data text-caption text-nexus-500 font-semibold">HOMOLOGADO</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Action Modal (Field Ergonomics: Generous targets, clear containment) -->
+<div class="fixed inset-0 bg-nexus-900/60 z-50 hidden flex items-center justify-center p-space-md backdrop-blur-sm" id="action-modal">
+<div class="bg-surface-container-lowest rounded-xl max-w-lg w-full p-space-xl shadow-xl flex flex-col gap-space-lg">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-nexus-500" id="modal-icon-container">
+<span class="material-symbols-outlined text-[24px]" id="modal-icon">swap_horiz</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-h3 text-h3 text-nexus-900" id="modal-title">Transferir Posição no Pátio</h3>
+<span class="font-caption text-caption text-secondary" id="modal-subtitle">Alocação física para contêiner MEDU 410982-0</span>
+</div>
+</div>
+<button class="text-secondary hover:text-nexus-900 p-1 rounded" onclick="closeActionModal()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md" id="modal-body">
+<!-- Dynamic content injected by JS -->
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-xs">
+<button class="px-space-lg py-2.5 rounded-lg bg-surface-container text-nexus-900 font-body-bold text-body-sm hover:bg-surface-container-highest transition-colors" onclick="closeActionModal()">
+          Cancelar
+        </button>
+<button class="px-space-lg py-2.5 rounded-lg bg-nexus-500 text-on-primary font-body-bold text-body-sm hover:bg-primary transition-colors" id="modal-confirm-btn" onclick="executeModalAction()">
+          Confirmar Execução
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple, deterministic Tab Switching
+  function switchTab(tabId) {
+    const tabs = ['resumo', 'vinculos', 'historico'];
+    tabs.forEach(t => {
+      const content = document.getElementById('tab-' + t);
+      const btn = document.getElementById('tab-btn-' + t);
+      if (t === tabId) {
+        content.classList.remove('hidden');
+        btn.classList.remove('text-secondary');
+        btn.classList.add('text-nexus-500');
+      } else {
+        content.classList.add('hidden');
+        btn.classList.remove('text-nexus-500');
+        btn.classList.add('text-secondary');
+      }
+    });
+  }
+
+  // PDF Generation Trigger
+  function triggerReportFeedback() {
+    const banner = document.getElementById('action-banner');
+    const title = document.getElementById('action-banner-title');
+    const desc = document.getElementById('action-banner-desc');
+    const icon = document.getElementById('action-banner-icon');
+
+    title.textContent = "Relatório A4 Conforme RF 11 Gerado";
+    desc.textContent = "Dossiê da Carga CRG-2026-08942 emitido em formato estandardizado para a Receita Federal e Autoridade Portuária.";
+    icon.textContent = "picture_as_pdf";
+    icon.className = "material-symbols-outlined text-nexus-500";
+    banner.classList.remove('hidden');
+
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function closeActionBanner() {
+    document.getElementById('action-banner').classList.add('hidden');
+  }
+
+  // Modal Workflow Handlers
+  let currentActionType = '';
+
+  function openActionModal(type) {
+    currentActionType = type;
+    const modal = document.getElementById('action-modal');
+    const title = document.getElementById('modal-title');
+    const subtitle = document.getElementById('modal-subtitle');
+    const icon = document.getElementById('modal-icon');
+    const body = document.getElementById('modal-body');
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+
+    if (type === 'transfer') {
+      title.textContent = "Transferir Posição no Pátio";
+      subtitle.textContent = "Carga CRG-2026-08942 • Contêiner MEDU 410982-0";
+      icon.textContent = "swap_horiz";
+      confirmBtn.textContent = "Reatribuir e Solicitar RTG";
+      body.innerHTML = `
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-body-bold text-body-sm text-nexus-900">Novo Setor de Destino</label>
+          <select id="select-setor" class="w-full bg-surface-container-lowest border-0 rounded-lg p-space-md text-body-sm text-nexus-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-nexus-500">
+            <option value="D-04">Setor D - Quadra 05 (Pilha Reefer Expansão)</option>
+            <option value="D-02">Setor D - Quadra 02 (Alocação Pré-Embarque Berço B-03)</option>
+            <option value="E-01">Setor E - Área Alfandegada Especial</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-body-bold text-body-sm text-nexus-900">Justificativa Operacional (Obrigatório)</label>
+          <textarea rows="2" placeholder="Descreva o motivo da movimentação (ex: Otimização de embarque STS-03)..." class="w-full bg-surface-container-lowest border-0 rounded-lg p-space-md text-body-sm text-nexus-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-nexus-500"></textarea>
+        </div>
+      `;
+    } else {
+      title.textContent = "Notificar Arrumador para Preparação";
+      subtitle.textContent = "Despacho de Ordem de Serviço ao Campo";
+      icon.textContent = "assignment_turned_in";
+      confirmBtn.textContent = "Emitir Notificação Imediata";
+      body.innerHTML = `
+        <div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-1">
+          <span class="font-caption text-caption text-secondary">Alvo da Instrução</span>
+          <span class="font-body-bold text-body-sm text-nexus-900">Equipe de Pátio Setor D • Guindaste RTG-08</span>
+          <span class="font-caption text-caption text-secondary">Ação: Desconexão de alimentação reefer e pré-posicionamento para guindaste de bordo.</span>
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-body-bold text-body-sm text-nexus-900">Prioridade de Manobra</label>
+          <div class="grid grid-cols-2 gap-space-sm">
+            <label class="flex items-center gap-2 p-space-md bg-surface-container-lowest rounded-lg cursor-pointer shadow-sm">
+              <input type="radio" name="prio" checked class="text-nexus-500">
+              <span class="font-body-sm text-body-sm text-nexus-900">Normal (Ordem Cronológica)</span>
+            </label>
+            <label class="flex items-center gap-2 p-space-md bg-surface-container-lowest rounded-lg cursor-pointer shadow-sm">
+              <input type="radio" name="prio" class="text-nexus-500">
+              <span class="font-body-sm text-body-sm text-nexus-900 font-bold">Urgente (Atracação Próxima)</span>
+            </label>
+          </div>
+        </div>
+      `;
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  function closeActionModal() {
+    document.getElementById('action-modal').classList.add('hidden');
+  }
+
+  function executeModalAction() {
+    closeActionModal();
+    const banner = document.getElementById('action-banner');
+    const title = document.getElementById('action-banner-title');
+    const desc = document.getElementById('action-banner-desc');
+    const icon = document.getElementById('action-banner-icon');
+
+    if (currentActionType === 'transfer') {
+      title.textContent = "Transferência Registrada com Sucesso";
+      desc.textContent = "Ordem de remanejamento enviada ao terminal RTG-08. Posição no pátio será atualizada após confirmação telemétrica.";
+      icon.textContent = "swap_horiz";
+      icon.className = "material-symbols-outlined text-nexus-500";
+    } else {
+      title.textContent = "Arrumador Notificado no Campo";
+      desc.textContent = "Instrução transmitida ao coletor de dados do encarregado de pátio (Setor D).";
+      icon.textContent = "send";
+      icon.className = "material-symbols-outlined text-success";
+    }
+
+    banner.classList.remove('hidden');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script></main></div></body></html>
