@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-[#F5F7FA]" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pilar 4 — Pátio, Vinculação Operacional &amp; Estado das Embarcações | NexusPort</title>
+<!-- Google Fonts: Inter & Montserrat -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Montserrat:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Custom Tailwind Config -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#131B2E',
+              dark: '#1E293B',
+              slate: '#334155',
+              blue: '#445987',
+              blueHover: '#374970',
+              blueLight: '#EBF0F7',
+              border: '#E2E8F0',
+              bgLight: '#F5F7FA'
+            },
+            status: {
+              success: '#059669',
+              warning: '#D97706',
+              danger: '#DC2626',
+              info: '#2563EB'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Montserrat', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="typography">
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1E293B;
+    }
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Montserrat', sans-serif;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+<style data-purpose="scrollbar-and-transitions">
+    /* Custom thin scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Sidebar collapse transitions */
+    .sidebar-transition {
+      transition: width 0.25s ease-in-out;
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="h-full overflow-hidden flex flex-row bg-[#F5F7FA] text-slate-800 antialiased">
+<!-- BEGIN: Sidebar -->
+<aside class="sidebar-transition w-72 bg-[#131B2E] text-slate-300 flex flex-col flex-shrink-0 z-30 select-none border-r border-slate-800" id="mainSidebar">
+<!-- Top brand container -->
+<div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80">
+<div class="flex items-center space-x-3 overflow-hidden" id="brandLogoBlock">
+<div class="w-8 h-8 rounded bg-[#445987] flex items-center justify-center text-white font-black tracking-wider text-sm shadow-md flex-shrink-0">
+          NX
+        </div>
+<div class="flex flex-col whitespace-nowrap overflow-hidden">
+<span class="font-display font-bold text-white text-base leading-tight tracking-tight">NexusPort</span>
+<span class="text-[10px] text-slate-400 font-mono tracking-wider">TERMINAL STS-01</span>
+</div>
+</div>
+<button aria-label="Recolher Sidebar" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" id="sidebarToggleBtn">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 6h16M4 12h16M4 18h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<!-- Category Label -->
+<div class="px-5 pt-5 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap overflow-hidden" id="sidebarCategoryLabel">
+      7 Pilares Operacionais
+    </div>
+<!-- Navigation Items -->
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto">
+<!-- Pilar 1 -->
+<a class="flex items-center px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors group" href="#">
+<svg class="w-4 h-4 mr-3 flex-shrink-0 text-slate-400 group-hover:text-slate-200" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="truncate">Pilar 1: Acesso &amp; RBAC</span>
+</a>
+<!-- Pilar 2 -->
+<a class="flex items-center px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors group" href="#">
+<svg class="w-4 h-4 mr-3 flex-shrink-0 text-slate-400 group-hover:text-slate-200" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="truncate">Pilar 2: Agendamento &amp; Gate</span>
+</a>
+<!-- Pilar 3 -->
+<a class="flex items-center px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors group" href="#">
+<svg class="w-4 h-4 mr-3 flex-shrink-0 text-slate-400 group-hover:text-slate-200" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="truncate">Pilar 3: Inspeção Formal</span>
+</a>
+<!-- Pilar 4 (ATIVO) -->
+<a aria-current="page" class="flex items-center px-3 py-2.5 rounded-lg text-xs font-semibold bg-[#445987] text-white shadow-sm transition-all" href="#">
+<svg class="w-4 h-4 mr-3 flex-shrink-0 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="truncate">Pilar 4: Pátio &amp; Vinculação</span>
+</a>
+<!-- Pilar 5 -->
+<a class="flex items-center px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors group" href="#">
+<svg class="w-4 h-4 mr-3 flex-shrink-0 text-slate-400 group-hover:text-slate-200" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="truncate">Pilar 5: Despacho Supervisor</span>
+</a>
+<!-- Pilar 6 -->
+<a class="flex items-center px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors group" href="#">
+<svg class="w-4 h-4 mr-3 flex-shrink-0 text-slate-400 group-hover:text-slate-200" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="truncate">Pilar 6: Painel &amp; Audit Trail</span>
+</a>
+<!-- Pilar 7 -->
+<a class="flex items-center px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors group" href="#">
+<svg class="w-4 h-4 mr-3 flex-shrink-0 text-slate-400 group-hover:text-slate-200" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="truncate">Pilar 7: Leitura Campo &amp; Offline</span>
+</a>
+</nav>
+<!-- User Profile Bar (Amanda Vasconcelos) -->
+<div class="p-3 bg-[#0B1323] border-t border-slate-800/90 flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-[#445987] flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ring-2 ring-slate-700/50">
+        AV
+      </div>
+<div class="min-w-0 flex-1 overflow-hidden" id="userProfileTextBlock">
+<p class="text-xs font-semibold text-white truncate leading-tight">Amanda Vasconcelos</p>
+<p class="text-[10px] text-slate-400 truncate tracking-tight font-medium">PLANEJADOR PÁTIO/NAVIOS</p>
+<p class="text-[9px] font-mono text-cyan-400/90 truncate">#PL-3021 • NÍVEL GESTÃO</p>
+</div>
+</div>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: Main Area -->
+<div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+<!-- Top Header -->
+<header class="bg-white border-b border-slate-200 px-6 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3 flex-shrink-0 shadow-sm z-10">
+<div>
+<div class="flex flex-wrap items-center gap-2 mb-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-slate-100 text-slate-700 border border-slate-300">
+            RF 2, RF 3 &amp; RN 1, RN 2 — PÁTIO, VINCULAÇÃO E GESTÃO DE ATIVOS
+          </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+            Operação Portuária Ativa - Berço 04
+          </span>
+</div>
+<h1 class="text-lg md:text-xl font-heading font-bold text-slate-900 leading-snug tracking-tight">
+          Pilar 4 — Pátio, Vinculação Operacional &amp; Estado das Embarcações
+        </h1>
+</div>
+<!-- Right Header Indicators -->
+<div class="flex items-center space-x-3 text-right">
+<div class="bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-lg text-left hidden sm:block">
+<p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Localização Física / Berço</p>
+<p class="text-xs font-mono font-medium text-slate-700">23°56'42"S 46°19'12"W <span class="text-[10px] text-slate-400">(Sem mapa - RF 8 / NR-3)</span></p>
+</div>
+<div class="border-l border-slate-200 pl-3">
+<button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition shadow-sm" type="button">
+<svg class="w-3.5 h-3.5 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+            Sincronizar Pátio
+          </button>
+</div>
+</div>
+</header>
+<!-- Scrollable Body Content -->
+<main class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+<!-- BEGIN: Alerta Normativo (RN 1, RN 2, RN 4, RN 12) -->
+<section class="rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-amber-900 shadow-sm" data-purpose="normative-alert">
+<div class="flex items-start space-x-3">
+<div class="p-1 rounded bg-amber-100 text-amber-700 flex-shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1 text-xs leading-relaxed">
+<p class="font-bold text-amber-950 font-heading text-sm mb-0.5">
+              Protocolo Crítico de Integridade &amp; Estado Operacional (RN 1, RN 2, RN 4 e RN 12)
+            </p>
+<p class="text-amber-900">
+<strong class="font-semibold text-amber-950">RN 1 &amp; RN 2:</strong> Navios classificados com status <em>"Em Reforma"</em> ou <em>"Agendado para Reforma"</em> estão terminantemente bloqueados pelo sistema contra o recebimento, atracação ativa de carga e vinculação de contêineres.
+              <strong class="font-semibold text-amber-950 ml-2">RN 12:</strong> Qualquer alteração manual ou sistêmica de localização física ou status da embarcação é propagada em cascata para todos os contêineres e lotes unitizados vinculados.
+            </p>
+</div>
+</div>
+</section>
+<!-- END: Alerta Normativo -->
+<!-- BEGIN: Seção 1 - Matriz de Embarcações & Status -->
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" data-purpose="vessels-matrix">
+<div class="px-5 py-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-bold font-mono bg-slate-100 text-slate-700 px-2 py-0.5 rounded">T3.5 &amp; T3.8 / RF 3</span>
+<h2 class="text-base font-heading font-bold text-slate-900">Matriz de Embarcações Atracadas &amp; Estado Operacional</h2>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Controle de atracações, restrições normativas de docagem e capacidade volumétrica de TEUs</p>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-mono text-slate-500">2 Navios Monitorados</span>
+<button class="text-xs font-semibold text-[#445987] hover:underline">Auditar Registros IMO</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs border-collapse">
+<thead>
+<tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+<th class="py-3 px-4">Navio / IMO</th>
+<th class="py-3 px-4">Rota Comercial (Origem ➔ Destino)</th>
+<th class="py-3 px-4">Estado Operacional (RN 1/2)</th>
+<th class="py-3 px-4">Localização (RN 12)</th>
+<th class="py-3 px-4">Capacidade / Ocupação</th>
+<th class="py-3 px-4 text-right">Ações Operacionais</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200 text-slate-700">
+<!-- Linha 1: MV Santos Star (Operante) -->
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-3.5 px-4">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded bg-blue-50 text-blue-800 font-bold flex items-center justify-center flex-shrink-0">
+                      ⚓
+                    </div>
+<div>
+<span class="font-heading font-bold text-slate-900 block text-sm">MV Santos Star</span>
+<span class="font-mono text-[11px] text-slate-500">IMO 9482103 • Porta-Contêineres</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-medium text-slate-900">Santos (BRA)</span>
+<span class="text-slate-400 mx-1">➔</span>
+<span class="font-medium text-slate-900">Rotterdam (NLD)</span>
+<div class="text-[10px] text-slate-400 mt-0.5">ETA: 24/09/2026 • Berço 04</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                    Operante
+                  </span>
+</td>
+<td class="py-3.5 px-4 font-mono font-medium text-slate-800">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-300">
+                    DENTRO_DO_PORTO
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="w-36">
+<div class="flex justify-between text-[11px] mb-1">
+<span class="font-medium text-slate-700">2.870 / 3.500 TEU</span>
+<span class="font-bold text-slate-900">82%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-[#445987] h-1.5 rounded-full" style="width: 82%"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right space-x-1 whitespace-nowrap">
+<button class="px-2.5 py-1.5 rounded bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium text-xs shadow-sm transition">
+                    Carregar Pátio
+                  </button>
+<button class="px-2.5 py-1.5 rounded bg-[#445987] text-white hover:bg-[#374970] font-medium text-xs shadow-sm transition">
+                    Manif. Carga
+                  </button>
+</td>
+</tr>
+<!-- Linha 2: MSC Bahia (Bloqueado por Reforma RN 1) -->
+<tr class="bg-red-50/20 hover:bg-red-50/40 transition-colors">
+<td class="py-3.5 px-4">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded bg-rose-100 text-rose-800 font-bold flex items-center justify-center flex-shrink-0">
+                      🛠️
+                    </div>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-heading font-bold text-slate-900 text-sm">MSC Bahia</span>
+<span class="text-[10px] font-bold bg-red-100 text-red-700 px-1.5 py-0.2 rounded uppercase">Bloqueio Ativo</span>
+</div>
+<span class="font-mono text-[11px] text-slate-500">IMO 9315582 • Graneleiro Multiuso</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-medium text-slate-900">Paranaguá (BRA)</span>
+<span class="text-slate-400 mx-1">➔</span>
+<span class="font-medium text-slate-900">Estaleiro Mauá (RJ)</span>
+<div class="text-[10px] text-slate-400 mt-0.5">Tempo fora do porto: 18d 04h</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="space-y-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-red-100 text-red-800 border border-red-300">
+<svg class="w-3 h-3 mr-1 text-red-600" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.366zm1.414-1.414L6.525 5.11a6 6 0 018.366 8.366zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" fill-rule="evenodd"></path>
+</svg>
+                      Agendado para Reforma
+                    </span>
+<div class="text-[10px] font-semibold text-rose-700 uppercase tracking-tight">
+                      RN 1: Proibido Carregar
+                    </div>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-slate-700">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-slate-200 text-slate-700 border border-slate-300">
+                    FORA_DO_PORTO
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-slate-100 text-slate-500 line-through">
+                    0 / 1.800 TEU
+                  </span>
+<div class="text-[10px] text-red-600 font-medium mt-0.5">Operações Trancadas</div>
+</td>
+<td class="py-3.5 px-4 text-right whitespace-nowrap">
+<button class="px-2.5 py-1.5 rounded bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed font-medium text-xs shadow-none" disabled="" title="Bloqueado por RN 1">
+                    Carregamento Proibido
+                  </button>
+<button class="px-2.5 py-1.5 rounded bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium text-xs shadow-sm transition">
+                    Ver Laudo
+                  </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- END: Seção 1 -->
+<!-- BEGIN: Seção 2 - Pátio & Vinculação Carga -> Contêiner -> Navio -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6" data-purpose="yard-and-binding">
+<!-- Left: Visão de Alocação de Pátio (Blocos e Baias) -->
+<div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2.5">
+<div>
+<span class="text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">T4.11 / RF 2</span>
+<h3 class="text-sm font-heading font-bold text-slate-900 mt-1">Pátio de Estocagem &amp; Baias</h3>
+</div>
+<span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-semibold">
+                Bloco B-04 / Refrig.
+              </span>
+</div>
+<p class="text-xs text-slate-600 mb-4">
+              Distribuição física dos contêineres nas quadras operacionais de consolidação antes do içamento.
+            </p>
+<!-- Matriz de Baias Visuais do Pátio -->
+<div class="space-y-3 font-mono text-xs">
+<div class="border border-slate-200 rounded-lg p-3 bg-slate-50/60">
+<div class="flex justify-between items-center mb-2">
+<span class="font-bold text-slate-800 text-[11px]">QUADRA B4 — LINHA REFRIGERADA 440V</span>
+<span class="text-[10px] text-slate-500">Capac: 12 TEUs</span>
+</div>
+<!-- Grid de Baias -->
+<div class="grid grid-cols-4 gap-2 text-center">
+<div class="bg-blue-100/90 border border-blue-300 text-blue-900 rounded p-1.5 text-[10px] font-semibold cursor-pointer shadow-sm">
+                    B4-01<br/><span class="font-normal text-[9px]">CNT-9941</span>
+</div>
+<div class="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded p-1.5 text-[10px] font-medium">
+                    B4-02<br/><span class="text-slate-400 text-[9px]">Livre</span>
+</div>
+<div class="bg-slate-100 border border-slate-300 text-slate-700 rounded p-1.5 text-[10px]">
+                    B4-03<br/><span class="font-normal text-[9px]">CNT-1102</span>
+</div>
+<div class="bg-slate-100 border border-slate-300 text-slate-700 rounded p-1.5 text-[10px]">
+                    B4-04<br/><span class="font-normal text-[9px]">CNT-8820</span>
+</div>
+</div>
+</div>
+<!-- Ficha de Inspeção de Estoque Vinculada -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1.5 text-slate-700">
+<div class="flex justify-between text-[11px]">
+<span class="text-slate-500">Sensor de Temperatura:</span>
+<span class="font-bold text-slate-900">-18.4 °C (Estável)</span>
+</div>
+<div class="flex justify-between text-[11px]">
+<span class="text-slate-500">Energia da Tomada:</span>
+<span class="font-semibold text-emerald-700">Plug Conectado (440V)</span>
+</div>
+<div class="flex justify-between text-[11px]">
+<span class="text-slate-500">Tempo de Permanência (Dwell):</span>
+<span class="font-mono text-slate-800">01d 08h 12m</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100">
+<button class="w-full py-2 px-3 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition shadow-sm text-center flex items-center justify-center space-x-2" type="button">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Visualizar Ficha da Carga em Estoque (T4.11)</span>
+</button>
+</div>
+</div>
+<!-- Right: Fluxo de Vinculação Encadeada (Carga -> Contêiner -> Navio) -->
+<div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+<div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3 border-b border-slate-100 pb-2.5">
+<div>
+<span class="text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">T4.12 &amp; RN 4 / RN 7</span>
+<h3 class="text-sm font-heading font-bold text-slate-900 mt-1">Fluxo de Vinculação Encadeada de Ativos</h3>
+</div>
+<span class="text-xs font-semibold text-slate-500">Tripla Associação Operacional</span>
+</div>
+<p class="text-xs text-slate-600 mb-4">
+              Mapeamento de rastreabilidade obrigatória: a carga inspecionada é acondicionada no contêiner certificado e despachada ao manifesto do navio autorizado.
+            </p>
+<!-- Card Encadeado com Setas (Carga -> Contêiner -> Navio) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 relative">
+<!-- 1. Carga -->
+<div class="p-3.5 rounded-xl border-2 border-blue-200 bg-blue-50/50 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono font-bold uppercase bg-blue-100 text-blue-800 px-2 py-0.5 rounded">1. Carga Aprovada</span>
+<span class="text-emerald-600 text-xs">✓ Apto</span>
+</div>
+<h4 class="font-mono font-bold text-slate-900 text-sm">CRG-2026-0941</h4>
+<p class="text-xs font-medium text-slate-700 mt-1">Refrigerada • Frutas Frescas</p>
+<p class="text-[11px] text-slate-500 font-mono mt-0.5">Peso: 28.40 t • 64.5 m³</p>
+<div class="mt-2 text-[10px] bg-white border border-blue-200 rounded p-1.5 text-slate-600">
+                    Destino: <strong class="text-slate-800">Le Havre (FRA)</strong><br/>
+                    Gate-In: 11/09/2026 14:30
+                  </div>
+</div>
+<div class="mt-3 text-[10px] font-semibold text-[#445987] flex items-center">
+<span>Pronto para estufagem</span>
+</div>
+</div>
+<!-- 2. Contêiner -->
+<div class="p-3.5 rounded-xl border-2 border-indigo-200 bg-indigo-50/40 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono font-bold uppercase bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">2. Contêiner Ativo</span>
+<span class="text-xs text-indigo-700 font-mono">REEFER 40'</span>
+</div>
+<h4 class="font-mono font-bold text-slate-900 text-sm">CNT-BR-9941</h4>
+<div class="mt-1 text-xs text-slate-700">
+<span class="font-medium">Tempo de uso:</span> <span class="font-mono font-bold text-slate-900">3a 2m</span>
+</div>
+<p class="text-[10px] text-indigo-900/80 font-mono mt-0.5">Última Revisão: 14/06/2026</p>
+<div class="mt-2 text-[10px] bg-white border border-indigo-200 rounded p-1.5 text-slate-600">
+                    Ref RN 7: Manutenção regular sob validação do Supervisor de Operações.
+                  </div>
+</div>
+<div class="mt-3 text-[10px] font-semibold text-indigo-800 flex items-center">
+<span>Lacre Portuário #LC-8831-SP</span>
+</div>
+</div>
+<!-- 3. Navio -->
+<div class="p-3.5 rounded-xl border-2 border-emerald-200 bg-emerald-50/40 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">3. Navio Alocado</span>
+<span class="text-xs text-emerald-700 font-bold">Autorizado</span>
+</div>
+<h4 class="font-heading font-bold text-slate-900 text-sm">MV Santos Star</h4>
+<p class="text-xs font-mono text-slate-700 mt-1">IMO 9482103</p>
+<p class="text-[10px] text-slate-500 mt-0.5">Berço 04 • Rota NLD/FRA</p>
+<div class="mt-2 text-[10px] bg-white border border-emerald-200 rounded p-1.5 text-slate-600">
+                    Status RN 1: <strong>Operante e Apto</strong> para receber esta unidade.
+                  </div>
+</div>
+<div class="mt-3 text-[10px] font-semibold text-emerald-800 flex items-center">
+<span>Posição Baia Ship: B-12-04</span>
+</div>
+</div>
+</div>
+<!-- Regra RN 7 explícita -->
+<div class="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 flex items-center space-x-2">
+<svg class="w-4 h-4 text-[#445987] flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span><strong>Regra RN 7:</strong> O tempo de uso do contêiner é calculado estritamente a partir da data de última manutenção definida e homologada pelo Supervisor de Pátio.</span>
+</div>
+</div>
+<!-- Ação Operacional -->
+<div class="mt-5 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="text-[11px] text-slate-500 font-mono">
+              Integridade do encadeamento validada via SHA-256
+            </div>
+<button class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 bg-[#445987] hover:bg-[#374970] text-white rounded-lg text-xs font-bold font-heading tracking-wide shadow-sm transition" id="btnConfirmarVinculacao" type="button">
+<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+              Confirmar Vinculação Operacional no Pátio (T4.12)
+            </button>
+</div>
+</div>
+</section>
+<!-- END: Seção 2 -->
+<!-- BEGIN: Seção 3 - Indicador de Equipamentos de Pátio (Guindastes STS T3.7) -->
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" data-purpose="crane-equipment">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">T3.7 / ATIVOS MECÂNICOS</span>
+<h3 class="text-sm font-heading font-bold text-slate-900">Equipamentos e Guindastes de Pátio (Ship-to-Shore)</h3>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Monitoramento de prontidão mecânica dos pórticos alocados para o berço</p>
+</div>
+<span class="text-xs font-mono text-slate-500">2 Guindastes Registrados</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Guindaste STS-01 -->
+<div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50 flex items-start justify-between">
+<div class="space-y-1">
+<div class="flex items-center space-x-2">
+<span class="font-heading font-bold text-slate-900 text-sm">Guindaste STS-01 (Portainer)</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+                  Operante
+                </span>
+</div>
+<p class="text-xs text-slate-600 font-mono">Modelo: ZPMC Super Post-Panamax • Carga máx: 65 t</p>
+<div class="text-[11px] text-slate-500 pt-1">
+                Alocação: <strong>Berço 04 (MV Santos Star)</strong> • Ciclos hoje: <span class="font-mono font-bold text-slate-800">142 TEUs</span>
+</div>
+</div>
+<div class="text-right flex flex-col items-end">
+<span class="text-[10px] text-slate-400 uppercase font-mono">Disponibilidade</span>
+<span class="text-lg font-bold font-mono text-emerald-600">99.4%</span>
+</div>
+</div>
+<!-- Guindaste STS-02 -->
+<div class="border border-amber-200 rounded-lg p-4 bg-amber-50/30 flex items-start justify-between">
+<div class="space-y-1">
+<div class="flex items-center space-x-2">
+<span class="font-heading font-bold text-slate-900 text-sm">Guindaste STS-02 (Pórtico Auxiliar)</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                  Manutenção Preventiva Sugerida
+                </span>
+</div>
+<p class="text-xs text-slate-600 font-mono">Modelo: Liebherr T102 • Carga máx: 50 t</p>
+<div class="text-[11px] text-slate-500 pt-1">
+                Horas de Içamento: <span class="font-mono font-bold text-amber-900">4.920h / 5.000h</span> (Alerta de graxa e cabo de aço)
+              </div>
+</div>
+<div class="text-right flex flex-col items-end">
+<span class="text-[10px] text-slate-400 uppercase font-mono">Ação Sugerida</span>
+<button class="mt-1 px-2 py-1 bg-white border border-amber-300 text-amber-800 rounded text-xs font-semibold hover:bg-amber-50 transition shadow-sm">
+                Abrir O.S.
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Seção 3 -->
+</main>
+</div>
+<!-- END: Main Area -->
+<!-- BEGIN: Client Scripts -->
+<script data-purpose="sidebar-collapse-logic">
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebar = document.getElementById('mainSidebar');
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const brandLogoBlock = document.getElementById('brandLogoBlock');
+      const sidebarCategoryLabel = document.getElementById('sidebarCategoryLabel');
+      const userProfileTextBlock = document.getElementById('userProfileTextBlock');
+      let isCollapsed = false;
+
+      toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+          sidebar.classList.remove('w-72');
+          sidebar.classList.add('w-20');
+          sidebarCategoryLabel.classList.add('hidden');
+          userProfileTextBlock.classList.add('hidden');
+          brandLogoBlock.querySelector('div:last-child').classList.add('hidden');
+          sidebar.querySelectorAll('nav a span').forEach(el => el.classList.add('hidden'));
+        } else {
+          sidebar.classList.remove('w-20');
+          sidebar.classList.add('w-72');
+          sidebarCategoryLabel.classList.remove('hidden');
+          userProfileTextBlock.classList.remove('hidden');
+          brandLogoBlock.querySelector('div:last-child').classList.remove('hidden');
+          sidebar.querySelectorAll('nav a span').forEach(el => el.classList.remove('hidden'));
+        }
+      });
+
+      // Feedback simples no botão de vinculação operacional
+      const btnConfirmar = document.getElementById('btnConfirmarVinculacao');
+      btnConfirmar.addEventListener('click', () => {
+        const originalText = btnConfirmar.innerHTML;
+        btnConfirmar.disabled = true;
+        btnConfirmar.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Registrando Vinculação...
+        `;
+        setTimeout(() => {
+          btnConfirmar.innerHTML = `
+            <svg class="w-4 h-4 mr-2 inline text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Vinculação Homologada!
+          `;
+          btnConfirmar.classList.remove('bg-[#445987]', 'hover:bg-[#374970]');
+          btnConfirmar.classList.add('bg-emerald-700');
+          setTimeout(() => {
+            btnConfirmar.innerHTML = originalText;
+            btnConfirmar.disabled = false;
+            btnConfirmar.classList.remove('bg-emerald-700');
+            btnConfirmar.classList.add('bg-[#445987]', 'hover:bg-[#374970]');
+          }, 3000);
+        }, 800);
+      });
+    });
+  </script>
+<!-- END: Client Scripts -->
+</body></html>

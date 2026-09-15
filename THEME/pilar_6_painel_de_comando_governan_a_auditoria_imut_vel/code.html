@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "tertiary-fixed": "#ffdf99",
+          "on-tertiary": "#ffffff",
+          "nexus-500": "#445987",
+          "surface-container-highest": "#e5e2e1",
+          "surface": "#fcf9f8",
+          "primary": "#2c416e",
+          "surface-container-lowest": "#ffffff",
+          "on-tertiary-container": "#f0cd7e",
+          "warning": "#D97706",
+          "on-background": "#1b1c1c",
+          "on-surface": "#1b1c1c",
+          "on-tertiary-fixed": "#251a00",
+          "on-error": "#ffffff",
+          "tertiary-container": "#6f5612",
+          "nexus-border": "#E1E5ED",
+          "secondary-container": "#d5e0f8",
+          "outline": "#757780",
+          "on-secondary": "#ffffff",
+          "error-container": "#ffdad6",
+          "tertiary-fixed-dim": "#e5c375",
+          "nexus-white": "#FFFFFF",
+          "on-primary-fixed-variant": "#314673",
+          "surface-container-low": "#f6f3f2",
+          "surface-variant": "#e5e2e1",
+          "secondary-fixed": "#d8e3fb",
+          "on-primary-fixed": "#001a43",
+          "primary-container": "#445987",
+          "on-secondary-fixed": "#111c2d",
+          "on-surface-variant": "#44474f",
+          "on-secondary-fixed-variant": "#3c475a",
+          "secondary": "#545f73",
+          "surface-container-high": "#eae7e7",
+          "surface-dim": "#dcd9d9",
+          "surface-container": "#f0eded",
+          "tertiary": "#543f00",
+          "inverse-primary": "#b1c6fb",
+          "background": "#fcf9f8",
+          "danger": "#C62828",
+          "on-tertiary-fixed-variant": "#5a4300",
+          "success": "#2E7D32",
+          "nexus-bg": "#F5F7FA",
+          "error": "#ba1a1a",
+          "secondary-fixed-dim": "#bcc7de",
+          "nexus-text": "#222222",
+          "primary-fixed": "#d9e2ff",
+          "primary-fixed-dim": "#b1c6fb",
+          "on-primary": "#ffffff",
+          "inverse-on-surface": "#f3f0ef",
+          "surface-bright": "#fcf9f8",
+          "on-error-container": "#93000a",
+          "surface-tint": "#495e8c",
+          "inverse-surface": "#303030",
+          "on-primary-container": "#bfd1ff",
+          "on-secondary-container": "#586377",
+          "nexus-900": "#1E293B",
+          "outline-variant": "#c5c6d0"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        "spacing": {
+          "space-lg": "1.5rem",
+          "space-xs": "0.25rem",
+          "space-md": "1rem",
+          "margin-md": "1.5rem",
+          "gutter-lg": "1.5rem",
+          "margin": "1rem",
+          "margin-lg": "2rem",
+          "space-xl": "2rem",
+          "gutter": "1rem",
+          "space-sm": "0.5rem"
+        },
+        "fontFamily": {
+          "h4": [
+            "Montserrat"
+          ],
+          "mono-data": [
+            "JetBrains Mono"
+          ],
+          "body": [
+            "Inter"
+          ],
+          "h2": [
+            "Montserrat"
+          ],
+          "mono-lg": [
+            "JetBrains Mono"
+          ],
+          "caption": [
+            "Inter"
+          ],
+          "body-medium": [
+            "Inter"
+          ],
+          "h3": [
+            "Montserrat"
+          ],
+          "display": [
+            "Montserrat"
+          ],
+          "h1": [
+            "Montserrat"
+          ],
+          "body-bold": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "h4": [
+            "18px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "600"
+            }
+          ],
+          "mono-data": [
+            "14px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "500"
+            }
+          ],
+          "body": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "400"
+            }
+          ],
+          "h2": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "fontWeight": "700"
+            }
+          ],
+          "mono-lg": [
+            "16px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "500"
+            }
+          ],
+          "caption": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "500"
+            }
+          ],
+          "body-medium": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "h3": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "600"
+            }
+          ],
+          "display": [
+            "32px",
+            {
+              "lineHeight": "40px",
+              "fontWeight": "700"
+            }
+          ],
+          "h1": [
+            "28px",
+            {
+              "lineHeight": "36px",
+              "fontWeight": "700"
+            }
+          ],
+          "body-bold": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "600"
+            }
+          ],
+          "body-sm": [
+            "14px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-nexus-bg font-body text-nexus-text min-h-screen"><aside class="fixed left-0 top-0 h-full w-72 bg-nexus-900 z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-3 px-space-md bg-nexus-900 border-b border-secondary/20"><span class="material-symbols-outlined text-primary-fixed text-2xl">anchor</span><div class="flex flex-col"><span class="font-h4 text-h4 tracking-wider uppercase text-nexus-white">NexusPort</span><span class="font-caption text-caption tracking-widest uppercase text-outline-variant">Terminal STS-01</span></div></div><div class="px-space-md py-space-sm"><span class="font-caption text-caption uppercase tracking-wider text-outline-variant">Pilares Operacionais</span></div><nav class="flex flex-col gap-1 px-space-sm" data-active-classes="bg-primary-container text-on-primary font-body-bold rounded-lg"><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="acesso-rbac" href="#"><span class="material-symbols-outlined text-[20px]">admin_panel_settings</span><span class="font-body-sm text-body-sm">Pilar 1: Acesso &amp; RBAC</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="agendamento-qr" href="#"><span class="material-symbols-outlined text-[20px]">qr_code_scanner</span><span class="font-body-sm text-body-sm">Pilar 2: Agendamento &amp; QR</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="inspecao-formal" href="#"><span class="material-symbols-outlined text-[20px]">fact_check</span><span class="font-body-sm text-body-sm">Pilar 3: Inspeção Formal</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="patio-vinculacao" href="#"><span class="material-symbols-outlined text-[20px]">view_comfy</span><span class="font-body-sm text-body-sm">Pilar 4: Pátio &amp; Vinculação</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="despacho-supervisor" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span class="font-body-sm text-body-sm">Pilar 5: Despacho Supervisor</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="painel-audit-trail" href="#"><span class="material-symbols-outlined text-[20px]">history_edu</span><span class="font-body-sm text-body-sm">Pilar 6: Painel &amp; Audit Trail</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="leitura-campo-mobile" href="#"><span class="material-symbols-outlined text-[20px]">phone_android</span><span class="font-body-sm text-body-sm">Pilar 7: Leitura Campo Mobile</span></a></nav></div><div class="p-space-md border-t border-secondary/20 flex flex-col gap-2"><div class="flex items-center justify-between"><span class="font-caption text-caption text-outline-variant uppercase">Versão TOS</span><span class="font-mono-data text-mono-data text-secondary-fixed">v4.8.2-PROD</span></div><div class="flex items-center justify-between"><span class="font-caption text-caption text-outline-variant uppercase">Yard Link</span><span class="flex items-center gap-1.5 font-mono-data text-mono-data text-success"><span class="h-2 w-2 rounded-full bg-success inline-block"></span>STABLE</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-nexus-white z-40 flex items-center justify-between px-gutter-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-nexus-border"><div class="flex items-center gap-space-md"><button aria-label="Alternar Menu" class="p-2 text-secondary hover:text-nexus-900 rounded hover:bg-surface-container transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined">menu</span></button><img alt="logo_porto.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VOyjHZsejRL9OSlso5C__O36rHMsog1vYukTPSSTqkNUJG5DfeZc1xIrjg4ucnDA3qmpGUabjgscQgM1y2YFE7zilVVQfn32uzqbtItZYRxXCVOYc5Q2bl00mPGVZ-8FvcdDEufNCfPunpa7mJ-CBE7omc5Wy3PwY-DDkW_Nh_i9WwPHBrAMn01iW5vf1MPwTCuwGeAYVRcaqXzx5gpGxgOJ6BxEGWLhK5IcJKAhMBHnt1rLCbo18ngYt9Xcvymbd5MK5TNTO_8w"/><div class="hidden md:flex items-center gap-2 px-3 py-1 rounded bg-secondary-container/40"><span class="material-symbols-outlined text-nexus-500 text-[18px]">dock</span><span class="font-body-sm text-body-sm text-nexus-900">Berço 01 / Gate Principal</span></div></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container"><span class="h-2 w-2 rounded-full bg-success"></span><span class="font-caption text-caption uppercase text-secondary font-semibold">STS-01 Conectado</span><span class="font-mono-data text-mono-data text-secondary text-xs">18ms</span></div><div class="h-6 w-[1px] bg-nexus-border hidden sm:block"></div><div class="flex items-center gap-3"><div class="text-right hidden sm:block"><span class="font-body-bold text-body-bold text-nexus-900 block leading-tight">Carlos Eduardo M.</span><div class="flex items-center justify-end gap-1.5"><span class="font-caption text-caption text-secondary">Superv. Geral</span><span class="font-mono-data text-mono-data text-xs text-primary font-bold bg-primary-fixed px-1.5 py-0.2 rounded">OP-7821</span></div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 px-gutter-lg py-margin bg-nexus-bg min-h-screen"><div class="flex flex-col w-full gap-space-lg">
+<!-- TOP CONTEXT BAR & STATUS -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-nexus-white p-space-lg rounded-xl shadow-sm border border-nexus-border">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded text-xs font-mono-data uppercase bg-primary-fixed text-primary font-bold">Pilar 06</span>
+<span class="text-secondary font-caption text-caption uppercase tracking-wider font-semibold">Terminal Marítimo STS-01 • Controle de Integridade</span>
+</div>
+<h1 class="font-h2 text-h2 text-nexus-900 tracking-tight">Painel de Comando, Governança &amp; Auditoria Imutável</h1>
+<p class="font-body-sm text-body-sm text-secondary">
+        Escopo Normativo: <span class="font-mono-data text-nexus-900 font-semibold">RF 7, RF 12, RF 13, RF 14 &amp; RN 11</span> — Rastreabilidade forense, soberania de decisões de alto impacto e cadeia de custódia ininterrupta.
+      </p>
+</div>
+<div class="flex items-center gap-space-md self-start lg:self-center">
+<div class="bg-nexus-bg p-3 rounded-lg flex items-center gap-3 border border-nexus-border">
+<div class="relative flex items-center justify-center">
+<span class="w-3 h-3 rounded-full bg-success animate-ping absolute opacity-75"></span>
+<span class="w-3 h-3 rounded-full bg-success relative"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-secondary uppercase tracking-wider font-bold">Ledger de Auditoria</span>
+<span class="font-mono-data text-mono-data text-nexus-900 text-xs font-bold">SINCRONIZADO (SHA-256)</span>
+</div>
+</div>
+<div class="hidden sm:flex flex-col bg-surface-container-low px-4 py-2 rounded-lg border border-nexus-border">
+<span class="font-caption text-caption text-secondary uppercase">Operador Responsável</span>
+<div class="flex items-center gap-1.5">
+<span class="font-body-bold text-body-sm text-nexus-900">Carlos Mendonça</span>
+<span class="font-mono-data text-xs px-1.5 py-0.5 bg-primary-container text-nexus-white rounded">#SP-8821</span>
+</div>
+</div>
+</div>
+</div>
+<!-- BLOCO 1: VISÃO GERAL OPERACIONAL CONFORME RF 7 & RN 11 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-space-md">
+<!-- 1. Navios Fora do Porto -->
+<div class="bg-nexus-white p-space-md rounded-xl shadow-sm border border-nexus-border flex flex-col justify-between hover:border-nexus-500 transition-colors">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="font-caption text-caption uppercase tracking-wider font-semibold">Navios Fora do Porto</span>
+<span class="material-symbols-outlined text-nexus-500 text-[20px]">directions_boat</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-h1 text-h1 text-nexus-900">08</span>
+<span class="font-caption text-caption text-secondary">embarcações</span>
+</div>
+<div class="mt-3 pt-2 border-t border-surface-container flex items-center gap-1.5">
+<span class="h-1.5 w-1.5 rounded-full bg-nexus-500"></span>
+<span class="font-caption text-caption text-secondary">Aguardando berço STS</span>
+</div>
+</div>
+<!-- 2. Cargas em Armazenagem -->
+<div class="bg-nexus-white p-space-md rounded-xl shadow-sm border border-nexus-border flex flex-col justify-between hover:border-nexus-500 transition-colors">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="font-caption text-caption uppercase tracking-wider font-semibold">Cargas em Pátio</span>
+<span class="material-symbols-outlined text-nexus-500 text-[20px]">warehouse</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-h1 text-h1 text-nexus-900">142</span>
+<span class="font-caption text-caption text-secondary">lotes ativos</span>
+</div>
+<div class="mt-3 pt-2 border-t border-surface-container flex items-center gap-1.5">
+<span class="h-1.5 w-1.5 rounded-full bg-success"></span>
+<span class="font-caption text-caption text-secondary">Segregação alfandegada</span>
+</div>
+</div>
+<!-- 3. Cargas Prontas p/ Entrega -->
+<div class="bg-nexus-white p-space-md rounded-xl shadow-sm border border-nexus-border flex flex-col justify-between hover:border-nexus-500 transition-colors">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="font-caption text-caption uppercase tracking-wider font-semibold">Prontas p/ Entrega</span>
+<span class="material-symbols-outlined text-warning text-[20px]">local_shipping</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-h1 text-h1 text-nexus-900">36</span>
+<span class="font-caption text-caption text-warning font-semibold">retirada pronta</span>
+</div>
+<div class="mt-3 pt-2 border-t border-surface-container flex items-center gap-1.5">
+<span class="material-symbols-outlined text-warning text-[14px]">gavel</span>
+<span class="font-caption text-caption text-secondary font-medium">Requer liberação Supervisor</span>
+</div>
+</div>
+<!-- 4. Cargas Recusadas na Inspeção -->
+<div class="bg-nexus-white p-space-md rounded-xl shadow-sm border border-nexus-border flex flex-col justify-between hover:border-nexus-500 transition-colors">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="font-caption text-caption uppercase tracking-wider font-semibold">Cargas Recusadas</span>
+<span class="material-symbols-outlined text-danger text-[20px]">report_problem</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-h1 text-h1 text-danger">04</span>
+<span class="font-caption text-caption text-secondary">bloqueadas</span>
+</div>
+<div class="mt-3 pt-2 border-t border-surface-container flex items-center justify-between">
+<span class="font-caption text-caption text-danger font-medium">Com laudo pericial</span>
+<span class="font-mono-data text-xs text-secondary font-semibold">RF 10</span>
+</div>
+</div>
+<!-- 5. Ocupação Pátio TEUs -->
+<div class="bg-nexus-white p-space-md rounded-xl shadow-sm border border-nexus-border flex flex-col justify-between hover:border-nexus-500 transition-colors">
+<div class="flex items-center justify-between text-secondary mb-1">
+<span class="font-caption text-caption uppercase tracking-wider font-semibold">Ocupação Pátio TEU</span>
+<span class="font-mono-data text-mono-data text-nexus-900 font-bold">78%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden my-1">
+<div class="bg-nexus-500 h-full rounded-full transition-all duration-500" style="width: 78%;"></div>
+</div>
+<div class="flex justify-between items-baseline text-xs text-secondary font-mono-data mt-1">
+<span>3.120 TEUs</span>
+<span>Cap: 4.000</span>
+</div>
+<div class="mt-2 pt-2 border-t border-surface-container flex items-center gap-1">
+<span class="h-1.5 w-1.5 rounded-full bg-nexus-500"></span>
+<span class="font-caption text-caption text-secondary">Nível operacional moderado</span>
+</div>
+</div>
+<!-- 6. Manutenções Sugeridas RN 11 -->
+<div class="bg-nexus-white p-space-md rounded-xl shadow-sm border border-nexus-border flex flex-col justify-between relative overflow-hidden hover:border-warning transition-colors">
+<div class="absolute top-0 right-0 w-2 h-full bg-warning"></div>
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="font-caption text-caption uppercase tracking-wider font-semibold text-warning">RN 11 • Manutenção</span>
+<span class="material-symbols-outlined text-warning text-[20px]">engineering</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-h1 text-h1 text-nexus-900">02</span>
+<span class="font-caption text-caption text-secondary">embarcações</span>
+</div>
+<div class="mt-3 pt-2 border-t border-surface-container flex items-center justify-between">
+<span class="font-caption text-caption text-warning font-semibold">&gt; 3 anos sem docagem</span>
+<button class="text-primary hover:underline font-mono-data text-xs font-bold" onclick="alert('RN 11: Embarcações MV Atlantic e MV Guanabara atingiram o ciclo de 36 meses sem vistoria naval registrada. Notificação enviada à capitania.')" type="button">VER</button>
+</div>
+</div>
+</div>
+<!-- GRID PRINCIPAL: DECISÕES CRÍTICAS (RF 13) + DELEGAÇÃO SUPERVISOR (RF 14) -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-space-lg">
+<!-- COLUNA 1 & 2: TRAIL DE DECISÕES CRÍTICAS IMUTÁVEIS (RF 13) -->
+<div class="xl:col-span-2 flex flex-col gap-space-md bg-nexus-white p-space-lg rounded-xl shadow-sm border border-nexus-border">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-nexus-border">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-nexus-900 text-2xl">verified_user</span>
+<h2 class="font-h3 text-h3 text-nexus-900">Trail de Decisões Críticas Imutável</h2>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+            Registros gravados via chave criptográfica do operador. Retificações geram novos blocos referenciados sem sobrescrita (RF 13).
+          </p>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 bg-surface-container text-nexus-900 rounded font-mono-data text-xs font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-success">lock</span> LOG SEGURO
+          </span>
+</div>
+</div>
+<!-- DECISION CARDS / TIMELINE TABLE -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-nexus-900 text-nexus-white font-caption text-caption uppercase">
+<th class="py-3 px-4 rounded-l">Timestamp / Hash</th>
+<th class="py-3 px-3">Operador (Matrícula)</th>
+<th class="py-3 px-3">Entidade Alvo</th>
+<th class="py-3 px-4">Decisão Registrada</th>
+<th class="py-3 px-3">Veredito</th>
+<th class="py-3 px-4 text-right rounded-r">Cadeia</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-nexus-border font-body-sm text-body-sm">
+<!-- REGISTRO 1: APROVAÇÃO SUPERVISOR -->
+<tr class="hover:bg-nexus-bg/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-mono-data font-semibold text-nexus-900 text-xs">15/09/2026 10:42:19</div>
+<div class="font-mono-data text-[11px] text-secondary">#hash: 8f72a4...d019</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-body-bold text-xs text-nexus-900">Carlos Mendonça</div>
+<div class="font-mono-data text-[11px] text-primary">#SP-8821 (Supervisor)</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-mono-data text-xs font-semibold text-nexus-900">BRSAN-CONT-88910</div>
+<div class="text-[11px] text-secondary">Lote Químico Seco</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-body-medium text-xs text-nexus-900">Liberação para Saída de Entrega</div>
+<div class="text-[11px] text-secondary">Guia DI autorizada pela Receita Federal</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/10 text-success">
+                  Aprovado
+                </span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="text-nexus-500 hover:text-nexus-900 font-mono-data text-xs underline font-semibold" onclick="document.getElementById('modal-details').classList.remove('hidden')" type="button">
+                  Validar
+                </button>
+</td>
+</tr>
+<!-- REGISTRO 2: RECUSA INSPETOR (COM RETIFICAÇÃO VINCULADA ABAIXO) -->
+<tr class="bg-error-container/20">
+<td class="py-3 px-4">
+<div class="font-mono-data font-semibold text-nexus-900 text-xs">15/09/2026 09:15:02</div>
+<div class="font-mono-data text-[11px] text-secondary">#hash: 4c31bb...aa52</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-body-bold text-xs text-nexus-900">Marcio F. Ramos</div>
+<div class="font-mono-data text-[11px] text-secondary">#IN-3104 (Inspetor)</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-mono-data text-xs font-semibold text-nexus-900">CONT-IMO-99321</div>
+<div class="text-[11px] text-secondary">Carga Perigosa Cl. 3</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-body-medium text-xs text-danger font-semibold">Recusa Formal em Portaria</div>
+<div class="text-[11px] text-secondary">Lacre violado e vazamento de base</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-danger/10 text-danger">
+                  Recusado
+                </span>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="font-mono-data text-xs text-secondary">V-ORIGINAL</span>
+</td>
+</tr>
+<!-- REGISTRO 2.1: RETIFICAÇÃO VINCULADA AO REGISTRO ANTERIOR (RF 13) -->
+<tr class="bg-surface-container-low border-l-4 border-warning">
+<td class="py-2.5 px-4 pl-8">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-warning">subdirectory_arrow_right</span>
+<span class="font-mono-data font-semibold text-nexus-900 text-xs">15/09/2026 09:48:10</span>
+</div>
+<div class="font-mono-data text-[10px] text-secondary pl-5">#ref-parent: 4c31bb...aa52</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="font-body-bold text-xs text-nexus-900">Marcio F. Ramos</div>
+<div class="font-mono-data text-[10px] text-secondary">#IN-3104 (Inspetor)</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="font-mono-data text-xs text-nexus-900">CONT-IMO-99321</div>
+<div class="text-[10px] text-warning font-semibold">RETIFICAÇÃO ANEXA</div>
+</td>
+<td class="py-2.5 px-4" colspan="2">
+<div class="text-xs text-nexus-900">
+<strong class="font-semibold text-warning">Nota de Emenda Criptografada:</strong> Vazamento contido em bacia de contenção secundária; recusa definitiva mantida sob novo termo ambiental #AMB-409.
+                </div>
+</td>
+<td class="py-2.5 px-4 text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono-data font-bold bg-warning/15 text-warning">
+                  RETIFICADO
+                </span>
+</td>
+</tr>
+<!-- REGISTRO 3: ORDEM DE MANUTENÇÃO SUGERIDA (RN 11) -->
+<tr class="hover:bg-nexus-bg/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-mono-data font-semibold text-nexus-900 text-xs">14/09/2026 16:20:41</div>
+<div class="font-mono-data text-[11px] text-secondary">#hash: 1e99fc...3304</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-body-bold text-xs text-nexus-900">Carlos Mendonça</div>
+<div class="font-mono-data text-[11px] text-primary">#SP-8821 (Supervisor)</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-mono-data text-xs font-semibold text-nexus-900">MV ATLANTIC STAR</div>
+<div class="text-[11px] text-secondary">IMO: 9145821</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-body-medium text-xs text-nexus-900">Solicitação de Docagem Preventiva</div>
+<div class="text-[11px] text-secondary">Disparo automático RN 11 (&gt; 3 anos da última revisão)</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-warning/15 text-warning">
+                  Intervenção
+                </span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="text-nexus-500 hover:text-nexus-900 font-mono-data text-xs underline font-semibold" onclick="alert('Certificado de docagem e ordem de serviço emitida para Estaleiro STS Drydock. Hash validado com sucesso.')" type="button">
+                  Validar
+                </button>
+</td>
+</tr>
+<!-- REGISTRO 4: DESIGNAÇÃO DE SUBSTITUTO (RF 14) -->
+<tr class="hover:bg-nexus-bg/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-mono-data font-semibold text-nexus-900 text-xs">10/09/2026 08:00:00</div>
+<div class="font-mono-data text-[11px] text-secondary">#hash: 99ba42...7710</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-body-bold text-xs text-nexus-900">Carlos Mendonça</div>
+<div class="font-mono-data text-[11px] text-primary">#SP-8821 (Supervisor)</div>
+</td>
+<td class="py-3 px-3">
+<div class="font-mono-data text-xs font-semibold text-nexus-900">Rafael Siqueira</div>
+<div class="text-[11px] text-secondary">#OP-7740</div>
+</td>
+<td class="py-3 px-4">
+<div class="font-body-medium text-xs text-nexus-900">Outorga Temporária de Supervisão</div>
+<div class="text-[11px] text-secondary">Plantão Operacional STS-01</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+                  Delegação
+                </span>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="font-mono-data text-xs text-success font-semibold">VIGENTE</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between pt-space-xs text-xs text-secondary border-t border-nexus-border">
+<span>Exibindo últimas 4 decisões críticas categorizadas</span>
+<div class="flex items-center gap-2 font-mono-data">
+<span>Integridade de Cadeia: 100% Intacta</span>
+<span class="inline-block w-2 h-2 rounded-full bg-success"></span>
+</div>
+</div>
+</div>
+<!-- COLUNA 3: BLOCO DE DELEGAÇÃO DE SUPERVISOR (RF 14 / T8.6 - T8.9) -->
+<div class="flex flex-col gap-space-md">
+<div class="bg-nexus-white p-space-lg rounded-xl shadow-sm border border-nexus-border flex flex-col justify-between h-full">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-start justify-between border-b border-nexus-border pb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-nexus-500 text-2xl">supervisor_account</span>
+<div>
+<h3 class="font-h4 text-h4 text-nexus-900">Governança &amp; Delegação</h3>
+<span class="font-caption text-caption text-secondary font-semibold uppercase">RF 14 • Gestão de Substitutos</span>
+</div>
+</div>
+<span class="px-2 py-0.5 text-xs font-mono-data uppercase bg-success/10 text-success font-bold rounded">
+              Ativo
+            </span>
+</div>
+<!-- REGRA ESTRITA CALLOUT -->
+<div class="p-3 bg-surface-container-low rounded-lg border-l-4 border-nexus-500 text-xs">
+<div class="flex items-center gap-1 text-nexus-900 font-semibold mb-1">
+<span class="material-symbols-outlined text-[16px] text-nexus-500">policy</span>
+<span>Regra Estrita Operacional:</span>
+</div>
+<p class="text-secondary leading-relaxed">
+              Apenas <strong>um substituto temporário ativo</strong> por Supervisor. A revogação antecipada encerra sumariamente os privilégios operacionais em todo o terminal.
+            </p>
+</div>
+<!-- CURRENT DELEGATED USER PROFILE -->
+<div class="bg-nexus-bg p-4 rounded-xl border border-nexus-border flex flex-col gap-3">
+<span class="font-caption text-caption uppercase text-secondary font-bold">Substituto Designado Atual</span>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold text-lg font-mono-data">
+                RS
+              </div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-nexus-900">Rafael Siqueira</span>
+<span class="font-body-sm text-body-sm text-secondary">Coordenador de Pátio Operacional</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-mono-data text-xs bg-nexus-white px-2 py-0.5 rounded border border-nexus-border text-nexus-900 font-semibold">#OP-7740</span>
+<span class="font-caption text-caption text-success font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span> Sessão Conectada
+                  </span>
+</div>
+</div>
+</div>
+<div class="bg-nexus-white p-3 rounded-lg border border-nexus-border flex flex-col gap-1.5 mt-2">
+<div class="flex justify-between items-center text-xs">
+<span class="text-secondary font-caption uppercase">Início de Vigência:</span>
+<span class="font-mono-data font-semibold text-nexus-900">10/09/2026 08:00</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-secondary font-caption uppercase">Término Previsto:</span>
+<span class="font-mono-data font-semibold text-nexus-900">15/09/2026 18:00</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-success h-full" style="width: 82%;"></div>
+</div>
+<span class="text-[11px] text-secondary text-right font-mono-data">Restam aprox. 7h15min</span>
+</div>
+</div>
+</div>
+<!-- REVOQUE ACTION BUTTON & MODAL TRIGGER -->
+<div class="flex flex-col gap-2 pt-4 mt-4 border-t border-nexus-border">
+<button class="w-full h-12 bg-danger hover:bg-danger/90 text-nexus-white font-body-bold text-body-sm rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-danger/50" onclick="document.getElementById('modal-revogacao').classList.remove('hidden')" type="button">
+<span class="material-symbols-outlined text-[20px]">person_cancel</span>
+            Revogar Delegação Imediatamente
+          </button>
+<span class="font-caption text-caption text-secondary text-center">
+            Ação irrevogável gravada com timestamp e assinatura do Supervisor Titular.
+          </span>
+</div>
+</div>
+</div>
+</div>
+<!-- BLOCO 4: AMOSTRAGEM DO LOG GERAL DE AUDITORIA FORENSE (RF 12 / T8.1 - T8.2) -->
+<div class="bg-nexus-white p-space-lg rounded-xl shadow-sm border border-nexus-border flex flex-col gap-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-nexus-900 text-2xl">receipt_long</span>
+<h2 class="font-h3 text-h3 text-nexus-900">Log Geral de Auditoria Operacional</h2>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+          Amostragem em tempo real de disparos automáticos, transições de status e comandos emitidos no TOS (RF 12).
+        </p>
+</div>
+<!-- FILTER CONTROLS -->
+<div class="flex flex-wrap items-center gap-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-[18px]">search</span>
+<input class="pl-9 pr-3 py-1.5 bg-nexus-bg border border-nexus-border rounded-lg text-body-sm text-nexus-900 focus:outline-none focus:border-nexus-500 font-mono-data w-64 text-xs" placeholder="Filtrar por Matrícula, Lote ou ID..." type="text"/>
+</div>
+<select class="px-3 py-1.5 bg-nexus-bg border border-nexus-border rounded-lg text-body-sm text-nexus-900 focus:outline-none focus:border-nexus-500 text-xs font-semibold">
+<option>Todos os Eventos</option>
+<option>Inspeções Gate</option>
+<option>Movimentação Pátio</option>
+<option>Eventos de Segurança</option>
+</select>
+<button class="px-3 py-1.5 bg-surface-container hover:bg-surface-container-high text-nexus-900 text-xs font-body-bold rounded-lg flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+          Exportar CSV (RFC 4180)
+        </button>
+</div>
+</div>
+<!-- DATA TABLE -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-secondary font-caption text-caption uppercase border-b border-nexus-border">
+<th class="py-2.5 px-4">ID Evento</th>
+<th class="py-2.5 px-3">Data/Hora Precisa</th>
+<th class="py-2.5 px-3">Origem / Módulo</th>
+<th class="py-2.5 px-4">Operador Responsável</th>
+<th class="py-2.5 px-4">Ação Executada</th>
+<th class="py-2.5 px-3">IP / Estação</th>
+<th class="py-2.5 px-3 text-center">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-nexus-border font-body-sm text-body-sm">
+<tr class="hover:bg-nexus-bg/50 transition-colors">
+<td class="py-2.5 px-4 font-mono-data text-xs text-nexus-900 font-semibold">#LOG-902184</td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">15/09/2026 11:02:14.281</td>
+<td class="py-2.5 px-3">
+<span class="font-caption text-caption px-2 py-0.5 rounded bg-surface-container text-nexus-900 font-bold">GATE-01</span>
+</td>
+<td class="py-2.5 px-4">
+<span class="font-body-medium text-xs text-nexus-900">Leitor OCR Automático</span>
+<span class="font-mono-data text-[11px] text-secondary block">SYS-AUTOMATION</span>
+</td>
+<td class="py-2.5 px-4 text-xs text-nexus-900">
+              Check-in de cavalo mecânico Placa <span class="font-mono-data font-semibold">RXI-9941</span> • Container MSKU-81920
+            </td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">10.20.4.112</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-data font-bold bg-success/15 text-success">CONFIRMADO</span>
+</td>
+</tr>
+<tr class="hover:bg-nexus-bg/50 transition-colors">
+<td class="py-2.5 px-4 font-mono-data text-xs text-nexus-900 font-semibold">#LOG-902183</td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">15/09/2026 10:58:02.109</td>
+<td class="py-2.5 px-3">
+<span class="font-caption text-caption px-2 py-0.5 rounded bg-surface-container text-nexus-900 font-bold">PÁTIO B-04</span>
+</td>
+<td class="py-2.5 px-4">
+<span class="font-body-medium text-xs text-nexus-900">Rafael Siqueira</span>
+<span class="font-mono-data text-[11px] text-primary block">#OP-7740 (Substituto)</span>
+</td>
+<td class="py-2.5 px-4 text-xs text-nexus-900">
+              Reendereçamento de TEU para baia refrigerada <span class="font-mono-data font-semibold">B4-R02-T03</span>
+</td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">10.20.12.88 (Mobile)</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-data font-bold bg-success/15 text-success">CONFIRMADO</span>
+</td>
+</tr>
+<tr class="hover:bg-nexus-bg/50 transition-colors">
+<td class="py-2.5 px-4 font-mono-data text-xs text-nexus-900 font-semibold">#LOG-902182</td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">15/09/2026 10:45:55.772</td>
+<td class="py-2.5 px-3">
+<span class="font-caption text-caption px-2 py-0.5 rounded bg-surface-container text-nexus-900 font-bold">INSPEÇÃO</span>
+</td>
+<td class="py-2.5 px-4">
+<span class="font-body-medium text-xs text-nexus-900">Carlos Mendonça</span>
+<span class="font-mono-data text-[11px] text-primary block">#SP-8821 (Supervisor)</span>
+</td>
+<td class="py-2.5 px-4 text-xs text-nexus-900">
+              Emissão de Declaração de Desembaraço Portuário (RF 13) para carga IMO-4
+            </td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">10.20.1.15</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-data font-bold bg-success/15 text-success">ASSINADO</span>
+</td>
+</tr>
+<tr class="hover:bg-nexus-bg/50 transition-colors">
+<td class="py-2.5 px-4 font-mono-data text-xs text-nexus-900 font-semibold">#LOG-902181</td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">15/09/2026 10:31:40.015</td>
+<td class="py-2.5 px-3">
+<span class="font-caption text-caption px-2 py-0.5 rounded bg-warning/20 text-warning font-bold">SEGURANÇA</span>
+</td>
+<td class="py-2.5 px-4">
+<span class="font-body-medium text-xs text-nexus-900">Sistema RBAC TOS</span>
+<span class="font-mono-data text-[11px] text-secondary block">AUTH-DAEMON</span>
+</td>
+<td class="py-2.5 px-4 text-xs text-nexus-900">
+              Tentativa não autorizada de liberação de gate por usuário com perfil 'Operador'
+            </td>
+<td class="py-2.5 px-3 font-mono-data text-xs text-secondary">10.20.4.15</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-data font-bold bg-danger/15 text-danger">BARRADO</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-secondary pt-2">
+<span class="font-caption">Sincronismo em lote com repositório off-site a cada 300 segundos.</span>
+<div class="flex items-center gap-1 font-mono-data">
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-nexus-900 font-bold" type="button">← Anterior</button>
+<span class="px-2 py-1">Página 1 de 284</span>
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-nexus-900 font-bold" type="button">Próxima →</button>
+</div>
+</div>
+</div>
+<!-- MODAL: CONFIRMAÇÃO DE REVOGAÇÃO DE SUPERVISOR (RF 14 / T8.8 - T8.9) -->
+<div class="fixed inset-0 z-50 bg-nexus-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-revogacao">
+<div class="bg-nexus-white max-w-lg w-full rounded-xl shadow-2xl border border-nexus-border overflow-hidden">
+<div class="p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center gap-3 text-danger">
+<div class="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">warning</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-nexus-900">Revogação Imediata de Poderes</h3>
+<span class="font-caption text-caption text-secondary font-semibold uppercase">RF 14 • Ação de Segurança Operacional</span>
+</div>
+</div>
+<div class="p-3 bg-error-container/30 rounded-lg text-xs text-nexus-900 leading-relaxed border-l-4 border-danger">
+<strong>Atenção Supervisor Carlos Mendonça (#SP-8821):</strong> Você está prestes a destituir <span class="font-bold">Rafael Siqueira (#OP-7740)</span> das prerrogativas de liberação e aprovação de pátio antes do prazo contratual (15/09 18:00).
+        </div>
+<div class="flex flex-col gap-2">
+<label class="font-caption text-caption text-secondary font-bold uppercase">Motivo Formal da Revogação (Obrigatório para Auditoria):</label>
+<textarea class="w-full p-3 bg-nexus-bg border border-nexus-border rounded-lg font-body-sm text-body-sm text-nexus-900 focus:outline-none focus:border-danger text-xs" id="motivo-revogacao" placeholder="Descreva o motivo formal da cassação antecipada dos poderes delegados..." rows="3">Retorno antecipado do Titular da Operação ao Centro de Despacho STS-01.</textarea>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-caption text-caption text-secondary font-bold uppercase">Confirmação de Credencial:</label>
+<div class="flex items-center gap-2">
+<input class="w-full p-2.5 bg-nexus-bg border border-nexus-border rounded-lg font-mono-data text-xs text-nexus-900 focus:outline-none focus:border-danger" placeholder="Digite sua senha mestra de Supervisor" type="password" value="********"/>
+</div>
+</div>
+</div>
+<div class="p-space-md bg-nexus-bg border-t border-nexus-border flex items-center justify-end gap-3">
+<button class="px-4 py-2.5 rounded-lg border border-nexus-border text-secondary hover:text-nexus-900 font-body-bold text-xs bg-nexus-white transition-colors" onclick="document.getElementById('modal-revogacao').classList.add('hidden')" type="button">
+          Cancelar Operação
+        </button>
+<button class="px-4 py-2.5 rounded-lg bg-danger hover:bg-danger/90 text-nexus-white font-body-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors" onclick="alert('Delegação do operador Rafael Siqueira #OP-7740 revogada com sucesso. Registro gravado no Ledger com hash imutável.'); document.getElementById('modal-revogacao').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">gavel</span>
+          Confirmar e Revogar Acesso
+        </button>
+</div>
+</div>
+</div>
+<!-- MODAL: VALIDAÇÃO FORENSE DE HASH CRIPTOGRÁFICO (RF 13) -->
+<div class="fixed inset-0 z-50 bg-nexus-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-details">
+<div class="bg-nexus-white max-w-xl w-full rounded-xl shadow-2xl border border-nexus-border overflow-hidden">
+<div class="p-space-md bg-nexus-900 text-nexus-white flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-success">enhanced_encryption</span>
+<span class="font-h4 text-h4">Prova Criptográfica de Imutabilidade</span>
+</div>
+<button class="text-secondary-fixed-dim hover:text-nexus-white" onclick="document.getElementById('modal-details').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<div class="flex flex-col gap-1">
+<span class="font-caption text-caption uppercase text-secondary font-bold">Bloco Assinado Digitalmente</span>
+<div class="p-3 bg-nexus-bg rounded border border-nexus-border font-mono-data text-xs text-nexus-900 break-all select-all">
+            0x8f72a4b891c0e352d1947bca88172901ee45ba1298457812cdfa19487b01d019
+          </div>
+</div>
+<div class="grid grid-cols-2 gap-3 text-xs">
+<div class="p-2.5 bg-surface-container-low rounded">
+<span class="text-secondary font-caption uppercase block">Certificado do Signatário:</span>
+<span class="font-mono-data font-bold text-nexus-900">CARLOS MENDONCA:SP-8821</span>
+<span class="text-secondary block text-[10px]">ICP-Brasil / Autoridade Portuária</span>
+</div>
+<div class="p-2.5 bg-surface-container-low rounded">
+<span class="text-secondary font-caption uppercase block">Carimbo do Tempo (TSA):</span>
+<span class="font-mono-data font-bold text-nexus-900">15/09/2026 10:42:19.412 UTC-3</span>
+<span class="text-success block text-[10px] font-semibold">✓ Raiz de Confiança Válida</span>
+</div>
+</div>
+<div class="p-3 bg-success/10 rounded-lg text-xs text-success flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>A integridade matemática deste registro foi validada. Nenhuma alteração retrospectiva foi detectada nos nós operacionais do Terminal STS-01.</span>
+</div>
+</div>
+<div class="p-space-md bg-nexus-bg border-t border-nexus-border flex justify-end">
+<button class="px-4 py-2 bg-nexus-500 hover:bg-nexus-900 text-nexus-white font-body-bold text-xs rounded-lg transition-colors" onclick="document.getElementById('modal-details').classList.add('hidden')" type="button">
+          Fechar Auditoria
+        </button>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

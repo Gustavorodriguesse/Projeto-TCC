@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "tertiary-fixed": "#ffdf99",
+          "on-tertiary": "#ffffff",
+          "nexus-500": "#445987",
+          "surface-container-highest": "#e5e2e1",
+          "surface": "#fcf9f8",
+          "primary": "#2c416e",
+          "surface-container-lowest": "#ffffff",
+          "on-tertiary-container": "#f0cd7e",
+          "warning": "#D97706",
+          "on-background": "#1b1c1c",
+          "on-surface": "#1b1c1c",
+          "on-tertiary-fixed": "#251a00",
+          "on-error": "#ffffff",
+          "tertiary-container": "#6f5612",
+          "nexus-border": "#E1E5ED",
+          "secondary-container": "#d5e0f8",
+          "outline": "#757780",
+          "on-secondary": "#ffffff",
+          "error-container": "#ffdad6",
+          "tertiary-fixed-dim": "#e5c375",
+          "nexus-white": "#FFFFFF",
+          "on-primary-fixed-variant": "#314673",
+          "surface-container-low": "#f6f3f2",
+          "surface-variant": "#e5e2e1",
+          "secondary-fixed": "#d8e3fb",
+          "on-primary-fixed": "#001a43",
+          "primary-container": "#445987",
+          "on-secondary-fixed": "#111c2d",
+          "on-surface-variant": "#44474f",
+          "on-secondary-fixed-variant": "#3c475a",
+          "secondary": "#545f73",
+          "surface-container-high": "#eae7e7",
+          "surface-dim": "#dcd9d9",
+          "surface-container": "#f0eded",
+          "tertiary": "#543f00",
+          "inverse-primary": "#b1c6fb",
+          "background": "#fcf9f8",
+          "danger": "#C62828",
+          "on-tertiary-fixed-variant": "#5a4300",
+          "success": "#2E7D32",
+          "nexus-bg": "#F5F7FA",
+          "error": "#ba1a1a",
+          "secondary-fixed-dim": "#bcc7de",
+          "nexus-text": "#222222",
+          "primary-fixed": "#d9e2ff",
+          "primary-fixed-dim": "#b1c6fb",
+          "on-primary": "#ffffff",
+          "inverse-on-surface": "#f3f0ef",
+          "surface-bright": "#fcf9f8",
+          "on-error-container": "#93000a",
+          "surface-tint": "#495e8c",
+          "inverse-surface": "#303030",
+          "on-primary-container": "#bfd1ff",
+          "on-secondary-container": "#586377",
+          "nexus-900": "#1E293B",
+          "outline-variant": "#c5c6d0"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        "spacing": {
+          "space-lg": "1.5rem",
+          "space-xs": "0.25rem",
+          "space-md": "1rem",
+          "margin-md": "1.5rem",
+          "gutter-lg": "1.5rem",
+          "margin": "1rem",
+          "margin-lg": "2rem",
+          "space-xl": "2rem",
+          "gutter": "1rem",
+          "space-sm": "0.5rem"
+        },
+        "fontFamily": {
+          "h4": [
+            "Montserrat"
+          ],
+          "mono-data": [
+            "JetBrains Mono"
+          ],
+          "body": [
+            "Inter"
+          ],
+          "h2": [
+            "Montserrat"
+          ],
+          "mono-lg": [
+            "JetBrains Mono"
+          ],
+          "caption": [
+            "Inter"
+          ],
+          "body-medium": [
+            "Inter"
+          ],
+          "h3": [
+            "Montserrat"
+          ],
+          "display": [
+            "Montserrat"
+          ],
+          "h1": [
+            "Montserrat"
+          ],
+          "body-bold": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "h4": [
+            "18px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "600"
+            }
+          ],
+          "mono-data": [
+            "14px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "500"
+            }
+          ],
+          "body": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "400"
+            }
+          ],
+          "h2": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "fontWeight": "700"
+            }
+          ],
+          "mono-lg": [
+            "16px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "500"
+            }
+          ],
+          "caption": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "500"
+            }
+          ],
+          "body-medium": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "h3": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "600"
+            }
+          ],
+          "display": [
+            "32px",
+            {
+              "lineHeight": "40px",
+              "fontWeight": "700"
+            }
+          ],
+          "h1": [
+            "28px",
+            {
+              "lineHeight": "36px",
+              "fontWeight": "700"
+            }
+          ],
+          "body-bold": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "600"
+            }
+          ],
+          "body-sm": [
+            "14px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-nexus-bg font-body text-nexus-text min-h-screen"><aside class="fixed left-0 top-0 h-full w-72 bg-nexus-900 z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-3 px-space-md bg-nexus-900 border-b border-secondary/20"><span class="material-symbols-outlined text-primary-fixed text-2xl">anchor</span><div class="flex flex-col"><span class="font-h4 text-h4 tracking-wider uppercase text-nexus-white">NexusPort</span><span class="font-caption text-caption tracking-widest uppercase text-outline-variant">Terminal STS-01</span></div></div><div class="px-space-md py-space-sm"><span class="font-caption text-caption uppercase tracking-wider text-outline-variant">Pilares Operacionais</span></div><nav class="flex flex-col gap-1 px-space-sm" data-active-classes="bg-primary-container text-on-primary font-body-bold rounded-lg"><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="acesso-rbac" href="#"><span class="material-symbols-outlined text-[20px]">admin_panel_settings</span><span class="font-body-sm text-body-sm">Pilar 1: Acesso &amp; RBAC</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="agendamento-qr" href="#"><span class="material-symbols-outlined text-[20px]">qr_code_scanner</span><span class="font-body-sm text-body-sm">Pilar 2: Agendamento &amp; QR</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="inspecao-formal" href="#"><span class="material-symbols-outlined text-[20px]">fact_check</span><span class="font-body-sm text-body-sm">Pilar 3: Inspeção Formal</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="patio-vinculacao" href="#"><span class="material-symbols-outlined text-[20px]">view_comfy</span><span class="font-body-sm text-body-sm">Pilar 4: Pátio &amp; Vinculação</span></a><a aria-current="page" class="flex items-center gap-3 px-3 py-2.5 transition-colors bg-primary-container text-on-primary font-body-bold rounded-lg" data-path="despacho-supervisor" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span class="font-body-sm text-body-sm">Pilar 5: Despacho Supervisor</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="painel-audit-trail" href="#"><span class="material-symbols-outlined text-[20px]">history_edu</span><span class="font-body-sm text-body-sm">Pilar 6: Painel &amp; Audit Trail</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim hover:bg-nexus-500/20 hover:text-nexus-white transition-colors" data-path="leitura-campo-mobile" href="#"><span class="material-symbols-outlined text-[20px]">phone_android</span><span class="font-body-sm text-body-sm">Pilar 7: Leitura Campo Mobile</span></a></nav></div><div class="p-space-md border-t border-secondary/20 flex flex-col gap-2"><div class="flex items-center justify-between"><span class="font-caption text-caption text-outline-variant uppercase">Versão TOS</span><span class="font-mono-data text-mono-data text-secondary-fixed">v4.8.2-PROD</span></div><div class="flex items-center justify-between"><span class="font-caption text-caption text-outline-variant uppercase">Yard Link</span><span class="flex items-center gap-1.5 font-mono-data text-mono-data text-success"><span class="h-2 w-2 rounded-full bg-success inline-block"></span>STABLE</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-nexus-white z-40 flex items-center justify-between px-gutter-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-nexus-border"><div class="flex items-center gap-space-md"><button aria-label="Alternar Menu" class="p-2 text-secondary hover:text-nexus-900 rounded hover:bg-surface-container transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined">menu</span></button><img alt="logo_porto.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VOyjHZsejRL9OSlso5C__O36rHMsog1vYukTPSSTqkNUJG5DfeZc1xIrjg4ucnDA3qmpGUabjgscQgM1y2YFE7zilVVQfn32uzqbtItZYRxXCVOYc5Q2bl00mPGVZ-8FvcdDEufNCfPunpa7mJ-CBE7omc5Wy3PwY-DDkW_Nh_i9WwPHBrAMn01iW5vf1MPwTCuwGeAYVRcaqXzx5gpGxgOJ6BxEGWLhK5IcJKAhMBHnt1rLCbo18ngYt9Xcvymbd5MK5TNTO_8w"/><div class="hidden md:flex items-center gap-2 px-3 py-1 rounded bg-secondary-container/40"><span class="material-symbols-outlined text-nexus-500 text-[18px]">dock</span><span class="font-body-sm text-body-sm text-nexus-900">Berço 01 / Gate Principal</span></div></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container"><span class="h-2 w-2 rounded-full bg-success"></span><span class="font-caption text-caption uppercase text-secondary font-semibold">STS-01 Conectado</span><span class="font-mono-data text-mono-data text-secondary text-xs">18ms</span></div><div class="h-6 w-[1px] bg-nexus-border hidden sm:block"></div><div class="flex items-center gap-3"><div class="text-right hidden sm:block"><span class="font-body-bold text-body-bold text-nexus-900 block leading-tight">Carlos Eduardo M.</span><div class="flex items-center justify-end gap-1.5"><span class="font-caption text-caption text-secondary">Superv. Geral</span><span class="font-mono-data text-mono-data text-xs text-primary font-bold bg-primary-fixed px-1.5 py-0.2 rounded">OP-7821</span></div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 px-gutter-lg py-margin bg-nexus-bg min-h-screen"><div class="flex flex-col w-full">
+<!-- Operational Header Strip -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-6">
+<div class="flex flex-col gap-1.5">
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-nexus-900 text-on-primary font-caption text-caption uppercase tracking-wider font-semibold">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed">shield</span>
+          Exclusividade Hierárquica do Supervisor
+        </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/70 text-nexus-900 font-mono-data text-xs">
+          RF 1 • RF 4 • RN 3 • RN 9 • RN 16
+        </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-success/15 text-success font-body-sm text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-success inline-block"></span>
+          Terminal STS-01 • Canal Ativo
+        </span>
+</div>
+<h1 class="font-h1 text-h1 text-nexus-900 tracking-tight">
+        Pilar 5 — Despacho Crítico &amp; Regulação de Saída
+      </h1>
+<p class="font-body-sm text-body-sm text-secondary">
+        Interface de alta responsabilidade operacional para validação de ETA normativo, despacho de navios atracados em cascata e cancelamento com rastreio forense.
+      </p>
+</div>
+<!-- Supervisor Badge & Quick Counters -->
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-3 bg-surface-container-lowest p-3 rounded-lg shadow-sm">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-inner">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<div class="flex flex-col pr-2">
+<span class="font-caption text-caption uppercase text-secondary tracking-wider">Autoridade Ativa</span>
+<span class="font-body-bold text-body-bold text-nexus-900 leading-tight">Carlos Mendonça</span>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-caption text-caption text-nexus-500 font-semibold">GERENTE DE OPERAÇÕES</span>
+<span class="font-mono-data text-mono-data text-xs bg-primary-fixed text-primary px-1.5 rounded font-bold">#SP-8821</span>
+</div>
+</div>
+</div>
+<div class="hidden sm:flex flex-col justify-center px-4 py-3 bg-surface-container-lowest rounded-lg shadow-sm">
+<span class="font-caption text-caption text-secondary uppercase">Aguardando Despacho</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-lg text-mono-lg font-bold text-warning">02</span>
+<span class="font-caption text-caption text-secondary">embarcações</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mandatory Business Rules Banner (RN 3 & RN 9) -->
+<section class="mb-8 relative overflow-hidden rounded-lg bg-surface-container-lowest shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-nexus-500"></div>
+<div class="p-5 sm:p-6 pl-6 sm:pl-7 flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-lg bg-secondary-container/50 text-nexus-500 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]">gavel</span>
+</div>
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-h4 text-h4 text-nexus-900">Protocolo Mandatório de Segurança &amp; Governança Operacional</span>
+<span class="font-mono-data text-xs bg-secondary-container/60 text-nexus-900 px-2 py-0.5 rounded font-bold">NORM-TOS-2026</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+<div class="flex flex-col gap-1 bg-nexus-bg/70 p-3 rounded">
+<span class="font-body-bold text-body-sm text-nexus-900 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-nexus-500 text-[18px]">account_tree</span>
+                RN 3: Exclusividade &amp; Efeito Cascata
+              </span>
+<p class="font-body-sm text-body-sm text-secondary">
+                Apenas o Supervisor possui prerrogativa de autenticação para autorizar a saída de cargas e navios. A emissão do despacho da embarcação comuta automaticamente a liberação sequencial e irrevogável de todos os contêineres e lotes manifestados.
+              </p>
+</div>
+<div class="flex flex-col gap-1 bg-nexus-bg/70 p-3 rounded">
+<span class="font-body-bold text-body-sm text-nexus-900 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-nexus-500 text-[18px]">calculate</span>
+                RN 9: Cálculo de Trânsito &amp; Bloqueio Geográfico
+              </span>
+<p class="font-body-sm text-body-sm text-secondary">
+                A Estimativa de Chegada (ETA) adota estritamente a fórmula <span class="font-mono-data text-xs font-semibold text-primary">ETA = Distância (km) / 33 km/h</span>. Navios com rotas marítimas não homologadas têm liberação sumariamente revogada no sistema operacional.
+              </p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex lg:flex-col items-end justify-between shrink-0 gap-2">
+<span class="font-caption text-caption text-secondary uppercase font-mono-data">Certificação Operacional</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/15 text-success font-mono-data text-xs font-bold">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+          ASSINATURA DIGITAL ATIVA
+        </span>
+</div>
+</div>
+</section>
+<!-- BLOCO 1: Fila de Despacho & Liberação de Navios Atracados -->
+<section class="mb-10 flex flex-col gap-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">directions_boat</span>
+</div>
+<div>
+<h2 class="font-h3 text-h3 text-nexus-900">Bloco 1: Fila de Despacho de Navios Atracados</h2>
+<span class="font-caption text-caption text-secondary">Ações de alto impacto sistêmico e liberação de berço STS-01</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-caption text-caption text-secondary uppercase">Filtro de Status:</span>
+<span class="font-mono-data text-xs bg-surface-container px-2 py-1 rounded text-nexus-900 font-semibold">Atracados (2)</span>
+</div>
+</div>
+<!-- Vessels Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Vessel 1: Ready to release (MV Santos Star) -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm flex flex-col justify-between overflow-hidden">
+<div>
+<!-- Header Bar -->
+<div class="bg-surface-container-low px-5 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary text-on-primary flex items-center justify-center font-h4 font-bold">
+                SS
+              </div>
+<div class="flex flex-col">
+<span class="font-h4 text-h4 text-nexus-900">MV Santos Star</span>
+<span class="font-mono-data text-mono-data text-secondary text-xs">IMO: <strong class="text-nexus-900">9482103</strong> • Bandeira: Libéria (LBR)</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-success/15 text-success font-body-sm text-xs font-bold uppercase">
+<span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+              Pronto para Despacho
+            </span>
+</div>
+<!-- Vessel Details & Routing Calculations -->
+<div class="p-5 flex flex-col gap-4">
+<!-- Route Metadata with Visual Flow -->
+<div class="bg-nexus-bg p-4 rounded-lg flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption uppercase text-secondary font-semibold">Rota Logística Homologada</span>
+<span class="font-mono-data text-xs text-success font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+                  ROTA REGISTRADA NO TOS
+                </span>
+</div>
+<div class="flex items-center justify-between gap-2 pt-1">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-secondary">Origem</span>
+<span class="font-body-bold text-body-bold text-nexus-900">Santos (BRA)</span>
+<span class="font-mono-data text-xs text-secondary">Berço STS-01</span>
+</div>
+<div class="flex-1 flex flex-col items-center px-2">
+<span class="font-mono-data text-xs text-primary font-bold">10.250 km</span>
+<div class="w-full flex items-center gap-1 my-1">
+<div class="h-1.5 w-1.5 rounded-full bg-primary"></div>
+<div class="h-0.5 flex-1 bg-nexus-500/40"></div>
+<span class="material-symbols-outlined text-primary text-[18px]">navigation</span>
+<div class="h-0.5 flex-1 bg-nexus-500/40"></div>
+<div class="h-1.5 w-1.5 rounded-full bg-primary"></div>
+</div>
+<span class="font-caption text-caption text-secondary">Via Canal do Atlântico</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-caption text-caption text-secondary">Destino Final</span>
+<span class="font-body-bold text-body-bold text-nexus-900">Roterdã (NLD)</span>
+<span class="font-mono-data text-xs text-secondary">Port of Rotterdam</span>
+</div>
+</div>
+<!-- Transit Computation (RN 9) -->
+<div class="pt-3 border-t border-nexus-border/60 grid grid-cols-3 gap-2 text-center">
+<div class="flex flex-col bg-surface-container-lowest py-2 px-1 rounded">
+<span class="font-caption text-caption text-secondary">Vel. Padrão RN 9</span>
+<span class="font-mono-data text-mono-data font-bold text-nexus-900">33.0 km/h</span>
+</div>
+<div class="flex flex-col bg-surface-container-lowest py-2 px-1 rounded">
+<span class="font-caption text-caption text-secondary">Tempo Estimado</span>
+<span class="font-mono-data text-mono-data font-bold text-primary">310.6 horas</span>
+</div>
+<div class="flex flex-col bg-surface-container-lowest py-2 px-1 rounded">
+<span class="font-caption text-caption text-secondary">ETA Calculado</span>
+<span class="font-mono-data text-mono-data font-bold text-success">12d 22h 36m</span>
+</div>
+</div>
+</div>
+<!-- Cascade Loading Payload -->
+<div class="flex items-center justify-between p-3 bg-secondary-container/20 rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-lowest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-sm text-nexus-900">Manifesto em Cascata Vinculado</span>
+<span class="font-caption text-caption text-secondary">Todas as cargas encontram-se em status "Pronta para Entrega"</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono-data text-xs bg-surface-container-lowest px-2 py-1 rounded text-nexus-900 font-bold">48 CNTs</span>
+<span class="font-mono-data text-xs bg-surface-container-lowest px-2 py-1 rounded text-nexus-900 font-bold">620 Lotes</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="p-5 pt-0">
+<button class="w-full h-12 rounded bg-nexus-500 hover:bg-primary text-on-primary font-body-bold flex items-center justify-center gap-2 shadow transition-colors cursor-pointer" onclick="openCascadeModal('MV Santos Star', '9482103', 48, 620)" type="button">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<span>Liberar Navio &amp; Despachar Cargas em Cascata</span>
+</button>
+</div>
+</div>
+<!-- Vessel 2: Blocked by RN 9 (MSC Atlântico) -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm flex flex-col justify-between overflow-hidden relative">
+<div class="absolute top-0 left-0 right-0 h-1 bg-danger"></div>
+<div>
+<!-- Header Bar -->
+<div class="bg-surface-container-low px-5 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-danger/20 text-danger flex items-center justify-center font-h4 font-bold">
+                MA
+              </div>
+<div class="flex flex-col">
+<span class="font-h4 text-h4 text-nexus-900">MSC Atlântico</span>
+<span class="font-mono-data text-mono-data text-secondary text-xs">IMO: <strong class="text-nexus-900">9128374</strong> • Bandeira: Panamá (PAN)</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-danger/15 text-danger font-body-sm text-xs font-bold uppercase">
+<span class="material-symbols-outlined text-[15px]">block</span>
+              Bloqueio Automático
+            </span>
+</div>
+<!-- Vessel Details & Failure Mode -->
+<div class="p-5 flex flex-col gap-4">
+<!-- Alert Banner -->
+<div class="bg-danger/10 p-4 rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-danger text-[24px] shrink-0 mt-0.5">warning</span>
+<div class="flex flex-col gap-1">
+<span class="font-body-bold text-body-sm text-danger">BLOQUEIO DE SAÍDA MANDATÓRIO (RN 9)</span>
+<p class="font-body-sm text-body-sm text-nexus-900">
+                  Rota não homologada pelo Supervisor de Pátio. O cálculo de ETA e a autorização de desamarração foram desativados preventivamente.
+                </p>
+</div>
+</div>
+<div class="bg-nexus-bg p-4 rounded-lg flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption uppercase text-secondary font-semibold">Parâmetros Pendentes de Rota</span>
+<span class="font-mono-data text-xs text-danger font-bold">PENDÊNCIA CRÍTICA</span>
+</div>
+<div class="flex items-center justify-between gap-2 pt-1">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-secondary">Origem</span>
+<span class="font-body-bold text-body-bold text-nexus-900">Santos (BRA)</span>
+<span class="font-mono-data text-xs text-secondary">Berço STS-02</span>
+</div>
+<div class="flex-1 flex flex-col items-center px-2">
+<span class="font-mono-data text-xs text-danger font-bold">Distância Desconhecida</span>
+<div class="w-full flex items-center gap-1 my-1">
+<div class="h-1.5 w-1.5 rounded-full bg-danger"></div>
+<div class="h-0.5 flex-1 border-t-2 border-dashed border-danger"></div>
+<span class="material-symbols-outlined text-danger text-[18px]">wrong_location</span>
+<div class="h-0.5 flex-1 border-t-2 border-dashed border-danger"></div>
+<div class="h-1.5 w-1.5 rounded-full bg-danger"></div>
+</div>
+<span class="font-caption text-caption text-danger">Rota não localizada na tabela náutica</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-caption text-caption text-secondary">Destino Declarado</span>
+<span class="font-body-bold text-body-bold text-nexus-900">Valparaíso (CHL)</span>
+<span class="font-mono-data text-xs text-secondary">Puerto Valparaíso</span>
+</div>
+</div>
+<div class="pt-3 border-t border-nexus-border/60 grid grid-cols-2 gap-2 text-center">
+<div class="flex flex-col bg-surface-container-lowest py-2 px-1 rounded">
+<span class="font-caption text-caption text-secondary">Cargas no Manifesto</span>
+<span class="font-mono-data text-mono-data font-bold text-nexus-900">32 Contêineres</span>
+</div>
+<div class="flex flex-col bg-surface-container-lowest py-2 px-1 rounded">
+<span class="font-caption text-caption text-secondary">Status Operacional</span>
+<span class="font-mono-data text-mono-data font-bold text-danger">Embarque Interrompido</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="p-5 pt-0 flex gap-2">
+<button class="flex-1 h-12 rounded bg-surface-container hover:bg-surface-container-high text-nexus-900 font-body-bold flex items-center justify-center gap-2 transition-colors cursor-pointer" onclick="alert('Abra o cadastro náutico para cadastrar Santos -&gt; Valparaíso (Aprox. 6.180 km via Estreito de Magalhães).')" type="button">
+<span class="material-symbols-outlined text-[20px]">add_location_alt</span>
+<span>Cadastrar Rota Náutica</span>
+</button>
+<button class="h-12 px-4 rounded bg-surface-container-high text-outline cursor-not-allowed font-body-bold flex items-center gap-1.5" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span>Liberar Bloqueado</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- BLOCO 2: Despacho Individual de Cargas & Gestão de Porto de Descarga -->
+<section class="mb-10 flex flex-col gap-4">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+</div>
+<div>
+<h2 class="font-h3 text-h3 text-nexus-900">Bloco 2: Despacho Individual de Cargas (RF 1 / RN 13 / T4.15)</h2>
+<span class="font-caption text-caption text-secondary">Controle refinado com validação independente de Porto de Descarga (POD)</span>
+</div>
+</div>
+<!-- Quick Search & Actions -->
+<div class="flex items-center gap-2">
+<div class="relative">
+<input class="w-64 pl-9 pr-3 py-1.5 bg-surface-container-lowest rounded text-body-sm text-nexus-900 placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" placeholder="Filtrar por Carga ou Contêiner..." type="text"/>
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-[18px] text-outline">search</span>
+</div>
+<button class="px-3 py-1.5 rounded bg-surface-container-lowest hover:bg-surface-container-low text-nexus-900 font-body-sm font-semibold flex items-center gap-1 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+          Filtros
+        </button>
+</div>
+</div>
+<!-- Table of Ready-to-Deliver Cargo -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-nexus-900 text-on-primary font-caption text-caption uppercase tracking-wider">
+<th class="py-3.5 px-4 font-semibold">Identificação da Carga</th>
+<th class="py-3.5 px-4 font-semibold">Contêiner &amp; Tipo</th>
+<th class="py-3.5 px-4 font-semibold">Porto de Descarga vs Destino Navio</th>
+<th class="py-3.5 px-4 font-semibold">Status Arrumador</th>
+<th class="py-3.5 px-4 font-semibold text-right">Ações Mandatórias do Supervisor</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-nexus-border text-body-sm text-nexus-900">
+<!-- Cargo Row 1: Spec Case CRG-2026-0941 -->
+<tr class="hover:bg-nexus-bg/50 transition-colors">
+<td class="py-4 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-mono-data text-mono-data font-bold text-primary">CRG-2026-0941</span>
+<span class="font-body-bold text-nexus-900 mt-0.5">Frutas Frescas (Manga Palmer)</span>
+<span class="font-caption text-caption text-secondary">Exportador: Vale Frutas S/A • 26.400 kg</span>
+</div>
+</td>
+<td class="py-4 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-mono-data text-mono-data font-semibold text-nexus-900">CNT-BR-9941</span>
+<span class="font-caption text-caption text-secondary">40' High-Cube Reefer (-0.5°C)</span>
+<span class="font-mono-data text-xs text-success font-semibold mt-1">Lacre: LC-98319-OK</span>
+</div>
+</td>
+<td class="py-4 px-4 align-top">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5">
+<span class="font-caption text-caption uppercase text-secondary">Descarga (POD):</span>
+<span class="font-body-bold text-xs bg-secondary-container/60 text-nexus-900 px-2 py-0.5 rounded">Le Havre (FRA)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-caption text-caption uppercase text-secondary">Destino Navio:</span>
+<span class="font-mono-data text-xs text-secondary">Roterdã (NLD) [MV Santos Star]</span>
+</div>
+<span class="font-caption text-caption text-nexus-500 italic mt-0.5">
+                  *Porto de descarga antecipado em rota multiprocesso
+                </span>
+</div>
+</td>
+<td class="py-4 px-4 align-top">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-success/15 text-success font-mono-data text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Pronta p/ Entrega
+              </span>
+<span class="block font-caption text-caption text-secondary mt-1">Homologado por: ARR-4412</span>
+</td>
+<td class="py-4 px-4 align-top text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="h-9 px-3 rounded bg-nexus-500 hover:bg-primary text-on-primary font-body-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-sm" onclick="individualRelease('CRG-2026-0941', 'CNT-BR-9941')" title="Liberar Saída Individual" type="button">
+<span class="material-symbols-outlined text-[17px]">done_all</span>
+<span>Liberar Saída</span>
+</button>
+<button class="h-9 px-2.5 rounded bg-warning/15 hover:bg-warning/25 text-warning font-body-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors" onclick="openHoldModal('CRG-2026-0941')" title="Reter para vistoria adicional" type="button">
+<span class="material-symbols-outlined text-[17px]">pan_tool</span>
+<span>Reter</span>
+</button>
+<button class="h-9 px-2.5 rounded bg-danger/15 hover:bg-danger/25 text-danger font-body-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors" onclick="openCancelModal('CRG-2026-0941', 'CNT-BR-9941')" title="Cancelar Entrega (RN 16)" type="button">
+<span class="material-symbols-outlined text-[17px]">cancel</span>
+<span>Cancelar</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Cargo Row 2: Standard Container -->
+<tr class="hover:bg-nexus-bg/50 transition-colors">
+<td class="py-4 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-mono-data text-mono-data font-bold text-primary">CRG-2026-0948</span>
+<span class="font-body-bold text-nexus-900 mt-0.5">Bobinas de Aço Laminado</span>
+<span class="font-caption text-caption text-secondary">CSN Logística • 44.000 kg</span>
+</div>
+</td>
+<td class="py-4 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-mono-data text-mono-data font-semibold text-nexus-900">CNT-BR-1022</span>
+<span class="font-caption text-caption text-secondary">2x 20' Heavy Platform</span>
+<span class="font-mono-data text-xs text-success font-semibold mt-1">Lacre: LC-77301-OK</span>
+</div>
+</td>
+<td class="py-4 px-4 align-top">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5">
+<span class="font-caption text-caption uppercase text-secondary">Descarga (POD):</span>
+<span class="font-body-bold text-xs bg-secondary-container/60 text-nexus-900 px-2 py-0.5 rounded">Roterdã (NLD)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-caption text-caption uppercase text-secondary">Destino Navio:</span>
+<span class="font-mono-data text-xs text-secondary">Roterdã (NLD) [MV Santos Star]</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 align-top">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-success/15 text-success font-mono-data text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Pronta p/ Entrega
+              </span>
+<span class="block font-caption text-caption text-secondary mt-1">Homologado por: ARR-4412</span>
+</td>
+<td class="py-4 px-4 align-top text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="h-9 px-3 rounded bg-nexus-500 hover:bg-primary text-on-primary font-body-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-sm" onclick="individualRelease('CRG-2026-0948', 'CNT-BR-1022')" title="Liberar Saída Individual" type="button">
+<span class="material-symbols-outlined text-[17px]">done_all</span>
+<span>Liberar Saída</span>
+</button>
+<button class="h-9 px-2.5 rounded bg-warning/15 hover:bg-warning/25 text-warning font-body-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors" onclick="openHoldModal('CRG-2026-0948')" title="Reter para vistoria adicional" type="button">
+<span class="material-symbols-outlined text-[17px]">pan_tool</span>
+<span>Reter</span>
+</button>
+<button class="h-9 px-2.5 rounded bg-danger/15 hover:bg-danger/25 text-danger font-body-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors" onclick="openCancelModal('CRG-2026-0948', 'CNT-BR-1022')" title="Cancelar Entrega (RN 16)" type="button">
+<span class="material-symbols-outlined text-[17px]">cancel</span>
+<span>Cancelar</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- BLOCO 3: Painel de Controle de Cancelamentos & Retenções com Auditoria (RN 16 / T4.23 - T4.24) -->
+<section class="mb-6 flex flex-col gap-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+</div>
+<div>
+<h2 class="font-h3 text-h3 text-nexus-900">Bloco 3: Registro de Cancelamentos, Retenções &amp; Trail Forense (RN 16)</h2>
+<span class="font-caption text-caption text-secondary">Registro imutável de deliberações com motivo mandatório e carimbo de operador</span>
+</div>
+</div>
+<span class="font-mono-data text-xs text-secondary bg-surface-container-lowest px-3 py-1.5 rounded shadow-sm">
+        Integridade Criptográfica TOS • SHA-256 Validado
+      </span>
+</div>
+<!-- Audit Cards Mosaic -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Card 1: Recent Cancellation Case -->
+<div class="bg-surface-container-lowest rounded-lg p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-danger"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-mono-data text-xs text-danger font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+              Entrega Cancelada (RN 16)
+            </span>
+<span class="font-mono-data text-xs text-secondary">Hoje, 11:42</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-nexus-900">Carga: CRG-2026-0812</span>
+<span class="font-mono-data text-mono-data text-secondary text-xs">Contêiner: CNT-BR-7718 • Químicos Clas. 3</span>
+</div>
+<div class="bg-nexus-bg p-3 rounded text-body-sm text-nexus-900 flex flex-col gap-1">
+<span class="font-caption text-caption uppercase text-secondary font-semibold">Motivo Obrigatório Registrado:</span>
+<p class="font-body-sm text-body-sm italic text-danger font-medium">
+              "Avaria detectada na válvula de alívio durante inspeção de pré-embarque. Risco de vazamento em alto-mar. Carga transferida para doca de quarentena química."
+            </p>
+</div>
+</div>
+<div class="pt-4 mt-4 border-t border-nexus-border flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-nexus-900 text-on-primary flex items-center justify-center font-caption text-xs font-bold">
+              CM
+            </div>
+<span class="font-caption text-caption text-nexus-900 font-semibold">Carlos Mendonça</span>
+</div>
+<span class="font-mono-data text-xs bg-surface-container text-nexus-900 px-2 py-0.5 rounded">#SP-8821</span>
+</div>
+</div>
+<!-- Card 2: Hold for Quarantine / Custom Inspection -->
+<div class="bg-surface-container-lowest rounded-lg p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-warning"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-mono-data text-xs text-warning font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">pause_circle</span>
+              Retenção Administrativa
+            </span>
+<span class="font-mono-data text-xs text-secondary">Hoje, 09:15</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-nexus-900">Carga: CRG-2026-0899</span>
+<span class="font-mono-data text-mono-data text-secondary text-xs">Contêiner: CNT-EU-4402 • Eletrônicos</span>
+</div>
+<div class="bg-nexus-bg p-3 rounded text-body-sm text-nexus-900 flex flex-col gap-1">
+<span class="font-caption text-caption uppercase text-secondary font-semibold">Justificativa Operacional:</span>
+<p class="font-body-sm text-body-sm text-secondary">
+              "Inconsistência entre peso da balança do Gate (32.100 kg) e peso informado no conhecimento de embarque (28.400 kg). Convocada conferência física conjunta com Receita."
+            </p>
+</div>
+</div>
+<div class="pt-4 mt-4 border-t border-nexus-border flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-nexus-900 text-on-primary flex items-center justify-center font-caption text-xs font-bold">
+              CM
+            </div>
+<span class="font-caption text-caption text-nexus-900 font-semibold">Carlos Mendonça</span>
+</div>
+<span class="font-mono-data text-xs bg-surface-container text-nexus-900 px-2 py-0.5 rounded">#SP-8821</span>
+</div>
+</div>
+<!-- Card 3: Cascade Execution Event Log -->
+<div class="bg-surface-container-lowest rounded-lg p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-success"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-mono-data text-xs text-success font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Despacho Concluído (RN 3)
+            </span>
+<span class="font-mono-data text-xs text-secondary">Ontem, 23:40</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-nexus-900">Embarcação: CMA CGM Rio</span>
+<span class="font-mono-data text-mono-data text-secondary text-xs">IMO: 9811029 • Destino: Singapura (SGP)</span>
+</div>
+<div class="bg-nexus-bg p-3 rounded text-body-sm text-nexus-900 flex flex-col gap-1">
+<span class="font-caption text-caption uppercase text-secondary font-semibold">Execução em Cascata:</span>
+<p class="font-body-sm text-body-sm text-secondary">
+              "72 contêineres e 940 lotes liberados com sucesso simultâneo. Berço desocupado e rebocadores liberados para manobra de desatracação."
+            </p>
+</div>
+</div>
+<div class="pt-4 mt-4 border-t border-nexus-border flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-nexus-900 text-on-primary flex items-center justify-center font-caption text-xs font-bold">
+              CM
+            </div>
+<span class="font-caption text-caption text-nexus-900 font-semibold">Carlos Mendonça</span>
+</div>
+<span class="font-mono-data text-xs bg-surface-container text-nexus-900 px-2 py-0.5 rounded">#SP-8821</span>
+</div>
+</div>
+</div>
+</section>
+<!-- MODAL 1: Confirmação de Liberação em Cascata do Navio (RN 3) -->
+<div class="fixed inset-0 z-50 bg-nexus-900/60 backdrop-blur-sm hidden items-center justify-center p-4" id="modal-cascade">
+<div class="bg-surface-container-lowest rounded-lg max-w-lg w-full p-6 shadow-xl flex flex-col gap-5">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]">directions_boat</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-h3 text-h3 text-nexus-900">Confirmar Despacho em Cascata</h3>
+<span class="font-caption text-caption text-secondary">Regra RN 3 • Liberação Irrevogável da Embarcação</span>
+</div>
+</div>
+<div class="p-4 bg-nexus-bg rounded-lg flex flex-col gap-2">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-secondary">Embarcação:</span>
+<span class="font-body-bold text-nexus-900" id="modal-vessel-name">MV Santos Star</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-secondary">IMO Regulatório:</span>
+<span class="font-mono-data font-bold text-nexus-900" id="modal-vessel-imo">9482103</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-secondary">Contêineres Afetados:</span>
+<span class="font-mono-data text-primary font-bold" id="modal-vessel-cnt">48 unidades</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-secondary">Lotes Manifestados:</span>
+<span class="font-mono-data text-primary font-bold" id="modal-vessel-lots">620 lotes</span>
+</div>
+</div>
+<div class="bg-warning/15 p-3 rounded text-body-sm text-nexus-900 flex items-start gap-2">
+<span class="material-symbols-outlined text-warning text-[20px] shrink-0">info</span>
+<span>Ao confirmar, todas as ordens de movimentação passarão para o status <strong class="text-success">"DESPACHADO"</strong> e a autorização de saída do porto será enviada à capitania.</span>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-caption text-caption uppercase text-secondary font-semibold">Chave de Assinatura do Supervisor</label>
+<input class="w-full px-3 py-2 bg-surface-container-low rounded border-none text-body-sm text-nexus-900 focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Insira seu PIN operacional (#SP-8821)" type="password"/>
+</div>
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="px-4 py-2.5 rounded text-secondary hover:bg-surface-container text-body-sm font-semibold transition-colors" onclick="closeCascadeModal()" type="button">
+          Cancelar
+        </button>
+<button class="px-5 py-2.5 rounded bg-nexus-500 hover:bg-primary text-on-primary text-body-sm font-body-bold flex items-center gap-2 shadow transition-colors" onclick="executeCascadeRelease()" type="button">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+          Autorizar Saída Definitiva
+        </button>
+</div>
+</div>
+</div>
+<!-- MODAL 2: Cancelamento de Entrega com Justificativa Obrigatória (RN 16) -->
+<div class="fixed inset-0 z-50 bg-nexus-900/60 backdrop-blur-sm hidden items-center justify-center p-4" id="modal-cancel">
+<div class="bg-surface-container-lowest rounded-lg max-w-lg w-full p-6 shadow-xl flex flex-col gap-5">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-danger/20 text-danger flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]">cancel</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-h3 text-h3 text-nexus-900">Cancelar Entrega de Carga</h3>
+<span class="font-caption text-caption text-secondary">Regra RN 16 • Motivo Mandatório Auditável</span>
+</div>
+</div>
+<div class="p-3 bg-danger/10 rounded flex items-center justify-between text-body-sm">
+<span class="text-secondary font-medium">Carga Selecionada:</span>
+<span class="font-mono-data font-bold text-danger" id="modal-cancel-cargo-id">CRG-2026-0941</span>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-caption text-caption uppercase text-secondary font-semibold">
+          Justificativa Obrigatória de Cancelamento <span class="text-danger">*</span>
+</label>
+<textarea class="w-full p-3 bg-surface-container-low rounded border-none text-body-sm text-nexus-900 placeholder:text-outline focus:ring-2 focus:ring-danger focus:outline-none" id="modal-cancel-reason" placeholder="Descreva pormenorizadamente a motivação operacional, técnica ou alfandegária para retenção ou cancelamento da entrega..." rows="4"></textarea>
+</div>
+<div class="flex items-center justify-between text-caption text-secondary">
+<span>Gravado sob perfil: <strong>Carlos Mendonça (#SP-8821)</strong></span>
+<span>Mínimo 20 caracteres</span>
+</div>
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="px-4 py-2.5 rounded text-secondary hover:bg-surface-container text-body-sm font-semibold transition-colors" onclick="closeCancelModal()" type="button">
+          Voltar
+        </button>
+<button class="px-5 py-2.5 rounded bg-danger hover:bg-red-800 text-on-error text-body-sm font-body-bold flex items-center gap-2 shadow transition-colors" onclick="confirmCancelAction()" type="button">
+<span class="material-symbols-outlined text-[18px]">gavel</span>
+          Confirmar Cancelamento (RN 16)
+        </button>
+</div>
+</div>
+</div>
+<!-- Toast Notification Feedback Area -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none max-w-md bg-nexus-900 text-on-primary p-4 rounded-lg shadow-xl flex items-center gap-3 border-l-4 border-success" id="inline-feedback">
+<span class="material-symbols-outlined text-success text-[24px]">check_circle</span>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-sm" id="feedback-title">Operação Concluída</span>
+<span class="font-caption text-caption text-secondary-fixed-dim" id="feedback-msg">Ação realizada pelo Supervisor com sucesso.</span>
+</div>
+</div>
+</div>
+<script>
+  function openCascadeModal(vessel, imo, cnts, lots) {
+    document.getElementById('modal-vessel-name').innerText = vessel;
+    document.getElementById('modal-vessel-imo').innerText = imo;
+    document.getElementById('modal-vessel-cnt').innerText = cnts + ' unidades';
+    document.getElementById('modal-vessel-lots').innerText = lots + ' lotes';
+    
+    const modal = document.getElementById('modal-cascade');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeCascadeModal() {
+    const modal = document.getElementById('modal-cascade');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function executeCascadeRelease() {
+    closeCascadeModal();
+    showToast('Despacho em Cascata Emitido (RN 3)', 'Navio MV Santos Star e 48 contêineres liberados com sucesso.');
+  }
+
+  function individualRelease(cargoId, cntId) {
+    showToast('Despacho Individual Homologado', `Carga ${cargoId} (${cntId}) liberada individualmente pelo Supervisor Carlos Mendonça.`);
+  }
+
+  function openHoldModal(cargoId) {
+    showToast('Retenção Operacional Ativada', `Carga ${cargoId} foi retida temporariamente para conferência.`);
+  }
+
+  function openCancelModal(cargoId, cntId) {
+    document.getElementById('modal-cancel-cargo-id').innerText = `${cargoId} (${cntId})`;
+    document.getElementById('modal-cancel-reason').value = '';
+    const modal = document.getElementById('modal-cancel');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeCancelModal() {
+    const modal = document.getElementById('modal-cancel');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function confirmCancelAction() {
+    const reason = document.getElementById('modal-cancel-reason').value.trim();
+    if (reason.length < 10) {
+      alert('Conforme a regra RN 16, é mandatório fornecer uma justificativa fundamentada antes de cancelar a entrega.');
+      return;
+    }
+    closeCancelModal();
+    showToast('Entrega Cancelada com Sucesso (RN 16)', 'Motivo auditável gravado permanentemente no Audit Trail.');
+  }
+
+  function showToast(title, msg) {
+    const toast = document.getElementById('inline-feedback');
+    document.getElementById('feedback-title').innerText = title;
+    document.getElementById('feedback-msg').innerText = msg;
+    
+    toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(() => {
+      toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 4500);
+  }
+</script></main></div></body></html>
