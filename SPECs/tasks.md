@@ -8,17 +8,17 @@
 
 ### 1.1. Modelagem do Domínio
 
-- [ ] **T1.1** — Produzir Diagrama de Casos de Uso (UML) mapeando todos os 9 cargos/perfis e suas interações com o sistema.
-- [ ] **T1.2** — Produzir Diagrama de Classes (UML) com entidades: Navio, Contêiner, Carga, Funcionário, Manutenção, Checklist, Tipo de Carga, Rota Marítima, Guindaste, Trail de Decisões, Log de Alterações, Visitante.
-- [ ] **T1.3** — Produzir Diagrama de Estados da Carga (State Machine UML) contemplando as 8 etapas do fluxo + transições de aprovação, recusa e cancelamento.
-- [ ] **T1.4** — Produzir Wireframes das telas principais: login, dashboard por cargo, cadastros (navio, contêiner, carga, funcionário), inspeção com checklist, liberação pelo Supervisor, trail de decisões, geração/impressão de etiqueta QR Code.
+- [x] **T1.1** — Produzir Diagrama de Casos de Uso (UML) mapeando todos os 9 cargos/perfis e suas interações com o sistema.
+- [x] **T1.2** — Produzir Diagrama de Classes (UML) com entidades: Navio, Contêiner, Carga, Funcionário, Manutenção, Checklist, Tipo de Carga, Rota Marítima, Guindaste, Trail de Decisões, Log de Alterações, Visitante.
+- [x] **T1.3** — Produzir Diagrama de Estados da Carga (State Machine UML) contemplando as 8 etapas do fluxo + transições de aprovação, recusa e cancelamento.
+- [x] **T1.4** — Produzir Wireframes das telas principais: login, dashboard por cargo, cadastros (navio, contêiner, carga, funcionário), inspeção com checklist, liberação pelo Supervisor, trail de decisões, geração/impressão de etiqueta QR Code.
 
 ### 1.2. Arquitetura & Banco de Dados
 
-- [ ] **T1.5** — Definir modelo relacional (MER) e dicionário de dados com tipos, constraints e índices.
-- [ ] **T1.6** — Criar scripts DDL para criação de todas as tabelas e relacionamentos.
-- [ ] **T1.7** — Implementar seed de dados iniciais (cargos, tipos de carga de exemplo, usuários admin de teste).
-- [ ] **T1.8** — Definir estratégia de geração de código individual único por funcionário (vinculado à matrícula).
+- [x] **T1.5** — Definir modelo relacional (MER) e dicionário de dados com tipos, constraints e índices.
+- [x] **T1.6** — Criar scripts DDL para criação de todas as tabelas e relacionamentos.
+- [x] **T1.7** — Implementar seed de dados iniciais (cargos, tipos de carga de exemplo, usuários admin de teste).
+- [x] **T1.8** — Definir estratégia de geração de código individual único por funcionário (vinculado à matrícula).
 
 ---
 
