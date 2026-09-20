@@ -316,6 +316,203 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 9.5 Lógica do Fluxo de Cargas (Fase 3: Core Business - T3.1 a T3.24)
+  initFluxoCargas();
+
+  function initFluxoCargas() {
+    const toggleAgendamentoBtn = document.getElementById('toggleAgendamentoFormBtn');
+    const agendamentoForm = document.getElementById('agendamentoCargaForm');
+    const fluxoTableBody = document.getElementById('fluxoCargasTableBody');
+
+    // Mocks de Cargas em Fluxo (ou carregados do localStorage)
+    let cargasFluxoList = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || 'null');
+    if (!cargasFluxoList) {
+      cargasFluxoList = [
+        { id: 'CRG-2026-001', tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola', portoDescarga: 'Porto de Roterdã', destino: 'Amsterdã', status: 'RECEBIMENTO_INSPECAO', container: 'CONT-991', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-001' },
+        { id: 'CRG-2026-002', tipo: 'Eletrônicos', peso: '12.0 t', volume: '20 m³', valor: 'R$ 450.000', natureza: 'Industrial', portoDescarga: 'Porto de Santos', destino: 'São Paulo', status: 'ARMAZENAGEM', container: 'CONT-992', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-002' },
+        { id: 'CRG-2026-003', tipo: 'Produtos Químicos', peso: '18.2 t', volume: '30 m³', valor: 'R$ 210.000', natureza: 'Química', portoDescarga: 'Porto de Singapura', destino: 'Singapura', status: 'PRONTA_PARA_ENTREGA', container: 'CONT-993', navio: 'MV Pacific Giant', qrCode: 'QR-CRG-2026-003' }
+      ];
+      localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+    }
+
+    function renderFluxoTable() {
+      if (!fluxoTableBody) return;
+      fluxoTableBody.innerHTML = cargasFluxoList.map(c => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="p-2 font-mono font-bold text-nexus-500">
+            ${c.id}
+            <span class="block text-[10px] text-slate-400 font-normal">${c.qrCode}</span>
+          </td>
+          <td class="p-2">${c.tipo} <span class="block text-[10px] text-slate-400">${c.natureza}</span></td>
+          <td class="p-2 font-mono">${c.peso} / ${c.volume}</td>
+          <td class="p-2 font-bold">${c.portoDescarga}</td>
+          <td class="p-2 font-mono text-xs">${c.container || 'Não vinculado'} / ${c.navio || 'Não vinculado'}</td>
+          <td class="p-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+              c.status === 'AGENDAMENTO' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' :
+              c.status === 'ARMAZENAGEM' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300' :
+              c.status === 'PRONTA_PARA_ENTREGA' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' :
+              c.status === 'EM_TRANSITO' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300' :
+              c.status === 'ENTREGUE' ? 'bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-300' :
+              c.status === 'RECUSADA' ? 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300' :
+              'bg-slate-100 text-slate-800'
+            }">
+              ${c.status}
+            </span>
+          </td>
+          <td class="p-2 font-mono text-[11px]">
+            <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'RECEBER')" class="px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold mr-1">Receber</button>
+            <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'INSPECIONAR')" class="px-1.5 py-0.5 rounded bg-nexus-500 hover:bg-nexus-900 text-white font-bold mr-1">Inspecionar</button>
+            <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'VINCULAR')" class="px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-bold mr-1">Vincular</button>
+            <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'PRONTA')" class="px-1.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold mr-1">Pronta</button>
+            <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'LIBERAR')" class="px-1.5 py-0.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold mr-1">Liberar</button>
+            <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'ENTREGAR')" class="px-1.5 py-0.5 rounded bg-green-600 hover:bg-green-700 text-white font-bold mr-1">Entregar</button>
+            <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'CANCELAR')" class="px-1.5 py-0.5 rounded bg-red-600 hover:bg-red-700 text-white font-bold">Cancelar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    if (toggleAgendamentoBtn && agendamentoForm) {
+      toggleAgendamentoBtn.addEventListener('click', () => agendamentoForm.classList.toggle('hidden'));
+    }
+
+    if (agendamentoForm) {
+      agendamentoForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const tipo = document.getElementById('agTipoCarga').value;
+        const peso = document.getElementById('agPeso').value + ' t';
+        const volume = document.getElementById('agVolume').value + ' m³';
+        const valor = 'R$ ' + parseFloat(document.getElementById('agValor').value).toLocaleString('pt-BR');
+        const natureza = document.getElementById('agNatureza').value.trim();
+        const portoDescarga = document.getElementById('agPortoDescarga').value.trim();
+        const destino = document.getElementById('agDestino').value.trim();
+
+        // T3.2 Validar se Tipo de Carga está cadastrado com checklist
+        const tiposCadastrados = JSON.parse(localStorage.getItem('nexus_crud_tipos_carga') || '[]');
+        const tipoEncontrado = tiposCadastrados.find(t => t.nome === tipo);
+        if (!tipoEncontrado && !['Grãos Soltos', 'Eletrônicos', 'Produtos Químicos', 'Maquinário Pesado'].includes(tipo)) {
+          alert('Agendamento negado: O Tipo de Carga selecionado não possui checklist cadastrado pelo Supervisor!');
+          return;
+        }
+
+        const idNum = Math.floor(100 + Math.random() * 900);
+        const newId = `CRG-2026-${idNum}`;
+        const newQrCode = `QR-${newId}`;
+
+        cargasFluxoList.push({
+          id: newId, tipo, peso, volume, valor, natureza, portoDescarga, destino,
+          status: 'AGENDAMENTO', container: '', navio: '', qrCode: newQrCode
+        });
+
+        localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+        renderFluxoTable();
+        agendamentoForm.reset();
+        agendamentoForm.classList.add('hidden');
+        alert(`Agendamento da Carga ${newId} concluído com sucesso! QR Code gerado automaticamente: ${newQrCode}`);
+      });
+    }
+
+    renderFluxoTable();
+
+    // Handler global para ações operacionais do fluxo (T3.6 - T3.24)
+    window.executarAcaoCarga = function(idCarga, acao) {
+      const carga = cargasFluxoList.find(c => c.id === idCarga);
+      if (!carga) return;
+
+      if (acao === 'RECEBER') {
+        if (carga.status !== 'AGENDAMENTO') {
+          alert('Apenas cargas com agendamento prévio podem ter recebimento físico registrado!');
+          return;
+        }
+        carga.status = 'RECEBIMENTO_INSPECAO';
+        alert(`Recebimento físico da carga ${idCarga} registrado pelo Conferente! Status atualizado para RECEBIMENTO_INSPECAO.`);
+      } else if (acao === 'INSPECIONAR') {
+        if (carga.status !== 'RECEBIMENTO_INSPECAO') {
+          alert('A inspeção só pode ser realizada para cargas no estado RECEBIMENTO_INSPECAO!');
+          return;
+        }
+        const aprovar = confirm(`Inspeção Técnica do Inspetor para a carga ${idCarga}:\n\nTodos os itens críticos do checklist do tipo "${carga.tipo}" estão em CONFORME?\n\nClique [OK] para Aprovar ou [Cancelar] para Recusar.`);
+        if (aprovar) {
+          carga.status = 'ARMAZENAGEM';
+          alert(`Carga ${idCarga} APROVADA na inspeção técnica! Encaminhada para ARMAZENAGEM no pátio.`);
+        } else {
+          const motivo = prompt('Informe obrigatoriamente o motivo da RECUSA no checklist:');
+          if (motivo) {
+            carga.status = 'RECUSADA';
+            carga.motivoRecusa = motivo;
+            alert(`Carga ${idCarga} RECUSADA na inspeção. Motivo registrado: "${motivo}". Status mantido em RECUSADA.`);
+          }
+        }
+      } else if (acao === 'VINCULAR') {
+        if (carga.status !== 'ARMAZENAGEM') {
+          alert('A vinculação só pode ser feita quando a carga está em ARMAZENAGEM!');
+          return;
+        }
+        const containerInput = prompt('Informe a identificação do Contêiner (Ex: CONT-991 / MSCU-102938-4):', 'CONT-991');
+        const navioInput = prompt('Informe o Navio (Ex: MV Santos Star):', 'MV Santos Star');
+
+        if (containerInput && navioInput) {
+          const naviosUpdates = JSON.parse(localStorage.getItem('nexus_updates_navios') || '{}');
+          const estadoNavio = naviosUpdates[navioInput]?.estado || (navioInput === 'MV Atlantic Breeze' ? 'AGENDADO_PARA_REFORMA' : 'OPERANTE');
+
+          if (['EM_REFORMA', 'AGENDADO_PARA_REFORMA'].includes(estadoNavio)) {
+            alert(`BLOQUEIO DE SEGURANÇA: O navio ${navioInput} está em estado "${estadoNavio}" e NÃO PODE RECEBER CARGAS!`);
+            return;
+          }
+
+          carga.container = containerInput;
+          carga.navio = navioInput;
+          alert(`Carga ${idCarga} vinculada com sucesso ao Contêiner ${containerInput} e ao Navio ${navioInput}!`);
+        }
+      } else if (acao === 'PRONTA') {
+        if (carga.status !== 'ARMAZENAGEM') {
+          alert('Apenas cargas em ARMAZENAGEM podem ser marcadas como Prontas para Entrega!');
+          return;
+        }
+        carga.status = 'PRONTA_PARA_ENTREGA';
+        alert(`Status da carga ${idCarga} alterado para PRONTA_PARA_ENTREGA pelo Arrumador/Consertador.`);
+      } else if (acao === 'LIBERAR') {
+        if (carga.status !== 'PRONTA_PARA_ENTREGA') {
+          alert('Apenas cargas no estado PRONTA_PARA_ENTREGA podem ser liberadas pelo Supervisor!');
+          return;
+        }
+
+        const rotasCadastradas = JSON.parse(localStorage.getItem('nexus_crud_rotas') || '[]');
+        const rotaExiste = rotasCadastradas.some(r => r.origem.includes('Santos') || r.destino.includes(carga.portoDescarga));
+
+        if (!rotaExiste && rotasCadastradas.length === 0) {
+          alert(`BLOQUEIO: Liberação impedida pois não existe rota marítima cadastrada para ${carga.portoDescarga}. O Supervisor deve cadastrar a rota primeiro!`);
+          return;
+        }
+
+        carga.status = 'EM_TRANSITO';
+        alert(`Carga ${idCarga} (e contêiner/navio vinculados) LIBERADOS para saída pelo Supervisor! Status alterado para EM_TRANSITO. Estimativa ETA calculada a 33 km/h.`);
+      } else if (acao === 'ENTREGAR') {
+        if (carga.status !== 'EM_TRANSITO') {
+          alert('Apenas cargas no estado EM_TRANSITO podem ter sua entrega confirmada no destino!');
+          return;
+        }
+        carga.status = 'ENTREGUE';
+        alert(`Sucesso! Entrega da carga ${idCarga} confirmada no destino. Status da carga e vinculação do contêiner ${carga.container || ''} e navio ${carga.navio || ''} atualizados para ENTREGUE!`);
+      } else if (acao === 'CANCELAR') {
+        if (!['AGENDAMENTO', 'ARMAZENAGEM', 'PRONTA_PARA_ENTREGA'].includes(carga.status)) {
+          alert('Cancelamento permitido apenas nos estados: Agendamento, Armazenagem ou Pronta para Entrega!');
+          return;
+        }
+        const motivoCancel = prompt('Informe obrigatoriamente o MOTIVO do cancelamento:');
+        if (motivoCancel) {
+          carga.status = 'CANCELADA';
+          carga.motivoCancelamento = motivoCancel;
+          alert(`Entrega da carga ${idCarga} CANCELADA pelo Supervisor. Motivo registrado: "${motivoCancel}".`);
+        }
+      }
+
+      localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+      renderFluxoTable();
+    };
+  }
+
   // 10. Ação de Logout
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
