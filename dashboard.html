@@ -1008,6 +1008,111 @@
           </form>
         </div>
 
+        <!-- Painel do Log de Alterações e Auditoria (Fase 7: T7.1, T7.2) -->
+        <div id="auditLogPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">history</span>
+              Log Geral de Alterações e Registros de Operações (T7.1, T7.2)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Auditoria Automática</span>
+          </div>
+
+          <div class="overflow-x-auto max-h-60 overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="sticky top-0 bg-nexus-bg dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
+                <tr>
+                  <th class="p-2.5">Data / Hora</th>
+                  <th class="p-2.5">Cargo</th>
+                  <th class="p-2.5">Código Usuário</th>
+                  <th class="p-2.5">Entidade Alterada</th>
+                  <th class="p-2.5">Tipo de Alteração</th>
+                </tr>
+              </thead>
+              <tbody id="auditLogTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-mono text-[11px]">
+                <!-- Renderizado por js/dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Painel do Trail de Decisões Críticas (Fase 7: T7.3, T7.4, T7.5) -->
+        <div id="trailDecisoesPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">gavel</span>
+              Trail de Decisões Críticas Imutável (T7.3, T7.4, T7.5)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Registro Imutável com Retificação</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-nexus-bg dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
+                  <th class="p-3">ID Registro</th>
+                  <th class="p-3">Data/Hora</th>
+                  <th class="p-3">Responsável</th>
+                  <th class="p-3">Decisão Padronizada</th>
+                  <th class="p-3">Entidade Impactada</th>
+                  <th class="p-3">Motivo / Justificativa</th>
+                  <th class="p-3">Retificação Anexada</th>
+                  <th class="p-3">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="trailDecisoesTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
+                <!-- Renderizado por js/dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Painel de Delegação Temporária de Supervisor (Fase 7: T7.6 - T7.9) -->
+        <div id="delegacaoSupervisorPanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">how_to_reg</span>
+              Delegação de Supervisor Titular (Designação de Substituto - T7.6 a T7.9)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Poderes de Liberação</span>
+          </div>
+
+          <!-- Status do Substituto Ativo -->
+          <div id="delegacaoStatusBox" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-nexus-500 text-2xl">badge</span>
+              <div>
+                <span class="font-bold text-nexus-900 dark:text-white block" id="substitutoNome">Nenhum Substituto Ativo</span>
+                <span class="text-xs text-slate-500" id="substitutoVigencia">Cada Supervisor Titular pode ter no máximo 1 substituto ativo por vez (T7.8).</span>
+              </div>
+            </div>
+            <button id="revogarDelegacaoBtn" type="button" class="hidden px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs transition-colors">
+              Revogar Delegação Imediatamente
+            </button>
+          </div>
+
+          <!-- Form de Delegação -->
+          <form id="delegacaoForm" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Funcionário Substituto (Matrícula)</label>
+              <input type="text" id="delegSubstitutoMatricula" required placeholder="Ex: MAT-6090 (Inspetor)" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Início da Vigência</label>
+              <input type="datetime-local" id="delegDataInicio" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Fim da Vigência</label>
+              <input type="datetime-local" id="delegDataFim" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
+            </div>
+            <div class="sm:col-span-3 flex justify-end">
+              <button type="submit" class="px-4 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1 transition-colors">
+                Designar Substituto Temporário
+              </button>
+            </div>
+          </form>
+        </div>
+
         <!-- Painel do Relatório de Produtividade (Fase 6: T6.9, T6.10) -->
         <div id="produtividadePanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
           <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">

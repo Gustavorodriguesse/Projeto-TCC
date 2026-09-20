@@ -316,6 +316,188 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 9.2 Lógica de Logs, Trail e Delegação de Supervisor (Fase 7: T7.1 a T7.9)
+  function initLogsTrailDelegacao() {
+    const auditTableBody = document.getElementById('auditLogTableBody');
+    const trailTableBody = document.getElementById('trailDecisoesTableBody');
+    const delegPanel = document.getElementById('delegacaoSupervisorPanel');
+    const delegForm = document.getElementById('delegacaoForm');
+    const revogarBtn = document.getElementById('revogarDelegacaoBtn');
+    const substitutoNome = document.getElementById('substitutoNome');
+    const substitutoVigencia = document.getElementById('substitutoVigencia');
+
+    // Exibir painel de delegação apenas para Supervisor (T7.6)
+    if (delegPanel && session.cargo === 'SUPERVISOR_GERENTE_OPERACOES') {
+      delegPanel.classList.remove('hidden');
+    }
+
+    // Função de Registro Automático do Log de Alterações (T7.1)
+    window.registrarLogAlteracao = function(entidade, tipoAlteracao, detalhes = '') {
+      const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
+      const newEntry = {
+        data_hora: new Date().toISOString(),
+        cargo: session.cargo_nome || session.cargo,
+        codigo_usuario: session.codigo_individual || session.codigo || '--',
+        entidade: entidade,
+        tipo_alteracao: tipoAlteracao,
+        detalhes: detalhes
+      };
+      logs.unshift(newEntry);
+      localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
+      renderAuditLogTable();
+    };
+
+    // Renderizar tabela do Log de Alterações (T7.2)
+    function renderAuditLogTable() {
+      if (!auditTableBody) return;
+      let logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || 'null');
+      if (!logs || logs.length === 0) {
+        logs = [
+          { data_hora: new Date().toISOString(), cargo: 'Supervisor de Operações', codigo_usuario: 'SUP-2001', entidade: 'CRG-2026-001', tipo_alteracao: 'Criação / Agendamento' },
+          { data_hora: new Date(Date.now() - 3600000).toISOString(), cargo: 'Inspetor Técnico', codigo_usuario: 'INS-6090', entidade: 'CRG-2026-002', tipo_alteracao: 'Aprovação de Inspeção' },
+          { data_hora: new Date(Date.now() - 7200000).toISOString(), cargo: 'Técnico em Portos', codigo_usuario: 'TEC-5080', entidade: 'MAT-1040', tipo_alteracao: 'Reemissão de Código de Acesso' }
+        ];
+        localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
+      }
+
+      auditTableBody.innerHTML = logs.map(l => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="p-2.5 text-slate-500">${new Date(l.data_hora).toLocaleString('pt-BR')}</td>
+          <td class="p-2.5 font-bold text-nexus-900 dark:text-white">${l.cargo}</td>
+          <td class="p-2.5 text-nexus-500 font-bold">${l.codigo_usuario}</td>
+          <td class="p-2.5 font-bold">${l.entidade}</td>
+          <td class="p-2.5">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">${l.tipo_alteracao}</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    renderAuditLogTable();
+
+    // Função de Registro Imutável no Trail de Decisões Críticas (T7.3)
+    window.registrarTrailDecisao = function(decisao, entidade, motivo = '') {
+      const trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || '[]');
+      const idReg = `TRL-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newEntry = {
+        id: idReg,
+        data_hora: new Date().toISOString(),
+        responsavel: `${session.nome} (${session.cargo_nome || session.cargo}) - ${session.codigo_individual || session.codigo}`,
+        decisao: decisao,
+        entidade: entidade,
+        motivo: motivo || 'Decisão homologada conforme fluxo operacional',
+        retificacao: null
+      };
+      trail.unshift(newEntry);
+      localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
+      renderTrailDecisoesTable();
+      window.registrarLogAlteracao(entidade, `Decisão Crítica: ${decisao}`, motivo);
+    };
+
+    // Anexar Retificação Vinculada (T7.4)
+    window.anexarRetificacaoTrail = function(idTrail) {
+      const trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || '[]');
+      const item = trail.find(t => t.id === idTrail);
+      if (!item) return;
+
+      const textoRetificacao = prompt(`Informe a RETIFICAÇÃO a ser vinculada ao registro imutável ${idTrail}:\n(O registro original permanecerá inalterado)`);
+      if (textoRetificacao) {
+        item.retificacao = `[Retificação em ${new Date().toLocaleString('pt-BR')} por ${session.codigo_individual}]: ${textoRetificacao}`;
+        localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
+        renderTrailDecisoesTable();
+        alert(`Retificação vinculada com sucesso ao registro imutável ${idTrail}!`);
+      }
+    };
+
+    // Renderizar Tabela do Trail de Decisões (T7.5)
+    function renderTrailDecisoesTable() {
+      if (!trailTableBody) return;
+      let trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || 'null');
+      if (!trail || trail.length === 0) {
+        trail = [
+          { id: 'TRL-2026-9012', data_hora: new Date().toISOString(), responsavel: 'Carlos Supervisor (Supervisor) - SUP-2001', decisao: 'Liberou Navio MV Santos Star', entidade: 'MV Santos Star', motivo: 'Documentação e inspeção em conformidade', retificacao: null },
+          { id: 'TRL-2026-8811', data_hora: new Date(Date.now() - 3600000).toISOString(), responsavel: 'Patricia Rocha (Inspetor) - INS-6090', decisao: 'Recusou Carga CRG-2026-003', entidade: 'CRG-2026-003', motivo: 'Avarias e lacre rompido na embalagem', retificacao: '[Retificação em 20/09 14:00]: Reinspecionado item não crítico e mantida recusa.' }
+        ];
+        localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
+      }
+
+      trailTableBody.innerHTML = trail.map(t => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="p-3 font-mono font-bold text-nexus-500">${t.id}</td>
+          <td class="p-3 text-slate-500 font-mono text-[11px]">${new Date(t.data_hora).toLocaleString('pt-BR')}</td>
+          <td class="p-3 font-bold">${t.responsavel}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300">${t.decisao}</span></td>
+          <td class="p-3 font-mono font-bold">${t.entidade}</td>
+          <td class="p-3 text-slate-600 dark:text-slate-300 text-xs">${t.motivo}</td>
+          <td class="p-3 text-xs italic text-amber-700 dark:text-amber-400 font-mono">${t.retificacao || '<span class="text-slate-400 not-italic">Sem retificação</span>'}</td>
+          <td class="p-3">
+            <button type="button" onclick="window.anexarRetificacaoTrail('${t.id}')" class="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-[10px] flex items-center gap-1">
+              Anexar Retificação
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    renderTrailDecisoesTable();
+
+    // Módulo de Delegação de Supervisor (T7.6, T7.7, T7.8, T7.9)
+    function updateDelegacaoUI() {
+      const activeDeleg = JSON.parse(localStorage.getItem('nexus_active_delegation') || 'null');
+      if (activeDeleg) {
+        if (substitutoNome) substitutoNome.textContent = `Substituto Ativo: ${activeDeleg.substitutoMatricula}`;
+        if (substitutoVigencia) substitutoVigencia.textContent = `Vigência: de ${new Date(activeDeleg.inicio).toLocaleString('pt-BR')} até ${new Date(activeDeleg.fim).toLocaleString('pt-BR')} (Designado por ${activeDeleg.supervisor})`;
+        if (revogarBtn) revogarBtn.classList.remove('hidden');
+      } else {
+        if (substitutoNome) substitutoNome.textContent = 'Nenhum Substituto Ativo';
+        if (substitutoVigencia) substitutoVigencia.textContent = 'Cada Supervisor Titular pode ter no máximo 1 substituto ativo por vez (T7.8).';
+        if (revogarBtn) revogarBtn.classList.add('hidden');
+      }
+    }
+
+    updateDelegacaoUI();
+
+    if (delegForm) {
+      delegForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const activeDeleg = JSON.parse(localStorage.getItem('nexus_active_delegation') || 'null');
+        if (activeDeleg) {
+          alert('REGRA DE NEGÓCIO (T7.8): Apenas 1 substituto ativo por Supervisor é permitido! Revogue a delegação atual antes de designar um novo.');
+          return;
+        }
+
+        const substitutoMatricula = document.getElementById('delegSubstitutoMatricula').value.trim();
+        const inicio = document.getElementById('delegDataInicio').value;
+        const fim = document.getElementById('delegDataFim').value;
+
+        const newDeleg = {
+          supervisor: session.codigo_individual || session.codigo,
+          substitutoMatricula, inicio, fim, dataDesignacao: new Date().toISOString()
+        };
+
+        localStorage.setItem('nexus_active_delegation', JSON.stringify(newDeleg));
+        updateDelegacaoUI();
+        window.registrarTrailDecisao(`Designou Substituto ${substitutoMatricula}`, 'SISTEMA_DELEGACAO', `Período de ${inicio} até ${fim}`);
+        alert(`Sucesso! Funcionário ${substitutoMatricula} designado temporariamente como substituto do Supervisor com poderes de liberação.`);
+      });
+    }
+
+    if (revogarBtn) {
+      revogarBtn.addEventListener('click', () => {
+        if (confirm('ATENÇÃO: Deseja REVOGAR IMEDIATAMENTE os poderes do substituto temporário?')) {
+          const activeDeleg = JSON.parse(localStorage.getItem('nexus_active_delegation') || '{}');
+          localStorage.removeItem('nexus_active_delegation');
+          updateDelegacaoUI();
+          window.registrarTrailDecisao(`Revogou Substituto ${activeDeleg.substitutoMatricula || ''}`, 'SISTEMA_DELEGACAO', 'Revogação antecipada pelo Supervisor Titular');
+          alert('Delegação revogada com sucesso! Poderes de liberação do substituto encerrados imediatamente.');
+        }
+      });
+    }
+  }
+
+  // 9.2 Lógica de Logs, Trail e Delegação de Supervisor (Fase 7: T7.1 a T7.9)
+  initLogsTrailDelegacao();
+
   // 9.3 Lógica de Dashboards Operacionais, Cards e Relatórios (Fase 6: T6.1 a T6.10)
   initDashboardsPesquisaRelatorios();
 
@@ -570,9 +752,6 @@ document.addEventListener('DOMContentLoaded', () => {
       `).join('');
     }
   }
-
-  // 9.4 Lógica de QR Code, Etiquetas e Leitura (Fase 5: T5.1 a T5.9)
-  initQrCodeEtiquetas();
 
   // 9.4 Lógica de QR Code, Etiquetas e Leitura (Fase 5: T5.1 a T5.9)
   initQrCodeEtiquetas();
