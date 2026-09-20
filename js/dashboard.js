@@ -1283,21 +1283,26 @@ document.addEventListener('DOMContentLoaded', () => {
     async function syncSupabaseCargas() {
       if (window.nexusSupabase) {
         try {
-          const { data, error } = await window.nexusSupabase.from('cargas').select('*');
+          let query = window.nexusSupabase.from('cargas').select('*');
+          if (window.NexusVision && typeof window.NexusVision.applyVisaoFilter === 'function') {
+            query = window.NexusVision.applyVisaoFilter(query, 'cargas', session);
+          }
+          const { data, error } = await query;
           if (!error && Array.isArray(data) && data.length > 0) {
             const mappedSupabaseCargas = data.map(row => ({
-              id: row.codigo || row.id || `CRG-${row.id.slice(0, 8)}`,
+              id: row.codigo || `CRG-${row.id.slice(0, 8)}`,
               tipo: row.material || 'Carga Geral',
               peso: (row.peso || 0) + ' t',
               volume: (row.volume || 0) + ' m³',
               valor: 'R$ ' + (row.valor_declarado || 0).toLocaleString('pt-BR'),
               natureza: row.natureza || 'Geral',
-              portoDescarga: row.porto_descarga || 'Porto Santos',
+              portoDescarga: row.porto_descarga || 'Porto de Santos',
               destino: row.destino || 'Destino Nacional',
               status: row.status_fluxo || 'AGENDAMENTO',
               container: row.container_id || '',
               navio: '',
-              qrCode: row.qr_code_url || `QR-${row.id}`
+              qrCode: row.qr_code_url || `QR-${row.id}`,
+              motivoRecusa: row.motivo_recusa || null
             }));
 
             // Mesclar dados sem duplicar IDs
@@ -1397,45 +1402,45 @@ document.addEventListener('DOMContentLoaded', () => {
         cargasFluxoList.push(novaCargaObj);
         localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
 
-        // Enviar para o Supabase se ativo
-        if (window.nexusSupabase) {
-          try {
-            // Obter uuid do tipo_carga se existir
-            let tipoCargaUuid = null;
-            const { data: tcData } = await window.nexusSupabase.from('tipos_carga').select('id').eq('nome', tipo).limit(1);
-            if (tcData && tcData.length > 0) {
-              tipoCargaUuid = tcData[0].id;
-            } else {
-              // Buscar qualquer tipo_carga padrão ou criar
-              const { data: anyTc } = await window.nexusSupabase.from('tipos_carga').select('id').limit(1);
-              if (anyTc && anyTc.length > 0) tipoCargaUuid = anyTc[0].id;
-            }
-
-            if (tipoCargaUuid) {
-              await window.nexusSupabase.from('cargas').insert([{
-                tipo_carga_id: tipoCargaUuid,
-                quantidade: 1,
-                material: tipo,
-                peso: rawPeso,
-                volume: rawVolume,
-                valor_declarado: rawValor,
-                natureza: natureza || 'Geral',
-                porto_descarga: portoDescarga || 'Porto de Santos',
-                destino: destino || 'Destino Nacional',
-                status_fluxo: 'AGENDAMENTO',
-                qr_code_url: newQrCode
-              }]);
-              console.log('[NexusPort] Carga persistida no Supabase com sucesso.');
-            }
-          } catch (spErr) {
-            console.warn('[NexusPort] Erro ao inserir carga no Supabase:', spErr);
-          }
-        }
-
         renderFluxoTable();
         agendamentoForm.reset();
         agendamentoForm.classList.add('hidden');
         alert(`Agendamento da Carga ${newId} concluído com sucesso! QR Code gerado automaticamente: ${newQrCode}`);
+
+        // Enviar para o Supabase se ativo
+        if (window.nexusSupabase) {
+          (async () => {
+            try {
+              let tipoCargaUuid = null;
+              const { data: tcData } = await window.nexusSupabase.from('tipos_carga').select('id').eq('nome', tipo).limit(1);
+              if (tcData && tcData.length > 0) {
+                tipoCargaUuid = tcData[0].id;
+              } else {
+                const { data: anyTc } = await window.nexusSupabase.from('tipos_carga').select('id').limit(1);
+                if (anyTc && anyTc.length > 0) tipoCargaUuid = anyTc[0].id;
+              }
+
+              if (tipoCargaUuid) {
+                await window.nexusSupabase.from('cargas').insert([{
+                  tipo_carga_id: tipoCargaUuid,
+                  quantidade: 1,
+                  material: tipo,
+                  peso: rawPeso,
+                  volume: rawVolume,
+                  valor_declarado: rawValor,
+                  natureza: natureza || 'Geral',
+                  porto_descarga: portoDescarga || 'Porto de Santos',
+                  destino: destino || 'Destino Nacional',
+                  status_fluxo: 'AGENDAMENTO',
+                  qr_code_url: newQrCode
+                }]);
+                console.log('[NexusPort] Carga persistida no Supabase com sucesso.');
+              }
+            } catch (spErr) {
+              console.warn('[NexusPort] Erro ao inserir carga no Supabase:', spErr);
+            }
+          })();
+        }
       });
     }
 

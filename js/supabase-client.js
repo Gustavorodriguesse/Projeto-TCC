@@ -7,10 +7,11 @@
   const config = window.NEXUS_CONFIG || {};
   let supabaseClient = null;
 
-  const url = config.SUPABASE_URL || window.SUPABASE_URL;
-  const key = config.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY;
+  const urlParams = typeof window !== 'undefined' && window.location ? new URLSearchParams(window.location.search) : null;
+  const url = config.SUPABASE_URL || window.SUPABASE_URL || (typeof localStorage !== 'undefined' && localStorage.getItem('SUPABASE_URL')) || (urlParams && urlParams.get('supabase_url'));
+  const key = config.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || (typeof localStorage !== 'undefined' && localStorage.getItem('SUPABASE_ANON_KEY')) || (urlParams && urlParams.get('supabase_key'));
 
-  if (typeof supabase !== 'undefined' && url && key && url !== "https://sua-url-supabase.supabase.co" && !url.includes("sua-url")) {
+  if (typeof supabase !== 'undefined' && url && key) {
     try {
       supabaseClient = supabase.createClient(url, key, {
         auth: {
@@ -23,7 +24,7 @@
       console.warn("[NexusPort] Erro ao inicializar o cliente Supabase:", err);
     }
   } else {
-    console.log("[NexusPort] Modo offline/simulação ativo ou credenciais do Supabase pendentes.");
+    console.log("[NexusPort] Aguardando credenciais do Supabase para inicialização.");
   }
 
   window.nexusSupabase = supabaseClient;
