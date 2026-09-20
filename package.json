@@ -1,0 +1,19 @@
+{
+  "name": "nexusport-system",
+  "version": "1.0.0",
+  "description": "NexusPort - Sistema de Gestão Operacional Portuária para o Porto de Santos (STS-01)",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -l 3000 .",
+    "test": "python3 verify_phase4.py && python3 verify_phase5.py && python3 verify_phase6.py && python3 verify_phase7.py && python3 verify_phase8.py && python3 verify_phase9.py"
+  },
+  "keywords": [
+    "nexusport",
+    "port-management",
+    "logistics",
+    "supabase",
+    "rls"
+  ],
+  "author": "NexusPort Team",
+  "license": "MIT"
+}
