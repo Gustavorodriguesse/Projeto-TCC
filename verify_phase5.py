@@ -89,7 +89,8 @@ async def main():
         await page.click("#simulateScanBtn")
         await page.wait_for_timeout(500)
 
-        assert any("LEITURA DO QR CODE BEM-SUCEDIDA" in msg for msg in dialog_messages), "Scan success alert expected"
+        modal_visible = await page.is_visible("#qrResultModal:not(.hidden)")
+        assert modal_visible, "Scan success modal expected"
         print("4. Scanner modal & role-based scan test passed.")
 
         await page.screenshot(path="verification_phase5_final.png")
