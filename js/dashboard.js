@@ -1279,6 +1279,45 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
     }
 
+    // Carregar e sincronizar dados do Supabase se disponível
+    async function syncSupabaseCargas() {
+      if (window.nexusSupabase) {
+        try {
+          const { data, error } = await window.nexusSupabase.from('cargas').select('*');
+          if (!error && Array.isArray(data) && data.length > 0) {
+            const mappedSupabaseCargas = data.map(row => ({
+              id: row.codigo || row.id || `CRG-${row.id.slice(0, 8)}`,
+              tipo: row.material || 'Carga Geral',
+              peso: (row.peso || 0) + ' t',
+              volume: (row.volume || 0) + ' m³',
+              valor: 'R$ ' + (row.valor_declarado || 0).toLocaleString('pt-BR'),
+              natureza: row.natureza || 'Geral',
+              portoDescarga: row.porto_descarga || 'Porto Santos',
+              destino: row.destino || 'Destino Nacional',
+              status: row.status_fluxo || 'AGENDAMENTO',
+              container: row.container_id || '',
+              navio: '',
+              qrCode: row.qr_code_url || `QR-${row.id}`
+            }));
+
+            // Mesclar dados sem duplicar IDs
+            mappedSupabaseCargas.forEach(sc => {
+              const idx = cargasFluxoList.findIndex(c => c.id === sc.id || c.qrCode === sc.qrCode);
+              if (idx >= 0) {
+                cargasFluxoList[idx] = { ...cargasFluxoList[idx], ...sc };
+              } else {
+                cargasFluxoList.unshift(sc);
+              }
+            });
+            localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+            renderFluxoTable();
+          }
+        } catch (err) {
+          console.warn('[NexusPort] Erro de sincronização com Supabase cargas:', err);
+        }
+      }
+    }
+
     function renderFluxoTable() {
       if (!fluxoTableBody) return;
       fluxoTableBody.innerHTML = cargasFluxoList.map(c => `
@@ -1325,12 +1364,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (agendamentoForm) {
-      agendamentoForm.addEventListener('submit', (e) => {
+      agendamentoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const tipo = document.getElementById('agTipoCarga').value;
-        const peso = document.getElementById('agPeso').value + ' t';
-        const volume = document.getElementById('agVolume').value + ' m³';
-        const valor = 'R$ ' + parseFloat(document.getElementById('agValor').value).toLocaleString('pt-BR');
+        const rawPeso = parseFloat(document.getElementById('agPeso').value) || 0;
+        const rawVolume = parseFloat(document.getElementById('agVolume').value) || 0;
+        const rawValor = parseFloat(document.getElementById('agValor').value) || 0;
+        const peso = rawPeso + ' t';
+        const volume = rawVolume + ' m³';
+        const valor = 'R$ ' + rawValor.toLocaleString('pt-BR');
         const natureza = document.getElementById('agNatureza').value.trim();
         const portoDescarga = document.getElementById('agPortoDescarga').value.trim();
         const destino = document.getElementById('agDestino').value.trim();
@@ -1347,12 +1389,49 @@ document.addEventListener('DOMContentLoaded', () => {
         const newId = `CRG-2026-${idNum}`;
         const newQrCode = `QR-${newId}`;
 
-        cargasFluxoList.push({
+        const novaCargaObj = {
           id: newId, tipo, peso, volume, valor, natureza, portoDescarga, destino,
           status: 'AGENDAMENTO', container: '', navio: '', qrCode: newQrCode
-        });
+        };
 
+        cargasFluxoList.push(novaCargaObj);
         localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+
+        // Enviar para o Supabase se ativo
+        if (window.nexusSupabase) {
+          try {
+            // Obter uuid do tipo_carga se existir
+            let tipoCargaUuid = null;
+            const { data: tcData } = await window.nexusSupabase.from('tipos_carga').select('id').eq('nome', tipo).limit(1);
+            if (tcData && tcData.length > 0) {
+              tipoCargaUuid = tcData[0].id;
+            } else {
+              // Buscar qualquer tipo_carga padrão ou criar
+              const { data: anyTc } = await window.nexusSupabase.from('tipos_carga').select('id').limit(1);
+              if (anyTc && anyTc.length > 0) tipoCargaUuid = anyTc[0].id;
+            }
+
+            if (tipoCargaUuid) {
+              await window.nexusSupabase.from('cargas').insert([{
+                tipo_carga_id: tipoCargaUuid,
+                quantidade: 1,
+                material: tipo,
+                peso: rawPeso,
+                volume: rawVolume,
+                valor_declarado: rawValor,
+                natureza: natureza || 'Geral',
+                porto_descarga: portoDescarga || 'Porto de Santos',
+                destino: destino || 'Destino Nacional',
+                status_fluxo: 'AGENDAMENTO',
+                qr_code_url: newQrCode
+              }]);
+              console.log('[NexusPort] Carga persistida no Supabase com sucesso.');
+            }
+          } catch (spErr) {
+            console.warn('[NexusPort] Erro ao inserir carga no Supabase:', spErr);
+          }
+        }
+
         renderFluxoTable();
         agendamentoForm.reset();
         agendamentoForm.classList.add('hidden');
@@ -1361,9 +1440,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     renderFluxoTable();
+    syncSupabaseCargas();
 
     // Handler global para ações operacionais do fluxo (T3.6 - T3.24)
-    window.executarAcaoCarga = function(idCarga, acao) {
+    window.executarAcaoCarga = async function(idCarga, acao) {
       const carga = cargasFluxoList.find(c => c.id === idCarga);
       if (!carga) return;
 
@@ -1452,6 +1532,18 @@ document.addEventListener('DOMContentLoaded', () => {
           carga.status = 'CANCELADA';
           carga.motivoCancelamento = motivoCancel;
           alert(`Entrega da carga ${idCarga} CANCELADA pelo Supervisor. Motivo registrado: "${motivoCancel}".`);
+        }
+      }
+
+      // Atualizar status no Supabase se ativo
+      if (window.nexusSupabase && carga.qrCode) {
+        try {
+          await window.nexusSupabase.from('cargas')
+            .update({ status_fluxo: carga.status, motivo_recusa: carga.motivoRecusa || null })
+            .eq('qr_code_url', carga.qrCode);
+          console.log(`[NexusPort] Status da carga ${idCarga} atualizado no Supabase para ${carga.status}.`);
+        } catch (spUpdErr) {
+          console.warn('[NexusPort] Erro ao atualizar status da carga no Supabase:', spUpdErr);
         }
       }
 
