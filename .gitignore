@@ -1,0 +1,13 @@
+# Environment & configuration files
+js/config.js
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build & System artifacts
+dist/
+.next/
+out/
+.DS_Store
+*.log

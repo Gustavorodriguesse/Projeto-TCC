@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>NexusPort — Autenticação de Operador</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'nexus-900': '#1E293B',
+            'nexus-500': '#445987',
+            'nexus-bg': '#F5F7FA',
+            'nexus-text': '#222222',
+            'nexus-border': '#E1E5ED',
+            'nexus-dark-bg': '#0F172A',
+            'nexus-dark-card': '#1E293B',
+            'nexus-dark-border': '#334155',
+            'success': '#2E7D32',
+            'warning': '#D97706',
+            'danger': '#C62828',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Montserrat', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-nexus-bg dark:bg-nexus-dark-bg text-nexus-text dark:text-slate-100 font-sans min-h-screen flex flex-col justify-between transition-colors duration-200">
+
+  <!-- Header Superior com Logo e Dark Mode Toggle -->
+  <header class="w-full px-6 py-4 flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900/80 backdrop-blur-md">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-nexus-900 flex items-center justify-center text-white font-display font-bold text-xl shadow-sm">
+        N
+      </div>
+      <div class="flex flex-col">
+        <span class="font-display font-bold text-lg text-nexus-900 dark:text-white leading-tight">NexusPort</span>
+        <span class="font-mono text-xs text-slate-500 dark:text-slate-400">Terminal STS-01 • Automação Portuária</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Dark Mode Switch Button -->
+      <button id="themeToggle" type="button" aria-label="Alternar tema escuro" class="p-2.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center">
+        <span class="material-symbols-outlined text-[20px]" id="themeToggleIcon">dark_mode</span>
+      </button>
+
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-mono text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Rede Operacional Ativa
+      </div>
+    </div>
+  </header>
+
+  <!-- Container Principal de Login (Bento Card Centralizado) -->
+  <main class="flex-1 flex flex-col justify-center items-center px-4 py-8 relative">
+    <!-- Fundo abstrato industrial -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-30 dark:opacity-10">
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-nexus-500/20 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-[460px] bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-nexus-border dark:border-nexus-dark-border p-6 sm:p-8">
+
+      <!-- Cabeçalho da Ficha de Login -->
+      <div class="flex items-start justify-between pb-4 mb-6 border-b border-nexus-border dark:border-nexus-dark-border">
+        <div>
+          <div class="flex items-center gap-1.5 text-nexus-500 dark:text-indigo-400 mb-1">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+            <span class="font-mono text-xs uppercase font-bold tracking-wider">Acesso Físico-Lógico</span>
+          </div>
+          <h1 class="font-display text-2xl font-bold text-nexus-900 dark:text-white">Autenticação de Funcionário</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Informe seu código individual para validação no sistema.</p>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 flex-shrink-0">
+          <span class="material-symbols-outlined text-[24px]">badge</span>
+        </div>
+      </div>
+
+      <!-- Formulário de Autenticação -->
+      <form id="loginForm" class="flex flex-col gap-5" onsubmit="return false;">
+
+        <!-- Campo: Código Individual Único vinculado à Matrícula -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <label for="operatorCode" class="text-xs font-bold uppercase tracking-wider text-nexus-900 dark:text-slate-200 flex items-center gap-1">
+              <span>Código Individual Único (Matrícula)</span>
+              <span class="text-danger">*</span>
+            </label>
+            <span class="font-mono text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+              <span class="material-symbols-outlined text-[12px]">lock</span>
+              Intransferível
+            </span>
+          </div>
+
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-[20px] pointer-events-none">id_card</span>
+            <input
+              type="text"
+              id="operatorCode"
+              name="operatorCode"
+              maxlength="14"
+              placeholder="Ex: NX-8821-SP"
+              autocomplete="off"
+              spellcheck="false"
+              class="w-full h-12 pl-11 pr-12 rounded-lg border border-nexus-border dark:border-slate-700 bg-nexus-bg dark:bg-slate-800 text-nexus-900 dark:text-white font-mono text-base font-semibold tracking-wider placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-nexus-500 transition-all uppercase"
+            />
+            <div class="absolute right-3 flex items-center pointer-events-none">
+              <span id="codeStatusIcon" class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-[22px]">fingerprint</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1 mt-0.5 leading-snug">
+            <span class="material-symbols-outlined text-[14px] text-nexus-500 flex-shrink-0 mt-0.5">info</span>
+            <span>Código individual vinculado à matrícula funcional do colaborador.</span>
+          </p>
+        </div>
+
+        <!-- Banner de Feedback Inline para mensagens de erro/aviso -->
+        <div id="authNotice" class="hidden p-3 rounded-lg border flex items-start gap-2.5 transition-all">
+          <span id="authNoticeIcon" class="material-symbols-outlined text-[20px] flex-shrink-0 mt-0.5">info</span>
+          <div class="flex flex-col text-left">
+            <span id="authNoticeTitle" class="text-xs font-bold"></span>
+            <span id="authNoticeMessage" class="text-xs mt-0.5 leading-relaxed"></span>
+          </div>
+        </div>
+
+        <!-- Botão Principal de Login -->
+        <button
+          type="submit"
+          id="loginSubmitBtn"
+          class="w-full h-12 rounded-lg bg-nexus-500 hover:bg-nexus-900 active:scale-[0.99] text-white font-semibold text-base flex items-center justify-center gap-2 transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexus-500"
+        >
+          <span class="material-symbols-outlined text-[20px]">login</span>
+          <span>Acessar Sistema Portuário</span>
+        </button>
+
+        <!-- Acesso a Contingência: Perda/Esquecimento do Código (RN 15 / T1.8) -->
+        <div class="pt-2 text-center border-t border-nexus-border dark:border-nexus-dark-border">
+          <div class="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 flex items-center justify-between gap-2 text-left">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="material-symbols-outlined text-warning text-[20px] flex-shrink-0">help</span>
+              <span class="text-xs text-slate-600 dark:text-slate-300 leading-tight">
+                Esqueceu ou perdeu o código?
+              </span>
+            </div>
+            <button type="button" id="openRecoveryModal" class="text-xs font-bold text-nexus-500 dark:text-indigo-400 hover:underline flex-shrink-0 transition-colors">
+              Solicitar Reemissão
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- Modal de Contingência: Solicitação de Reemissão do Código ao Técnico em Portos (RN 15 / T1.8) -->
+  <div id="recoveryModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-nexus-900/60 backdrop-blur-sm">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-nexus-border dark:border-slate-800 p-6 flex flex-col gap-4">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-warning">
+            <span class="material-symbols-outlined text-[24px]">contact_support</span>
+          </div>
+          <div>
+            <h3 class="font-display text-lg font-bold text-nexus-900 dark:text-white">Reemissão de Credencial</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Protocolo de Segurança RN 15</p>
+          </div>
+        </div>
+        <button type="button" id="closeRecoveryModal" class="text-slate-400 hover:text-nexus-900 dark:hover:text-white p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <div class="bg-slate-50 dark:bg-slate-800 p-3.5 rounded-xl flex flex-col gap-2">
+        <span class="text-xs font-bold text-nexus-900 dark:text-white">Procedimento Operacional:</span>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          Conforme regra de negócio RN 15, em caso de perda ou esquecimento, o código individual é invalidado e reemitido presencialmente pelo <strong class="text-nexus-900 dark:text-white">Técnico em Portos</strong> na Guarita Central STS-01, mantendo a mesma matrícula.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-2 font-mono text-xs text-slate-600 dark:text-slate-300">
+        <div class="flex justify-between py-1.5 bg-slate-100 dark:bg-slate-800/60 px-3 rounded-lg">
+          <span>Rádio VHF:</span>
+          <span class="font-bold text-nexus-900 dark:text-white">CH-16 Operacional</span>
+        </div>
+        <div class="flex justify-between py-1.5 bg-slate-100 dark:bg-slate-800/60 px-3 rounded-lg">
+          <span>Ramal Guarita Técnico:</span>
+          <span class="font-bold text-nexus-900 dark:text-white">#4412 / Ramal 88</span>
+        </div>
+      </div>
+
+      <button type="button" id="dismissRecoveryModal" class="w-full h-11 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-nexus-900 dark:text-white font-semibold text-sm transition-colors mt-2">
+        Entendido, retornar ao login
+      </button>
+    </div>
+  </div>
+
+  <!-- Rodapé Institucional -->
+  <footer class="w-full py-4 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900">
+    <div class="flex flex-wrap items-center justify-center gap-3 mb-1">
+      <span class="font-mono">TLS 1.3 Criptografado</span>
+      <span>•</span>
+      <span>Porto de Santos STS-01</span>
+      <span>•</span>
+      <span>NexusPort © 2026</span>
+    </div>
+  </footer>
+
+  <!-- Scripts JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.example.js"></script>
+  <script src="js/config.js" onerror="this.remove()"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

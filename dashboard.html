@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>NexusPort — Painel Operacional</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'nexus-900': '#1E293B',
+            'nexus-500': '#445987',
+            'nexus-bg': '#F5F7FA',
+            'nexus-text': '#222222',
+            'nexus-border': '#E1E5ED',
+            'nexus-dark-bg': '#0F172A',
+            'nexus-dark-card': '#1E293B',
+            'nexus-dark-border': '#334155',
+            'success': '#2E7D32',
+            'warning': '#D97706',
+            'danger': '#C62828',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Montserrat', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+
+  <!-- Chart.js via CDN para gráficos da Visão Estratégica (T1.6) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Auth Guard Inclusion (Garante execução antes da renderização do body) -->
+  <script src="js/auth-guard.js"></script>
+  <script>
+    // Executa a validação do guard
+    window.currentUserSession = NexusAuth.requireAuth();
+  </script>
+  <script src="js/vision-layer.js"></script>
+</head>
+<body class="bg-nexus-bg dark:bg-nexus-dark-bg text-nexus-text dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Topbar Superior -->
+  <header class="w-full h-16 px-4 sm:px-6 flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 sticky top-0 z-40">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-nexus-900 flex items-center justify-center text-white font-display font-bold text-lg shadow-sm">
+        N
+      </div>
+      <div class="flex flex-col min-w-0">
+        <span class="font-display font-bold text-base text-nexus-900 dark:text-white leading-tight truncate">NexusPort</span>
+        <span class="font-mono text-[11px] text-slate-500 dark:text-slate-400 truncate">Terminal STS-01</span>
+      </div>
+    </div>
+
+    <!-- Perfil do Usuário e Ações -->
+    <div class="flex items-center gap-3">
+      <!-- Badge de Identificação do Operador -->
+      <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+        <div id="headerAvatar" class="w-7 h-7 rounded-lg bg-nexus-500 text-white flex items-center justify-center font-mono text-xs font-bold">
+          --
+        </div>
+        <div class="hidden sm:flex flex-col min-w-0">
+          <span id="headerUserName" class="text-xs font-bold text-nexus-900 dark:text-white truncate">--</span>
+          <div class="flex items-center gap-1.5">
+            <span id="headerUserRole" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">--</span>
+            <span class="text-[10px] text-slate-300 dark:text-slate-600">•</span>
+            <span id="headerUserCode" class="font-mono text-[10px] font-semibold text-nexus-500 dark:text-indigo-400">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Switch -->
+      <button id="themeToggle" type="button" aria-label="Alternar tema escuro" class="p-2 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+        <span class="material-symbols-outlined text-[18px]" id="themeToggleIcon">dark_mode</span>
+      </button>
+
+      <!-- Logout Button -->
+      <button id="logoutBtn" type="button" aria-label="Encerrar Sessão" class="p-2 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors flex items-center gap-1 text-xs font-semibold">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+        <span class="hidden md:inline">Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Layout Principal (Sidebar + Workspace) -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- Sidebar Navegação -->
+    <aside class="w-64 bg-nexus-900 text-white flex flex-col justify-between hidden md:flex border-r border-slate-800">
+      <div class="p-4 flex flex-col gap-6">
+
+        <div class="flex flex-col gap-1">
+          <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3">Menu Operacional</span>
+          <nav class="flex flex-col gap-1 mt-1">
+            <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-nexus-500 text-white text-sm font-medium transition-colors">
+              <span class="material-symbols-outlined text-[20px]">dashboard</span>
+              <span>Painel Geral</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-medium transition-colors opacity-75">
+              <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+              <span>Cargas & Pátio</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-medium transition-colors opacity-75">
+              <span class="material-symbols-outlined text-[20px]">directions_boat</span>
+              <span>Embarcações</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-medium transition-colors opacity-75">
+              <span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+              <span>Scanner QR</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="flex flex-col gap-1 border-t border-slate-800 pt-4">
+          <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3">Governança & RLS</span>
+          <div class="px-3 py-2 bg-slate-800/80 rounded-lg flex flex-col gap-1 border border-slate-700/60 text-xs">
+            <div class="flex items-center gap-1.5 text-emerald-400 font-mono text-[11px] font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Sessão Guard Ativa
+            </div>
+            <span id="sidebarVisionTag" class="text-slate-300 text-[11px]">--</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-slate-800 text-[11px] font-mono text-slate-400">
+        Porto de Santos • STS-01
+      </div>
+    </aside>
+
+    <!-- Conteúdo do Painel -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      <div class="max-w-5xl mx-auto flex flex-col gap-6">
+
+        <!-- Welcome Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-nexus-900 dark:bg-slate-800 text-white flex items-center justify-center font-display font-bold text-2xl shadow-sm">
+              <span id="welcomeAvatar">--</span>
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center gap-2">
+                <h1 id="welcomeName" class="font-display text-xl font-bold text-nexus-900 dark:text-white">--</h1>
+                <span id="welcomeRoleBadge" class="px-2 py-0.5 rounded bg-nexus-500 text-white font-mono text-[10px] font-bold uppercase">--</span>
+              </div>
+              <p id="welcomeContext" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">--</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 self-stretch sm:self-auto bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+            <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[24px]">verified</span>
+            <div class="flex flex-col">
+              <span class="font-mono text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Código Individual</span>
+              <span id="welcomeCode" class="font-mono text-xs font-bold text-nexus-900 dark:text-white">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Security & Vision Card -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+              <span class="text-xs font-bold uppercase tracking-wider">Cargo Registrado</span>
+              <span class="material-symbols-outlined text-[20px] text-nexus-500">badge</span>
+            </div>
+            <span id="cardRoleName" class="font-display font-bold text-base text-nexus-900 dark:text-white mt-1">--</span>
+            <span id="cardRoleLevel" class="text-xs text-slate-500 dark:text-slate-400">--</span>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+              <span class="text-xs font-bold uppercase tracking-wider">Camada de Visão (RLS)</span>
+              <span class="material-symbols-outlined text-[20px] text-nexus-500">visibility</span>
+            </div>
+            <span id="cardVisionLayer" class="font-display font-bold text-base text-nexus-900 dark:text-white mt-1">--</span>
+            <span id="cardVisionStatus" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Filtro Automático Ativo</span>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+              <span class="text-xs font-bold uppercase tracking-wider">Estado do Guard</span>
+              <span class="material-symbols-outlined text-[20px] text-success">lock</span>
+            </div>
+            <span class="font-display font-bold text-base text-nexus-900 dark:text-white mt-1">Sessão Autenticada</span>
+            <span class="text-xs text-slate-500 dark:text-slate-400">Validação T1.3/T1.6 em Execução</span>
+          </div>
+
+        </div>
+
+        <!-- Painel de Gestão de Códigos de Acesso (Exclusivo Técnico em Portos / T1.8 & Spec.md RN 15) -->
+        <div id="tecnicoAccessCodePanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[24px]">key_off</span>
+              <div>
+                <h2 class="font-display text-base font-bold text-nexus-900 dark:text-white">Gestão de Códigos de Acesso (Invalidar & Reemitir)</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Invalidação de código perdido/esquecido e geração de novo código individual vinculado à matrícula (RN 15 / T1.8).</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700">
+              Técnico em Portos
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+              <label for="empMatriculaSearch" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Matrícula do Funcionário</label>
+              <input type="text" id="empMatriculaSearch" placeholder="Ex: MAT-1040" class="w-full px-3 py-2 rounded-xl border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-nexus-500" />
+            </div>
+
+            <button id="searchEmpBtn" type="button" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors h-9">
+              <span class="material-symbols-outlined text-[18px]">search</span>
+              <span>Localizar Funcionário</span>
+            </button>
+
+            <button id="regenCodeBtn" type="button" disabled class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors h-9 disabled:opacity-50 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined text-[18px]">autorenew</span>
+              <span>Invalidar & Gerar Novo Código</span>
+            </button>
+          </div>
+
+          <!-- Resultado da busca -->
+          <div id="empSearchResultBox" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-nexus-900 dark:text-white" id="resEmpNome">--</span>
+              <span class="font-mono text-slate-500" id="resEmpCargo">--</span>
+            </div>
+            <div class="flex items-center justify-between text-xs font-mono">
+              <span class="text-slate-500">Código Atual: <strong id="resEmpCodigo" class="text-nexus-500 dark:text-indigo-400">--</strong></span>
+              <span class="text-slate-500">Status: <strong id="resEmpStatus" class="text-emerald-600">ATIVO</strong></span>
+            </div>
+          </div>
+
+          <!-- Alert de Sucesso da Invalidação -->
+          <div id="codeRegenNotice" class="hidden p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 text-xs flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-emerald-600">check_circle</span>
+              <span>Código antigo invalidado! Novo código gerado: <strong id="newGeneratedCode" class="font-mono text-sm underline">--</strong></span>
+            </div>
+            <span class="font-mono text-[10px] bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded">Vinculado à mesma matrícula</span>
+          </div>
+        </div>
+
+        <!-- Alerta de Restrição para Visão Operacional (Spec.md RF 1) -->
+        <div id="restrictionNoticeBox" class="hidden p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3">
+          <span class="material-symbols-outlined text-[22px] text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5">admin_panel_settings</span>
+          <div>
+            <span class="font-bold text-sm block">Restrição de Acesso da Visão Operacional (RF 1):</span>
+            <p class="mt-0.5 leading-relaxed">
+              Você possui acesso de leitura a todos os dados operacionais (cargas, navios, contêineres, manutenções, checklists, logs e trail). Conforme especificação funcional, a documentação interna de funcionários e o cadastro de visitantes permanecem estritamente restritos ao Técnico em Portos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Seção de Painel Executivo / Visão Estratégica (Exclusivo Diretor - T1.6) -->
+        <div id="estrategicoPanel" class="hidden flex flex-col gap-6">
+
+          <div class="flex items-center justify-between bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5">
+            <div class="flex items-center gap-3">
+              <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-nexus-500 dark:text-indigo-400">
+                <span class="material-symbols-outlined text-[24px]">analytics</span>
+              </div>
+              <div>
+                <h2 class="font-display text-lg font-bold text-nexus-900 dark:text-white">Indicadores Executivos Consolidados (Visão Estratégica)</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Acesso irrestrito de leitura, gráficos analíticos e exportação de dados históricos (RF 1).</p>
+              </div>
+            </div>
+
+            <button id="exportHistoricoBtn" type="button" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-2 transition-all shadow-sm">
+              <span class="material-symbols-outlined text-[18px]">download</span>
+              <span>Exportar Dados Históricos</span>
+            </button>
+          </div>
+
+          <!-- Cards de KPIs Executivos -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Taxa de Aprovação</span>
+              <span id="kpiAprovacao" class="font-display font-bold text-2xl text-emerald-600 dark:text-emerald-400">94.2%</span>
+              <span class="text-[10px] text-slate-400">Total acumulado de vistorias</span>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Taxa de Recusa</span>
+              <span id="kpiRecusa" class="font-display font-bold text-2xl text-red-600 dark:text-red-400">5.8%</span>
+              <span class="text-[10px] text-slate-400">Motivos registrados no checklist</span>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Permanência Média</span>
+              <span id="kpiPermanencia" class="font-display font-bold text-2xl text-nexus-900 dark:text-white">3.8 dias</span>
+              <span class="text-[10px] text-slate-400">Tempo de carga no pátio</span>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Cargas Processadas</span>
+              <span id="kpiTotalCargas" class="font-display font-bold text-2xl text-nexus-500 dark:text-indigo-400">12.480</span>
+              <span class="text-[10px] text-slate-400">Volume anual terminal STS-01</span>
+            </div>
+          </div>
+
+          <!-- Seção de Gráficos Analíticos (Chart.js) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-3">
+              <span class="font-display text-sm font-bold text-nexus-900 dark:text-white">Produtividade Operacional por Cargo</span>
+              <div class="relative h-52 w-full">
+                <canvas id="chartProdutividade"></canvas>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-3">
+              <span class="font-display text-sm font-bold text-nexus-900 dark:text-white">Embarcações Mais Utilizadas</span>
+              <div class="relative h-52 w-full">
+                <canvas id="chartNavios"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Seção: Minhas Operações (Visão Própria / T1.4) -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[22px]">assignment</span>
+              <h2 id="tableSectionTitle" class="font-display text-lg font-bold text-nexus-900 dark:text-white">Operações em Pátio</h2>
+            </div>
+            <span id="visaoPropriaCountBadge" class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700">
+              0 itens
+            </span>
+          </div>
+
+          <!-- Tabela de Cargas / Operações -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-nexus-bg dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-mono uppercase">
+                <tr>
+                  <th class="p-3">Código Carga</th>
+                  <th class="p-3">Tipo de Carga</th>
+                  <th class="p-3">Peso</th>
+                  <th class="p-3">Contêiner</th>
+                  <th class="p-3">Status Operacional</th>
+                  <th class="p-3">Data/Hora</th>
+                </tr>
+              </thead>
+              <tbody id="visaoPropriaTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 text-nexus-900 dark:text-slate-200 font-medium">
+                <!-- Conteúdo dinâmico renderizado por js/dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Scripts JavaScript -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
