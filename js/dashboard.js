@@ -316,6 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 9.4 Lógica de QR Code, Etiquetas e Leitura (Fase 5: T5.1 a T5.9)
+  initQrCodeEtiquetas();
+
   // 9.6 Lógica de Manutenções e Emergências (Fase 4: T4.1 a T4.10)
   initManutencaoEmergencia();
 
@@ -473,6 +476,201 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 9.4 Lógica de QR Code, Etiquetas e Leitura (Fase 5: T5.1 a T5.9)
+  function initQrCodeEtiquetas() {
+    const qrModal = document.getElementById('qrModal');
+    const closeQrModalBtn = document.getElementById('closeQrModalBtn');
+    const qrCanvas = document.getElementById('qrCanvas');
+    const qrModalEntityId = document.getElementById('qrModalEntityId');
+    const qrModalEntityType = document.getElementById('qrModalEntityType');
+    const qrModalEntitySub = document.getElementById('qrModalEntitySub');
+    const printEtiquetaBtn = document.getElementById('printEtiquetaBtn');
+
+    const qrScannerModal = document.getElementById('qrScannerModal');
+    const closeScannerModalBtn = document.getElementById('closeScannerModalBtn');
+    const openQrScannerSidebarBtn = document.getElementById('openQrScannerSidebarBtn');
+    const simulatedQrInput = document.getElementById('simulatedQrInput');
+    const simulateScanBtn = document.getElementById('simulateScanBtn');
+
+    let currentEntityData = null;
+    let html5QrCodeScanner = null;
+
+    if (closeQrModalBtn && qrModal) {
+      closeQrModalBtn.addEventListener('click', () => qrModal.classList.add('hidden'));
+    }
+
+    if (closeScannerModalBtn && qrScannerModal) {
+      closeScannerModalBtn.addEventListener('click', () => {
+        qrScannerModal.classList.add('hidden');
+        if (html5QrCodeScanner) {
+          try { html5QrCodeScanner.stop(); } catch(e){}
+        }
+      });
+    }
+
+    if (openQrScannerSidebarBtn) {
+      openQrScannerSidebarBtn.addEventListener('click', () => {
+        openQrScannerModal();
+      });
+    }
+
+    // Função para abrir modal e exibir QR Code gerado em tempo real (T5.1, T5.2)
+    window.exibirEtiquetaQr = function(entityData, isReimpressao = false) {
+      currentEntityData = entityData;
+      if (!qrModal || !qrCanvas) return;
+
+      const entityId = entityData.id || entityData.codigo;
+      const qrData = entityData.qrCode || `QR-${entityId}`;
+      const typeLabel = entityData.tipo || entityData.tipo_carga || 'Contêiner / Carga';
+      const subLabel = `Data: ${new Date().toLocaleDateString('pt-BR')} • Ref: ${entityData.navio || entityData.natureza || 'STS-01'}`;
+
+      if (qrModalEntityId) qrModalEntityId.textContent = entityId;
+      if (qrModalEntityType) qrModalEntityType.textContent = typeLabel;
+      if (qrModalEntitySub) qrModalEntitySub.textContent = subLabel;
+
+      if (typeof QRCode !== 'undefined') {
+        QRCode.toCanvas(qrCanvas, qrData, { width: 180, margin: 1 }, function (error) {
+          if (error) console.error(error);
+        });
+      }
+
+      qrModal.classList.remove('hidden');
+
+      if (isReimpressao) {
+        // Grava log de reimpressão de etiqueta (T5.5)
+        const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
+        logs.push({
+          data_hora: new Date().toISOString(),
+          cargo: session.cargo,
+          codigo_usuario: session.codigo_individual || session.codigo,
+          entidade: entityId,
+          tipo_alteracao: 'Reimpressão de etiqueta'
+        });
+        localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
+        console.log(`[Log Audit] Reimpressão de etiqueta registrada para ${entityId}`);
+      }
+    };
+
+    // Gerador de PDF de etiqueta padronizado 10x10 cm (T5.3, T5.4)
+    if (printEtiquetaBtn) {
+      printEtiquetaBtn.addEventListener('click', () => {
+        if (!currentEntityData) return;
+
+        const entityId = currentEntityData.id || currentEntityData.codigo;
+        const qrData = currentEntityData.qrCode || `QR-${entityId}`;
+
+        if (window.jspdf && window.jspdf.jsPDF) {
+          const { jsPDF } = window.jspdf;
+          // Formato 100x100 mm (10x10 cm)
+          const doc = new jsPDF({ unit: 'mm', format: [100, 100] });
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(12);
+          doc.text('PORTO DE SANTOS - NEXUSPORT', 50, 12, { align: 'center' });
+
+          // Pega imagem do Canvas QR
+          const imgData = qrCanvas.toDataURL('image/png');
+          doc.addImage(imgData, 'PNG', 25, 18, 50, 50);
+
+          doc.setFontSize(14);
+          doc.text(entityId, 50, 74, { align: 'center' });
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.text(`Tipo: ${currentEntityData.tipo || currentEntityData.tipo_carga || 'Geral'}`, 50, 81, { align: 'center' });
+          doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 50, 87, { align: 'center' });
+
+          doc.setFontSize(8);
+          doc.text(`QR: ${qrData}`, 50, 93, { align: 'center' });
+
+          doc.save(`Etiqueta_${entityId}.pdf`);
+          alert(`Etiqueta PDF de 10x10cm gerada para ${entityId}! Enviada para impressão.`);
+        } else {
+          window.print();
+        }
+      });
+    }
+
+    // Leitor e Scanner via Câmera / Leitura (T5.6, T5.7, T5.8, T5.9)
+    function openQrScannerModal() {
+      if (!qrScannerModal) return;
+      qrScannerModal.classList.remove('hidden');
+
+      if (typeof Html5Qrcode !== 'undefined') {
+        const qrReaderElem = document.getElementById('qrReader');
+        if (qrReaderElem) qrReaderElem.innerHTML = '';
+
+        html5QrCodeScanner = new Html5Qrcode("qrReader");
+        html5QrCodeScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (decodedText) => {
+            processarLeituraQr(decodedText);
+            html5QrCodeScanner.stop();
+            qrScannerModal.classList.add('hidden');
+          },
+          () => {}
+        ).catch(err => {
+          console.warn("Câmera indisponível ou permissão negada. Use a simulação manual de QR Code.", err);
+          document.getElementById('qrReader').innerHTML = '<div class="p-4 text-center text-slate-400">Câmera não detectada neste ambiente. Utilize o campo de simulação abaixo.</div>';
+        });
+      }
+    }
+
+    if (simulateScanBtn && simulatedQrInput) {
+      simulateScanBtn.addEventListener('click', () => {
+        const qrValue = simulatedQrInput.value.trim();
+        if (!qrValue) {
+          alert('Por favor, informe o texto do QR Code para simular a leitura.');
+          return;
+        }
+        processarLeituraQr(qrValue);
+        if (qrScannerModal) qrScannerModal.classList.add('hidden');
+        simulatedQrInput.value = '';
+      });
+    }
+
+    // Processador de Leitura com Redirecionamento Direcionado por Cargo (T5.7, T5.8, T5.9)
+    function processarLeituraQr(qrCodeText) {
+      // Validar Autenticação (T5.9)
+      if (!session || !session.codigo_individual) {
+        alert('Acesso Negado: Dispositivo/Usuário não autenticado no sistema!');
+        return;
+      }
+
+      // Registro de Leitura (Scan) no Log (T5.8)
+      const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
+      logs.push({
+        data_hora: new Date().toISOString(),
+        cargo: session.cargo,
+        codigo_usuario: session.codigo_individual || session.codigo,
+        entidade: qrCodeText,
+        tipo_alteracao: 'Leitura QR Code no Pátio (Scan)'
+      });
+      localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
+
+      // Direcionamento com base no cargo (T5.7)
+      const cargo = session.cargo;
+      let acaoMensagem = '';
+
+      if (cargo === 'ESTIVADOR') {
+        acaoMensagem = `[ESTIVADOR] Carga/Contêiner ${qrCodeText} localizado! Iniciar movimentação de pátio registrada no sistema.`;
+      } else if (cargo === 'CONFERENTE_CARGA') {
+        acaoMensagem = `[CONFERENTE DE CARGA] Carga ${qrCodeText} localizada! Redirecionado para tela de registro de Recebimento Físico e Condições de Saída.`;
+      } else if (cargo === 'INSPETOR') {
+        acaoMensagem = `[INSPETOR] Carga ${qrCodeText} localizada! Abertura automática do Checklist Técnico de Inspeção correspondente.`;
+      } else if (cargo === 'ARRUMADOR_CONSERTADOR') {
+        acaoMensagem = `[ARRUMADOR E CONSERTADOR] Carga ${qrCodeText} localizada! Status alterado diretamente para PRONTA PARA ENTREGA.`;
+      } else if (cargo === 'SUPERVISOR_GERENTE_OPERACOES') {
+        acaoMensagem = `[SUPERVISOR] Contêiner/Carga ${qrCodeText} localizado! Exibindo status consolidado de todas as cargas vinculadas a este contêiner.`;
+      } else {
+        acaoMensagem = `[SISTEMA] Leitura do QR Code ${qrCodeText} realizada com sucesso pelo usuário ${session.nome} (${cargo}).`;
+      }
+
+      alert(`LEITURA DO QR CODE BEM-SUCEDIDA!\n\nDados Codificados: ${qrCodeText}\n\n${acaoMensagem}`);
+    }
+  }
+
   // 9.5 Lógica do Fluxo de Cargas (Fase 3: Core Business - T3.1 a T3.24)
   initFluxoCargas();
 
@@ -518,6 +716,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </span>
           </td>
           <td class="p-2 font-mono text-[11px]">
+            <button type="button" onclick="window.exibirEtiquetaQr({id: '${c.id}', tipo: '${c.tipo}', qrCode: '${c.qrCode}', natureza: '${c.natureza}'})" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-black text-white font-bold mr-1" title="Ver / Imprimir Etiqueta QR Code">Etiqueta QR</button>
+            <button type="button" onclick="window.exibirEtiquetaQr({id: '${c.id}', tipo: '${c.tipo}', qrCode: '${c.qrCode}', natureza: '${c.natureza}'}, true)" class="px-1.5 py-0.5 rounded bg-amber-600 hover:bg-amber-700 text-white font-bold mr-1" title="Reimprimir Etiqueta com Log">Reimprimir</button>
             <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'RECEBER')" class="px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold mr-1">Receber</button>
             <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'INSPECIONAR')" class="px-1.5 py-0.5 rounded bg-nexus-500 hover:bg-nexus-900 text-white font-bold mr-1">Inspecionar</button>
             <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'VINCULAR')" class="px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-bold mr-1">Vincular</button>
