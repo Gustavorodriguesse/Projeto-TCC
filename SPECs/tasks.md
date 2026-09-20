@@ -219,9 +219,9 @@
 
 ### 9.2. Documentação
 
-- [ ] **T9.6** — Documentação técnica da API (se aplicável).
-- [ ] **T9.7** — Manual de usuário por cargo.
-- [ ] **T9.8** — Revisão final dos artefatos de modelagem (casos de uso, classes, estados, wireframes).
+
+- [ ] **T9.6** — Manual de usuário por cargo.
+
 
 ### 9.3. Implantação
 
