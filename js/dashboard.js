@@ -1407,39 +1407,66 @@ document.addEventListener('DOMContentLoaded', () => {
         agendamentoForm.classList.add('hidden');
         alert(`Agendamento da Carga ${newId} concluído com sucesso! QR Code gerado automaticamente: ${newQrCode}`);
 
-        // Enviar para o Supabase se ativo
+        // Enviar para o Supabase
         if (window.nexusSupabase) {
-          (async () => {
-            try {
-              let tipoCargaUuid = null;
-              const { data: tcData } = await window.nexusSupabase.from('tipos_carga').select('id').eq('nome', tipo).limit(1);
-              if (tcData && tcData.length > 0) {
-                tipoCargaUuid = tcData[0].id;
-              } else {
-                const { data: anyTc } = await window.nexusSupabase.from('tipos_carga').select('id').limit(1);
-                if (anyTc && anyTc.length > 0) tipoCargaUuid = anyTc[0].id;
-              }
+          try {
+            let tipoCargaUuid = null;
+            const { data: tcData, error: tcErr } = await window.nexusSupabase.from('tipos_carga').select('id').eq('nome', tipo).limit(1);
+            if (tcErr) console.error('Erro ao buscar tipo_carga no Supabase:', tcErr);
 
-              if (tipoCargaUuid) {
-                await window.nexusSupabase.from('cargas').insert([{
-                  tipo_carga_id: tipoCargaUuid,
-                  quantidade: 1,
-                  material: tipo,
-                  peso: rawPeso,
-                  volume: rawVolume,
-                  valor_declarado: rawValor,
-                  natureza: natureza || 'Geral',
-                  porto_descarga: portoDescarga || 'Porto de Santos',
-                  destino: destino || 'Destino Nacional',
-                  status_fluxo: 'AGENDAMENTO',
-                  qr_code_url: newQrCode
-                }]);
-                console.log('[NexusPort] Carga persistida no Supabase com sucesso.');
+            if (tcData && tcData.length > 0) {
+              tipoCargaUuid = tcData[0].id;
+            } else {
+              const { data: anyTc, error: anyTcErr } = await window.nexusSupabase.from('tipos_carga').select('id').limit(1);
+              if (anyTcErr) console.error('Erro ao buscar tipo_carga padrao no Supabase:', anyTcErr);
+
+              if (anyTc && anyTc.length > 0) {
+                tipoCargaUuid = anyTc[0].id;
+              } else {
+                // Tenta criar um tipo_carga padrao se nao existir
+                const { data: newTc, error: createTcErr } = await window.nexusSupabase.from('tipos_carga').insert([{
+                  nome: tipo || 'Carga Geral',
+                  categoria_risco: 'Padrao',
+                  requisitos_especiais: 'Nenhum'
+                }]).select('id');
+
+                if (createTcErr) {
+                  console.error('Erro ao criar tipo_carga no Supabase:', createTcErr);
+                } else if (newTc && newTc.length > 0) {
+                  tipoCargaUuid = newTc[0].id;
+                }
               }
-            } catch (spErr) {
-              console.warn('[NexusPort] Erro ao inserir carga no Supabase:', spErr);
             }
-          })();
+
+            if (tipoCargaUuid) {
+              const payloadInsert = {
+                tipo_carga_id: tipoCargaUuid,
+                quantidade: 1,
+                material: tipo,
+                peso: rawPeso,
+                volume: rawVolume,
+                valor_declarado: rawValor,
+                natureza: natureza || 'Geral',
+                porto_descarga: portoDescarga || 'Porto de Santos',
+                destino: destino || 'Destino Nacional',
+                status_fluxo: 'AGENDAMENTO',
+                qr_code_url: newQrCode
+              };
+
+              console.log('[NexusPort] Enviando payload insert para cargas:', payloadInsert);
+              const { data, error } = await window.nexusSupabase.from('cargas').insert([payloadInsert]).select();
+
+              if (error) {
+                console.error('Erro ao guardar no Supabase:', error);
+              } else {
+                console.log('Sucesso ao guardar no Supabase:', data);
+              }
+            } else {
+              console.error('Erro ao guardar no Supabase: Nao foi possivel obter um tipo_carga_id valido.');
+            }
+          } catch (spErr) {
+            console.error('Erro ao guardar no Supabase:', spErr);
+          }
         }
       });
     }
