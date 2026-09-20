@@ -495,6 +495,85 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 9.1 Lógica de Localização dos Navios e Cálculos de Tempo (Fase 8: T8.1 a T8.6)
+  function initLocalizacaoETempos() {
+    const localizacaoTableBody = document.getElementById('localizacaoNaviosTableBody');
+
+    // Função de Cálculo do Tempo de Permanência no Porto (T8.4)
+    window.calcularTempoPermanenciaPorto = function(dataEntradaStr) {
+      if (!dataEntradaStr) return '0d 0h';
+      const inicio = new Date(dataEntradaStr).getTime();
+      const agora = Date.now();
+      const diffMs = Math.max(0, agora - inicio);
+      const horasTotais = Math.floor(diffMs / (1000 * 60 * 60));
+      const dias = Math.floor(horasTotais / 24);
+      const horas = horasTotais % 24;
+      return `${dias}d ${horas}h no porto`;
+    };
+
+    // Função de Cálculo do Tempo Fora do Porto para Cargas e Navios (T8.5, T8.6)
+    window.calcularTempoForaPorto = function(dataSaidaStr) {
+      if (!dataSaidaStr) return '0d 0h fora';
+      const inicio = new Date(dataSaidaStr).getTime();
+      const agora = Date.now();
+      const diffMs = Math.max(0, agora - inicio);
+      const horasTotais = Math.floor(diffMs / (1000 * 60 * 60));
+      const dias = Math.floor(horasTotais / 24);
+      const horas = horasTotais % 24;
+      return `${dias}d ${horas}h fora do porto`;
+    };
+
+    // Função de Cálculo de ETA baseado em distância e velocidade fixa de 33 km/h (T8.3, RN 9)
+    window.calcularEstimativaChegada = function(distanciaKm) {
+      const velocidadeMedia = 33; // km/h (RN 9)
+      const horasTotais = distanciaKm / velocidadeMedia;
+      const dias = Math.floor(horasTotais / 24);
+      const horas = Math.round(horasTotais % 24);
+      return `${dias}d ${horas}h (Distância: ${distanciaKm} km @ 33 km/h)`;
+    };
+
+    // Renderizar Tabela de Localização dos Navios (T8.1, T8.2, T8.3, T8.6)
+    function renderLocalizacaoNavios() {
+      if (!localizacaoTableBody) return;
+
+      const naviosList = [
+        { nome: 'MV Santos Star', imo: 'IMO-9821034', gps: '23.9608° S, 46.3022° W', classificacao: 'DENTRO_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 10200, dataSaida: null },
+        { nome: 'MV Pacific Giant', imo: 'IMO-9742110', gps: '12.0463° S, 77.0428° W', classificacao: 'FORA_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Singapura', distancia: 18500, dataSaida: new Date(Date.now() - 86400000 * 3).toISOString() },
+        { nome: 'MV Atlantic Breeze', imo: 'IMO-9651002', gps: '01.2902° N, 103.8519° E', classificacao: 'NO_PORTO_DE_DESTINO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 0, dataSaida: new Date(Date.now() - 86400000 * 12).toISOString() }
+      ];
+
+      localizacaoTableBody.innerHTML = naviosList.map(n => {
+        const etaText = n.classificacao === 'DENTRO_DO_PORTO' ? 'Em Atrracação / No Porto' : n.classificacao === 'NO_PORTO_DE_DESTINO' ? 'Atordoado no Destino' : window.calcularEstimativaChegada(n.distancia);
+        const tempoFora = n.dataSaida ? window.calcularTempoForaPorto(n.dataSaida) : 'No Porto (0h)';
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="p-3 font-bold text-nexus-900 dark:text-white">
+              ${n.nome}
+              <span class="block font-mono text-[10px] text-nexus-500">${n.imo}</span>
+            </td>
+            <td class="p-3 font-mono text-xs text-slate-600 dark:text-slate-300">${n.gps}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                n.classificacao === 'DENTRO_DO_PORTO' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' :
+                n.classificacao === 'FORA_DO_PORTO' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300' :
+                'bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300'
+              }">${n.classificacao}</span>
+            </td>
+            <td class="p-3 text-xs">${n.origem} → <strong class="text-nexus-900 dark:text-white">${n.destino}</strong></td>
+            <td class="p-3 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold">${etaText}</td>
+            <td class="p-3 font-mono text-xs font-bold text-slate-500">${tempoFora}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    renderLocalizacaoNavios();
+  }
+
+  // 9.1 Lógica de Localização dos Navios e Cálculos de Tempo (Fase 8: T8.1 a T8.6)
+  initLocalizacaoETempos();
+
   // 9.2 Lógica de Logs, Trail e Delegação de Supervisor (Fase 7: T7.1 a T7.9)
   initLogsTrailDelegacao();
 
