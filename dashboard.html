@@ -860,7 +860,183 @@
             </span>
           </div>
 
-          <!-- 3.1 & 3.2 Cadastro e Agendamento de Carga -->
+        <!-- Container dos Cards de Visão Geral Operacional (Fase 6: T6.1, T6.2, T6.3, T6.4) -->
+        <div id="cardsOperacionaisPanel" class="hidden flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">grid_view</span>
+              Visão Geral Operacional (Cards Indicadores)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Atualização periódica ativa</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <!-- Card 1: Navios em Manutenção -->
+            <div onclick="window.detalharCardOperacional('NAVIOS_MANUTENCAO')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
+              <div class="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+                <span class="material-symbols-outlined text-xl">build</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Navios em Manutenção</span>
+                <span id="cardNaviosManutencaoVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Navios Fora do Porto -->
+            <div onclick="window.detalharCardOperacional('NAVIOS_FORA')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
+              <div class="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400">
+                <span class="material-symbols-outlined text-xl">sailing</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Navios Fora do Porto</span>
+                <span id="cardNaviosForaVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Cargas em Armazenagem -->
+            <div onclick="window.detalharCardOperacional('CARGAS_ARMAZENAGEM')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
+              <div class="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400">
+                <span class="material-symbols-outlined text-xl">inventory_2</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Cargas em Armazenagem</span>
+                <span id="cardCargasArmazenagemVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Prontas Aguardando Liberação -->
+            <div onclick="window.detalharCardOperacional('CARGAS_PRONTAS')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
+              <div class="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-xl">verified</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Prontas p/ Liberação</span>
+                <span id="cardCargasProntasVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
+              </div>
+            </div>
+
+            <!-- Card 5: Cargas Recusadas -->
+            <div onclick="window.detalharCardOperacional('CARGAS_RECUSADAS')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
+              <div class="p-2.5 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-400">
+                <span class="material-symbols-outlined text-xl">cancel</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Cargas Recusadas</span>
+                <span id="cardCargasRecusadasVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
+              </div>
+            </div>
+
+            <!-- Card 6: Ocupação do Pátio -->
+            <div onclick="window.detalharCardOperacional('OCUPACAO_PATIO')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
+              <div class="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400">
+                <span class="material-symbols-outlined text-xl">pie_chart</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Ocupação do Pátio</span>
+                <span id="cardOcupacaoPatioVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0%</span>
+              </div>
+            </div>
+
+            <!-- Card 7: Preventiva Sugerida (>3 anos) -->
+            <div onclick="window.detalharCardOperacional('PREVENTIVA_SUGERIDA')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all sm:col-span-2 lg:col-span-2 flex items-center gap-3 shadow-sm">
+              <div class="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+                <span class="material-symbols-outlined text-xl">warning</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Preventiva Sugerida (>3 Anos de Uso)</span>
+                <span id="cardPreventivaVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0 Equipamento(s)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulário de Pesquisa Operacional (Fase 6: T6.7 - 5 Filtros Exatos) -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">search</span>
+              Pesquisa Operacional de Cargas e Operações (5 Filtros Exatos)
+            </h3>
+            <button id="limparPesquisaBtn" type="button" class="text-xs text-slate-500 hover:text-nexus-500 font-semibold">Limpar Filtros</button>
+          </div>
+
+          <form id="searchOperacionalForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">1. Nome do Navio</label>
+              <input type="text" id="searchNavio" placeholder="Ex: MV Santos Star" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">2. Nº do Contêiner</label>
+              <input type="text" id="searchContainer" placeholder="Ex: CONT-991" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">3. Tipo de Carga</label>
+              <select id="searchTipoCarga" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800">
+                <option value="">Todos os Tipos</option>
+                <option value="Grãos Soltos">Grãos Soltos</option>
+                <option value="Eletrônicos">Eletrônicos</option>
+                <option value="Produtos Químicos">Produtos Químicos</option>
+                <option value="Maquinário Pesado">Maquinário Pesado</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">4. Período de Data</label>
+              <div class="grid grid-cols-2 gap-1">
+                <input type="date" id="searchDataInicio" class="w-full px-1.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-[11px]" />
+                <input type="date" id="searchDataFim" class="w-full px-1.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-[11px]" />
+              </div>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">5. Status do Fluxo</label>
+              <select id="searchStatus" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800">
+                <option value="">Todos os Status</option>
+                <option value="AGENDAMENTO">AGENDAMENTO</option>
+                <option value="RECEBIMENTO_INSPECAO">RECEBIMENTO_INSPECAO</option>
+                <option value="ARMAZENAGEM">ARMAZENAGEM</option>
+                <option value="PRONTA_PARA_ENTREGA">PRONTA_PARA_ENTREGA</option>
+                <option value="EM_TRANSITO">EM_TRANSITO</option>
+                <option value="ENTREGUE">ENTREGUE</option>
+                <option value="RECUSADA">RECUSADA</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2 md:col-span-5 flex justify-end">
+              <button type="submit" class="px-4 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined text-sm">search</span>
+                Filtrar Resultados
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Painel do Relatório de Produtividade (Fase 6: T6.9, T6.10) -->
+        <div id="produtividadePanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">assessment</span>
+              Relatório de Produtividade Operacional por Cargo e Funcionário (T6.9, T6.10)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Acesso Restrito</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-nexus-bg dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
+                  <th class="p-3">Matrícula</th>
+                  <th class="p-3">Funcionário</th>
+                  <th class="p-3">Cargo</th>
+                  <th class="p-3">Volume de Operações</th>
+                  <th class="p-3">Última Ação</th>
+                </tr>
+              </thead>
+              <tbody id="produtividadeTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
+                <!-- Renderizado por js/dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 3.1 & 3.2 Cadastro e Agendamento de Carga -->
           <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between">
               <span class="font-bold text-xs uppercase text-slate-500">1. Agendamento de Carga (T3.1 - T3.5)</span>

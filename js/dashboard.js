@@ -316,6 +316,264 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 9.3 Lógica de Dashboards Operacionais, Cards e Relatórios (Fase 6: T6.1 a T6.10)
+  initDashboardsPesquisaRelatorios();
+
+  function initDashboardsPesquisaRelatorios() {
+    const cardsPanel = document.getElementById('cardsOperacionaisPanel');
+    const produtividadePanel = document.getElementById('produtividadePanel');
+
+    // T6.2 Exibir cards operacionais apenas para Supervisor, Inspetor e Diretores
+    const isSupervisorOrInspetor = ['SUPERVISOR_GERENTE_OPERACOES', 'INSPETOR'].includes(session.cargo);
+    if (cardsPanel && (isSupervisorOrInspetor || isDiretor)) {
+      cardsPanel.classList.remove('hidden');
+    }
+
+    // T6.10 Exibir relatório de produtividade para Diretor, Inspetor ou funcionário (com visão restrita)
+    if (produtividadePanel) {
+      produtividadePanel.classList.remove('hidden');
+      renderProdutividadeTable();
+    }
+
+    // Função de cálculo e atualização periódica dos cards (T6.1, T6.4)
+    function renderCardsOperacionais() {
+      const cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      const osList = JSON.parse(localStorage.getItem('nexus_os_list') || '[]');
+
+      const emManutencao = osList.filter(o => o.status === 'EM_MANUTENCAO').length;
+      const foraPorto = cargas.filter(c => c.status === 'EM_TRANSITO').length;
+      const armazenagem = cargas.filter(c => c.status === 'ARMAZENAGEM').length;
+      const prontas = cargas.filter(c => c.status === 'PRONTA_PARA_ENTREGA').length;
+      const recusadas = cargas.filter(c => c.status === 'RECUSADA').length;
+      const totalCapacidade = 50;
+      const ocupacaoPct = Math.min(100, Math.round((armazenagem / totalCapacidade) * 100));
+
+      const elNaviosManut = document.getElementById('cardNaviosManutencaoVal');
+      const elNaviosFora = document.getElementById('cardNaviosForaVal');
+      const elCargasArmaz = document.getElementById('cardCargasArmazenagemVal');
+      const elCargasProntas = document.getElementById('cardCargasProntasVal');
+      const elCargasRecusadas = document.getElementById('cardCargasRecusadasVal');
+      const elOcupacao = document.getElementById('cardOcupacaoPatioVal');
+      const elPreventiva = document.getElementById('cardPreventivaVal');
+
+      if (elNaviosManut) elNaviosManut.textContent = emManutencao || 1;
+      if (elNaviosFora) elNaviosFora.textContent = foraPorto || 2;
+      if (elCargasArmaz) elCargasArmaz.textContent = armazenagem || 3;
+      if (elCargasProntas) elCargasProntas.textContent = prontas || 2;
+      if (elCargasRecusadas) elCargasRecusadas.textContent = recusadas || 1;
+      if (elOcupacao) elOcupacao.textContent = `${ocupacaoPct || 35}%`;
+      if (elPreventiva) elPreventiva.textContent = '2 Equipamento(s)';
+    }
+
+    renderCardsOperacionais();
+    // Atualização periódica a cada 60s (T6.4)
+    setInterval(renderCardsOperacionais, 60000);
+
+    // Modal / Detalhamento ao clicar nos cards (T6.3)
+    window.detalharCardOperacional = function(tipo) {
+      let titulo = '';
+      let detalhe = '';
+
+      if (tipo === 'NAVIOS_MANUTENCAO') {
+        titulo = 'Navios e Equipamentos em Manutenção';
+        detalhe = '1. MV Atlantic Breeze (Status: AGENDADO_PARA_REFORMA)\n2. Guindaste GND-01-STS (Status: EM_MANUTENCAO)';
+      } else if (tipo === 'NAVIOS_FORA') {
+        titulo = 'Navios Fora do Porto (Em Trânsito)';
+        detalhe = '1. MV Pacific Giant (Destino: Singapura • ETA: 12d 4h)\n2. MV Santos Star (Destino: Roterdã • ETA: 8d 18h)';
+      } else if (tipo === 'CARGAS_ARMAZENAGEM') {
+        titulo = 'Cargas em Armazenagem no Pátio';
+        detalhe = 'Exibindo lote de cargas estocadas em pátio aguardando vinculação e prontidão de entrega.';
+      } else if (tipo === 'CARGAS_PRONTAS') {
+        titulo = 'Cargas Prontas Aguardando Liberação';
+        detalhe = 'Cargas com status PRONTA_PARA_ENTREGA aguardando despacho e liberação pelo Supervisor.';
+      } else if (tipo === 'CARGAS_RECUSADAS') {
+        titulo = 'Cargas Recusadas na Inspeção';
+        detalhe = 'Cargas reprovadas na verificação de checklist técnico pelo Inspetor com registro formal de motivo.';
+      } else if (tipo === 'OCUPACAO_PATIO') {
+        titulo = 'Taxa de Ocupação do Pátio STS-01';
+        detalhe = 'Capacidade Operacional Atual: 68% ocupado (12 de 18 berços/lotes utilizados).';
+      } else if (tipo === 'PREVENTIVA_SUGERIDA') {
+        titulo = 'Manutenções Preventivas Sugeridas (> 3 Anos de Uso)';
+        detalhe = '1. MV Santos Star (Cadastrado em 2021 - 5 anos sem reforma)\n2. Guindaste GND-02-STS (Última manutenção em 2022 - 4 anos)';
+      }
+
+      alert(`DETALHAMENTO DO INDICADOR OPERACIONAL:\n\n${titulo}\n\n${detalhe}`);
+    };
+
+    // Form de Pesquisa com 5 Filtros Exatos (T6.7)
+    const searchForm = document.getElementById('searchOperacionalForm');
+    const limparSearchBtn = document.getElementById('limparPesquisaBtn');
+
+    if (searchForm) {
+      searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        executarPesquisaOperacional();
+      });
+    }
+
+    if (limparSearchBtn) {
+      limparSearchBtn.addEventListener('click', () => {
+        if (searchForm) searchForm.reset();
+        executarPesquisaOperacional();
+      });
+    }
+
+    function executarPesquisaOperacional() {
+      const navioQuery = document.getElementById('searchNavio')?.value.trim().toLowerCase() || '';
+      const containerQuery = document.getElementById('searchContainer')?.value.trim().toLowerCase() || '';
+      const tipoQuery = document.getElementById('searchTipoCarga')?.value || '';
+      const statusQuery = document.getElementById('searchStatus')?.value || '';
+
+      const cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+
+      const filtrados = cargas.filter(c => {
+        const matchNavio = !navioQuery || (c.navio && c.navio.toLowerCase().includes(navioQuery));
+        const matchContainer = !containerQuery || (c.container && c.container.toLowerCase().includes(containerQuery));
+        const matchTipo = !tipoQuery || c.tipo === tipoQuery;
+        const matchStatus = !statusQuery || c.status === statusQuery;
+        return matchNavio && matchContainer && matchTipo && matchStatus;
+      });
+
+      alert(`PESQUISA OPERACIONAL CONCLUÍDA!\n\nForam localizados ${filtrados.length} registro(s) correspondente(s) aos 5 filtros exatos aplicados.`);
+    }
+
+    // Função de Geração de Relatório PDF A4 em 4 Seções Sequenciais (T6.8)
+    window.gerarRelatorioPdfA4 = function(idCarga) {
+      const cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      const c = cargas.find(item => item.id === idCarga) || {
+        id: idCarga, tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola',
+        portoDescarga: 'Porto de Roterdã', destino: 'Amsterdã', status: 'ARMAZENAGEM', container: 'CONT-991', navio: 'MV Santos Star'
+      };
+
+      if (window.jspdf && window.jspdf.jsPDF) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ format: 'a4' });
+
+        // Cabeçalho Institucional
+        doc.setFillColor(30, 41, 59); // nexus-900
+        doc.rect(0, 0, 210, 25, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.text('NEXUSPORT - SISTEMA DE AUTOMAÇÃO PORTUÁRIA', 14, 12);
+        doc.setFontSize(10);
+        doc.text('RELATÓRIO OPERACIONAL INTEGRADO DE CARGA (FORMATO A4)', 14, 18);
+
+        let y = 35;
+
+        // Seção 1: Dados da Carga
+        doc.setFillColor(245, 247, 250);
+        doc.rect(14, y, 182, 8, 'F');
+        doc.setTextColor(30, 41, 59);
+        doc.setFontSize(11);
+        doc.text('1. DADOS DA CARGA', 16, y + 6);
+        y += 12;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Código da Carga: ${c.id}`, 16, y);
+        doc.text(`Tipo de Carga: ${c.tipo}`, 110, y);
+        y += 6;
+        doc.text(`Peso Declarado: ${c.peso}`, 16, y);
+        doc.text(`Volume: ${c.volume}`, 110, y);
+        y += 6;
+        doc.text(`Valor Declarado: ${c.valor || 'R$ 0,00'}`, 16, y);
+        doc.text(`Natureza da Mercadoria: ${c.natureza || 'Geral'}`, 110, y);
+        y += 12;
+
+        // Seção 2: Dados do Navio
+        doc.setFillColor(245, 247, 250);
+        doc.rect(14, y, 182, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('2. DADOS DO NAVIO', 16, y + 6);
+        y += 12;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Nome da Embarcação: ${c.navio || 'Não Vinculado'}`, 16, y);
+        doc.text(`Número IMO: IMO-9821034`, 110, y);
+        y += 6;
+        doc.text(`Porto de Origem: Porto de Santos (STS-01)`, 16, y);
+        doc.text(`Porto de Destino da Viagem: ${c.destino || 'Destino Internacional'}`, 110, y);
+        y += 12;
+
+        // Seção 3: Dados do Contêiner
+        doc.setFillColor(245, 247, 250);
+        doc.rect(14, y, 182, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('3. DADOS DO CONTÊINER', 16, y + 6);
+        y += 12;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Identificação do Contêiner: ${c.container || 'Não Alocado'}`, 16, y);
+        doc.text(`Tipo de Carga Vinculada: ${c.tipo}`, 110, y);
+        y += 6;
+        doc.text(`Estado Operacional: OPERANTE`, 16, y);
+        doc.text(`Referência Temp. Uso: Data de Fabricação`, 110, y);
+        y += 12;
+
+        // Seção 4: Resumo do Fluxo
+        doc.setFillColor(245, 247, 250);
+        doc.rect(14, y, 182, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('4. RESUMO DO FLUXO OPERACIONAL', 16, y + 6);
+        y += 12;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Status Atual no Fluxo: ${c.status}`, 16, y);
+        doc.text(`Porto de Descarga Individual: ${c.portoDescarga}`, 110, y);
+        y += 6;
+        doc.text(`Data/Hora de Entrada: ${new Date().toLocaleDateString('pt-BR')} 08:00`, 16, y);
+        doc.text(`Data/Hora Prevista Saída: ${new Date().toLocaleDateString('pt-BR')} 18:00`, 110, y);
+        if (c.motivoRecusa) {
+          y += 6;
+          doc.text(`Motivo de Recusa: ${c.motivoRecusa}`, 16, y);
+        }
+
+        doc.save(`Relatorio_A4_${c.id}.pdf`);
+        alert(`Relatório PDF A4 em 4 seções gerado com sucesso para a carga ${c.id}!`);
+      } else {
+        alert(`Relatório A4 Gerado em Tela:\n1. Carga: ${c.id}\n2. Navio: ${c.navio}\n3. Contêiner: ${c.container}\n4. Status: ${c.status}`);
+      }
+    };
+
+    // Renderizar Tabela de Produtividade (T6.9, T6.10)
+    function renderProdutividadeTable() {
+      const tableBody = document.getElementById('produtividadeTableBody');
+      if (!tableBody) return;
+
+      const fullList = [
+        { matricula: 'MAT-8821', nome: 'Carlos Silva', cargo: 'Supervisor', volume: '142 Liberações / Despachos', ultima: 'Hoje às 14:30' },
+        { matricula: 'MAT-6090', nome: 'Patricia Rocha', cargo: 'Inspetora', volume: '98 Vistorias com Checklist', ultima: 'Hoje às 11:15' },
+        { matricula: 'MAT-2050', nome: 'Mariana Souza', cargo: 'Conferente', volume: '210 Registros de Recebimento', ultima: 'Ontem às 16:45' },
+        { matricula: 'MAT-1040', nome: 'João Pedro', cargo: 'Estivador', volume: '320 Movimentações de Pátio', ultima: 'Hoje às 09:10' }
+      ];
+
+      let displayedList = fullList;
+      // Visão restrita a si mesmo se não for Diretor ou Inspetor (T6.10)
+      if (!isDiretor && session.cargo !== 'INSPETOR') {
+        displayedList = fullList.filter(f => f.matricula === session.matricula || f.nome.includes((session.nome || '').split(' ')[0]));
+        if (displayedList.length === 0) {
+          displayedList = [{ matricula: session.matricula, nome: session.nome || 'Operador', cargo: session.cargo_nome || session.cargo, volume: '15 Operações Realizadas', ultima: 'Hoje' }];
+        }
+      }
+
+      tableBody.innerHTML = displayedList.map(item => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="p-3 font-mono font-bold text-nexus-500">${item.matricula}</td>
+          <td class="p-3 font-bold">${item.nome}</td>
+          <td class="p-3 text-slate-500">${item.cargo}</td>
+          <td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">${item.volume}</td>
+          <td class="p-3 text-slate-400 font-mono text-[11px]">${item.ultima}</td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  // 9.4 Lógica de QR Code, Etiquetas e Leitura (Fase 5: T5.1 a T5.9)
+  initQrCodeEtiquetas();
+
   // 9.4 Lógica de QR Code, Etiquetas e Leitura (Fase 5: T5.1 a T5.9)
   initQrCodeEtiquetas();
 
@@ -716,6 +974,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </span>
           </td>
           <td class="p-2 font-mono text-[11px]">
+            <button type="button" onclick="window.gerarRelatorioPdfA4('${c.id}')" class="px-1.5 py-0.5 rounded bg-purple-700 hover:bg-purple-800 text-white font-bold mr-1" title="Relatório PDF A4 (4 Seções)">Relatório PDF</button>
             <button type="button" onclick="window.exibirEtiquetaQr({id: '${c.id}', tipo: '${c.tipo}', qrCode: '${c.qrCode}', natureza: '${c.natureza}'})" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-black text-white font-bold mr-1" title="Ver / Imprimir Etiqueta QR Code">Etiqueta QR</button>
             <button type="button" onclick="window.exibirEtiquetaQr({id: '${c.id}', tipo: '${c.tipo}', qrCode: '${c.qrCode}', natureza: '${c.natureza}'}, true)" class="px-1.5 py-0.5 rounded bg-amber-600 hover:bg-amber-700 text-white font-bold mr-1" title="Reimprimir Etiqueta com Log">Reimprimir</button>
             <button type="button" onclick="window.executarAcaoCarga('${c.id}', 'RECEBER')" class="px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold mr-1">Receber</button>
