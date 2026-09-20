@@ -316,6 +316,163 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 9.6 Lógica de Manutenções e Emergências (Fase 4: T4.1 a T4.10)
+  initManutencaoEmergencia();
+
+  function initManutencaoEmergencia() {
+    const toggleOsBtn = document.getElementById('toggleOsFormBtn');
+    const osForm = document.getElementById('osForm');
+    const osTableBody = document.getElementById('osTableBody');
+
+    const panicBtn = document.getElementById('panicButton');
+    const resetEmergencyBtn = document.getElementById('resetEmergencyBtn');
+    const emergencyAlertBanner = document.getElementById('emergencyAlertBanner');
+
+    const toggleIncidenteBtn = document.getElementById('toggleIncidenteBtn');
+    const incidenteForm = document.getElementById('incidenteForm');
+
+    // Mocks de Ordens de Serviço (OS)
+    let osList = JSON.parse(localStorage.getItem('nexus_os_list') || 'null');
+    if (!osList) {
+      osList = [
+        { id: 'OS-2026-001', equipamento: 'GND-01-STS', prioridade: 'ALTA', descricao: 'Desgaste nas roldanas de içamento', status: 'PENDENTE_APROVACAO', data: new Date().toISOString().split('T')[0] },
+        { id: 'OS-2026-002', equipamento: 'MSCU-102938-4', prioridade: 'MEDIA', descricao: 'Vazamento na vedação de borracha', status: 'EM_MANUTENCAO', data: new Date().toISOString().split('T')[0] }
+      ];
+      localStorage.setItem('nexus_os_list', JSON.stringify(osList));
+    }
+
+    function renderOsTable() {
+      if (!osTableBody) return;
+      osTableBody.innerHTML = osList.map(os => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="p-2 font-mono font-bold text-nexus-500">${os.id}</td>
+          <td class="p-2 font-bold">${os.equipamento}</td>
+          <td class="p-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+              os.prioridade === 'ALTA' ? 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300' :
+              os.prioridade === 'MEDIA' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' :
+              'bg-slate-100 text-slate-800'
+            }">${os.prioridade}</span>
+          </td>
+          <td class="p-2">${os.descricao}</td>
+          <td class="p-2 font-mono text-xs">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+              os.status === 'EM_MANUTENCAO' ? 'bg-amber-100 text-amber-800' :
+              os.status === 'CONCLUIDA' ? 'bg-emerald-100 text-emerald-800' :
+              os.status === 'REPROVADA' ? 'bg-red-100 text-red-800' :
+              'bg-blue-100 text-blue-800'
+            }">${os.status}</span>
+          </td>
+          <td class="p-2 font-mono text-[11px]">
+            ${os.status === 'PENDENTE_APROVACAO' ? `
+              <button type="button" onclick="window.executarAcaoOS('${os.id}', 'APROVAR')" class="px-1.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold mr-1">Aprovar</button>
+              <button type="button" onclick="window.executarAcaoOS('${os.id}', 'REPROVAR')" class="px-1.5 py-0.5 rounded bg-red-600 hover:bg-red-700 text-white font-bold">Reprovar</button>
+            ` : os.status === 'EM_MANUTENCAO' ? `
+              <button type="button" onclick="window.executarAcaoOS('${os.id}', 'CONCLUIR')" class="px-1.5 py-0.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold">Concluir Manutenção</button>
+            ` : `<span class="text-slate-400 font-sans italic">Finalizada</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    if (toggleOsBtn && osForm) {
+      toggleOsBtn.addEventListener('click', () => osForm.classList.toggle('hidden'));
+    }
+
+    if (osForm) {
+      osForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const equipamento = document.getElementById('osEquipamento').value;
+        const prioridade = document.getElementById('osPrioridade').value;
+        const descricao = document.getElementById('osDescricao').value.trim();
+
+        const newId = `OS-2026-${Math.floor(100 + Math.random() * 900)}`;
+        osList.push({
+          id: newId, equipamento, prioridade, descricao,
+          status: 'PENDENTE_APROVACAO', data: new Date().toISOString().split('T')[0]
+        });
+
+        localStorage.setItem('nexus_os_list', JSON.stringify(osList));
+        renderOsTable();
+        osForm.reset();
+        osForm.classList.add('hidden');
+        alert(`Ordem de Serviço ${newId} criada com sucesso para ${equipamento}! Enviada para aprovação do Supervisor.`);
+      });
+    }
+
+    renderOsTable();
+
+    // Handler global de ações de OS (T4.2, T4.3, T4.4, T4.5)
+    window.executarAcaoOS = function(idOS, acao) {
+      const os = osList.find(o => o.id === idOS);
+      if (!os) return;
+
+      if (acao === 'APROVAR') {
+        os.status = 'EM_MANUTENCAO';
+        alert(`Ordem de Serviço ${idOS} APROVADA pelo Supervisor! Equipamento ${os.equipamento} atualizado para o estado EM_MANUTENCAO e bloqueado temporariamente para operações.`);
+      } else if (acao === 'REPROVAR') {
+        os.status = 'REPROVADA';
+        alert(`Ordem de Serviço ${idOS} REPROVADA pelo Supervisor.`);
+      } else if (acao === 'CONCLUIR') {
+        os.status = 'CONCLUIDA';
+        alert(`Manutenção da OS ${idOS} CONCLUÍDA! Equipamento ${os.equipamento} reativado e liberado para uso no estado OPERANTE.`);
+      }
+
+      localStorage.setItem('nexus_os_list', JSON.stringify(osList));
+      renderOsTable();
+    };
+
+    // Protocolos de Emergência (T4.6 - T4.10)
+    if (panicBtn) {
+      panicBtn.addEventListener('click', () => {
+        if (confirm('ATENÇÃO: Deseja acionar o BOTÃO DE PÂNICO e declarar EMERGÊNCIA CRÍTICA no Terminal STS-01?')) {
+          localStorage.setItem('nexus_emergency_active', 'true');
+          if (emergencyAlertBanner) emergencyAlertBanner.classList.remove('hidden');
+          alert('EMERGÊNCIA CRÍTICA DECLARADA! Alarme sonoro/visual ativado. Pátio STS-01 bloqueado temporariamente para operações de movimentação.');
+        }
+      });
+    }
+
+    if (resetEmergencyBtn) {
+      resetEmergencyBtn.addEventListener('click', () => {
+        if (confirm('Confirmar desativação do alarme de emergência e liberação do pátio?')) {
+          localStorage.removeItem('nexus_emergency_active');
+          if (emergencyAlertBanner) emergencyAlertBanner.classList.add('hidden');
+          alert('Alarme de emergência desativado com sucesso. Retorno às operações normais liberado.');
+        }
+      });
+    }
+
+    if (localStorage.getItem('nexus_emergency_active') === 'true') {
+      if (emergencyAlertBanner) emergencyAlertBanner.classList.remove('hidden');
+    }
+
+    if (toggleIncidenteBtn && incidenteForm) {
+      toggleIncidenteBtn.addEventListener('click', () => incidenteForm.classList.toggle('hidden'));
+    }
+
+    if (incidenteForm) {
+      incidenteForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const local = document.getElementById('incLocal').value.trim();
+        const tipo = document.getElementById('incTipo').value;
+        const gravidade = document.getElementById('incGravidade').value;
+        const descricao = document.getElementById('incDescricao').value.trim();
+
+        const incidentes = JSON.parse(localStorage.getItem('nexus_incidentes') || '[]');
+        incidentes.push({
+          id: `INC-2026-${Math.floor(100 + Math.random() * 900)}`,
+          local, tipo, gravidade, descricao, data: new Date().toISOString()
+        });
+
+        localStorage.setItem('nexus_incidentes', JSON.stringify(incidentes));
+        incidenteForm.reset();
+        incidenteForm.classList.add('hidden');
+        alert('Relatório de Incidente pós-emergência registrado com sucesso para auditoria!');
+      });
+    }
+  }
+
   // 9.5 Lógica do Fluxo de Cargas (Fase 3: Core Business - T3.1 a T3.24)
   initFluxoCargas();
 
