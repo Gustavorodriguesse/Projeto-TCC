@@ -32,7 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     { codigo: 'NX-4070-PL', matricula: 'MAT-4070', nome: 'Fernanda Lima', cargo: 'PLANEJADOR_PATIO_NAVIOS', ativo: true },
     { codigo: 'NX-5080-TC', matricula: 'MAT-5080', nome: 'Lucas Mendes', cargo: 'TECNICO_PORTOS', ativo: true },
     { codigo: 'NX-6090-IN', matricula: 'MAT-6090', nome: 'Patricia Rocha', cargo: 'INSPETOR', ativo: true },
-    { codigo: 'NX-7010-DIR', matricula: 'MAT-7010', nome: 'Dr. Eduardo Costa', cargo: 'DIRETOR_OPERACOES_LOGISTICA', ativo: true }
+    { codigo: 'NX-7010-DIR', matricula: 'MAT-7010', nome: 'Dr. Eduardo Costa', cargo: 'DIRETOR_OPERACOES_LOGISTICA', ativo: true },
+    { codigo: 'TEC-1001', matricula: 'MAT-1001', nome: 'Lucas Mendes', cargo: 'TECNICO_PORTOS', ativo: true },
+    { codigo: 'SUP-2001', matricula: 'MAT-2001', nome: 'Carlos Silva', cargo: 'SUPERVISOR_GERENTE_OPERACOES', ativo: true },
+    { codigo: 'INS-6090', matricula: 'MAT-6090', nome: 'Patricia Rocha', cargo: 'INSPETOR', ativo: true }
   ];
 
   // 1. Gestão de Tema Claro / Escuro (Dark Mode)
@@ -184,7 +187,38 @@ document.addEventListener('DOMContentLoaded', () => {
             employeeFound = { ...baseEmp, codigo: codeValue, codigo_individual: codeValue };
           }
         } else {
-          employeeFound = mockEmployees.find(emp => emp.codigo === codeValue && emp.ativo);
+          // Busca por código exato ou matrícula
+          employeeFound = mockEmployees.find(emp => (emp.codigo === codeValue || emp.matricula === codeValue) && emp.ativo);
+
+          // Se não encontrou, realiza busca flexível por prefixo de código / cargo
+          if (!employeeFound) {
+            const upperCode = codeValue.toUpperCase();
+            let matchedCargo = null;
+            if (upperCode.startsWith('TEC-') || upperCode.startsWith('TC-')) {
+              matchedCargo = 'TECNICO_PORTOS';
+            } else if (upperCode.startsWith('SUP-')) {
+              matchedCargo = 'SUPERVISOR_GERENTE_OPERACOES';
+            } else if (upperCode.startsWith('EST-') || upperCode.startsWith('OP-')) {
+              matchedCargo = 'ESTIVADOR';
+            } else if (upperCode.startsWith('CONF-') || upperCode.startsWith('CF-')) {
+              matchedCargo = 'CONFERENTE_CARGA';
+            } else if (upperCode.startsWith('ARR-') || upperCode.startsWith('AR-')) {
+              matchedCargo = 'ARRUMADOR_CONSERTADOR';
+            } else if (upperCode.startsWith('PLAN-') || upperCode.startsWith('PL-')) {
+              matchedCargo = 'PLANEJADOR_PATIO_NAVIOS';
+            } else if (upperCode.startsWith('INSP-') || upperCode.startsWith('INS-') || upperCode.startsWith('IN-')) {
+              matchedCargo = 'INSPETOR';
+            } else if (upperCode.startsWith('DIR-')) {
+              matchedCargo = 'DIRETOR_OPERACOES_LOGISTICA';
+            }
+
+            if (matchedCargo) {
+              const baseEmp = mockEmployees.find(emp => emp.cargo === matchedCargo && emp.ativo);
+              if (baseEmp) {
+                employeeFound = { ...baseEmp, codigo: codeValue, codigo_individual: codeValue };
+              }
+            }
+          }
         }
       }
 
