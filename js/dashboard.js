@@ -1030,13 +1030,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    function getQrPayloadUrl(codeValue) {
+      const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+      return `${baseUrl}/dashboard.html?scan=${encodeURIComponent(codeValue)}`;
+    }
+
     // Função para abrir modal e exibir QR Code gerado em tempo real (T5.1, T5.2)
     window.exibirEtiquetaQr = function(entityData, isReimpressao = false) {
       currentEntityData = entityData;
       if (!qrModal || !qrCanvas) return;
 
       const entityId = entityData.id || entityData.codigo;
-      const qrData = entityData.qrCode || `QR-${entityId}`;
+      const rawCode = entityData.qrCode || `QR-${entityId}`;
+      const qrPayload = getQrPayloadUrl(rawCode);
       const typeLabel = entityData.tipo || entityData.tipo_carga || 'Contêiner / Carga';
       const subLabel = `Data: ${new Date().toLocaleDateString('pt-BR')} • Ref: ${entityData.navio || entityData.natureza || 'STS-01'}`;
 
@@ -1045,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (qrModalEntitySub) qrModalEntitySub.textContent = subLabel;
 
       if (typeof QRCode !== 'undefined') {
-        QRCode.toCanvas(qrCanvas, qrData, { width: 180, margin: 1 }, function (error) {
+        QRCode.toCanvas(qrCanvas, qrPayload, { width: 180, margin: 1 }, function (error) {
           if (error) console.error(error);
         });
       }
@@ -1147,7 +1153,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Processador de Leitura com Redirecionamento Direcionado por Cargo (T5.7, T5.8, T5.9)
-    function processarLeituraQr(qrCodeText) {
+    function processarLeituraQr(rawCode) {
+      let qrCodeText = rawCode;
+      if (rawCode && (rawCode.includes('?scan=') || rawCode.includes('?qr='))) {
+        try {
+          const parsed = new URL(rawCode, window.location.origin);
+          qrCodeText = parsed.searchParams.get('scan') || parsed.searchParams.get('qr') || rawCode;
+        } catch (e) {}
+      }
+
       // Validar Autenticação (T5.9)
       if (!session || !session.codigo_individual) {
         alert('Acesso Negado: Dispositivo/Usuário não autenticado no sistema!');
@@ -1184,6 +1198,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       alert(`LEITURA DO QR CODE BEM-SUCEDIDA!\n\nDados Codificados: ${qrCodeText}\n\n${acaoMensagem}`);
+    }
+
+    // Leitura automática se acessado via URL de QR Code (?scan=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const scanParam = urlParams.get('scan') || urlParams.get('qr');
+    if (scanParam) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => {
+        processarLeituraQr(scanParam);
+      }, 500);
     }
   }
 
