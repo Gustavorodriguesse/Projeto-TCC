@@ -22,7 +22,7 @@ async def verify_t1_8():
 
         await page.goto("http://localhost:3000/index.html")
         await page.evaluate(f"sessionStorage.setItem('nexus_session', JSON.stringify({session_tecnico}));")
-        await page.goto("http://localhost:3000/dashboard.html")
+        await page.goto("http://localhost:3000/tecnico_portos.html")
         await page.wait_for_selector("#headerUserName")
 
         print("[TEST T1.8] Painel do Técnico em Portos carregado. Buscando funcionário MAT-1040...")

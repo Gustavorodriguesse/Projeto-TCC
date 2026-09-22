@@ -27,15 +27,15 @@ async def main():
             localStorage.removeItem('nexus_cargas_fluxo');
         }""")
 
-        await page.goto("http://localhost:3000/dashboard.html")
-        await page.wait_for_selector("#fluxoCargasPanel")
+        await page.goto("http://localhost:3000/cargas.html")
+        await page.wait_for_selector("#cargasTableBody")
 
-        print("Testing Phase 3 Flow...")
+        print("Testing Phase 3 Flow on cargas.html...")
 
-        # Unified dialog handler
         dialog_messages = []
 
         async def handle_dialog(dialog):
+            print("Dialog message:", dialog.message)
             dialog_messages.append(dialog.message)
             if "Contêiner" in dialog.message:
                 await dialog.accept("CONT-992")
@@ -46,35 +46,27 @@ async def main():
             else:
                 await dialog.accept()
 
-        page.on("dialog", handle_dialog)
+        page.on("dialog", lambda d: asyncio.create_task(handle_dialog(d)))
 
-        # 1. Test PRONTA_PARA_ENTREGA for item in ARMAZENAGEM (CRG-2026-002)
-        pronta_btns = await page.query_selector_all('button:has-text("Pronta")')
-        if pronta_btns:
-            await pronta_btns[1].click()
-            await page.wait_for_timeout(300)
+        # 1. Test PRONTA_PARA_ENTREGA
+        await page.click('button:has-text("Pronta")')
+        await page.wait_for_timeout(500)
 
         # 2. Test Supervisor Release (EM_TRANSITO)
-        liberar_btns = await page.query_selector_all('button:has-text("Liberar")')
-        if liberar_btns:
-            await liberar_btns[1].click()
-            await page.wait_for_timeout(300)
+        await page.click('button:has-text("Liberar")')
+        await page.wait_for_timeout(500)
 
         # 3. Test Delivery Confirmation (T3.20 - T3.22)
-        entregar_btns = await page.query_selector_all('button:has-text("Entregar")')
-        if entregar_btns:
-            await entregar_btns[1].click()
-            await page.wait_for_timeout(300)
-            assert any("ENTREGUE" in msg for msg in dialog_messages), f"Delivery dialog expected, got: {dialog_messages}"
-            print("1. Delivery propagation test passed.")
+        await page.click('button:has-text("Entregar")')
+        await page.wait_for_timeout(500)
+        assert any("ENTREGUE" in msg or "entregue" in msg for msg in dialog_messages), f"Delivery dialog expected, got: {dialog_messages}"
+        print("1. Delivery propagation test passed.")
 
         # 4. Test Cancellation with mandatory reason logging (T3.23 - T3.24)
-        cancelar_btns = await page.query_selector_all('button:has-text("Cancelar")')
-        if cancelar_btns:
-            await cancelar_btns[2].click() # CRG-2026-003 in PRONTA_PARA_ENTREGA
-            await page.wait_for_timeout(300)
-            assert any("CANCELADA" in msg for msg in dialog_messages), "Cancellation dialog expected"
-            print("2. Cancellation with mandatory reason test passed.")
+        await page.click('button:has-text("Cancelar")')
+        await page.wait_for_timeout(500)
+        assert any("CANCELADA" in msg or "cancelada" in msg for msg in dialog_messages), f"Cancellation dialog expected, got: {dialog_messages}"
+        print("2. Cancellation with mandatory reason test passed.")
 
         await page.screenshot(path="verification_phase3_final.png")
         print("Phase 3 full flow verification complete! Screenshot saved.")

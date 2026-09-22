@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTable() {
     if (!cargasTableBody) return;
 
-    // Filtra cargas conforme Camada de Visão (T1.4, T1.5, T1.6)
-    const userItems = NexusVision.getMockVisaoData('cargas', session);
+    cargasFluxoList = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+    const userItems = cargasFluxoList;
 
     cargasTableBody.innerHTML = userItems.map(c => {
       // Determina quais botões de ação são VISÍVEIS para o CARGO LOGADO (RF 1 / Spec.md)
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (motivo) {
         carga.status = 'CANCELADA';
         carga.motivoCancelamento = motivo;
-        alert(`Carga ${idCarga} cancelada pelo Supervisor.`);
+        alert(`Entrega da carga ${idCarga} CANCELADA pelo Supervisor. Motivo registrado: "${motivo}".`);
       }
     }
 

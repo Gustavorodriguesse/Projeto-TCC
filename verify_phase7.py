@@ -24,7 +24,7 @@ async def main():
         await page.goto("http://localhost:3000/dashboard.html")
         await page.wait_for_selector("#auditLogPanel")
 
-        print("Testing Phase 7 Flow...")
+        print("Testing Phase 7 Flow on dashboard.html & delegacao.html...")
 
         dialog_messages = []
         async def handle_dialog(dialog):
@@ -36,12 +36,12 @@ async def main():
 
         page.on("dialog", handle_dialog)
 
-        # 1. Test Audit Log Table (T7.1, T7.2)
+        # 1. Test Audit Log Table on dashboard.html (T7.1, T7.2)
         audit_rows = await page.query_selector_all("#auditLogTableBody tr")
         assert len(audit_rows) > 0, "Audit log rows expected"
         print("1. Audit Log rendering passed.")
 
-        # 2. Test Critical Decision Trail & Rectification Attachment (T7.3, T7.4, T7.5)
+        # 2. Test Critical Decision Trail & Rectification Attachment on dashboard.html (T7.3, T7.4, T7.5)
         trail_rows = await page.query_selector_all("#trailDecisoesTableBody tr")
         assert len(trail_rows) > 0, "Trail rows expected"
 
@@ -53,8 +53,9 @@ async def main():
             assert any("Retificação vinculada com sucesso" in msg for msg in dialog_messages), "Rectification success alert expected"
             print("2. Decision trail & rectification attachment passed.")
 
-        # 3. Test Supervisor Delegation Flow & Active Rule Limit (T7.6, T7.7, T7.8, T7.9)
-        await page.wait_for_selector("#delegacaoSupervisorPanel:not(.hidden)")
+        # 3. Test Supervisor Delegation Flow & Active Rule Limit on delegacao.html (T7.6, T7.7, T7.8, T7.9)
+        await page.goto("http://localhost:3000/delegacao.html")
+        await page.wait_for_selector("#delegacaoForm")
 
         await page.fill("#delegSubstitutoMatricula", "MAT-6090")
         await page.fill("#delegDataInicio", "2026-10-01T08:00")
