@@ -10,7 +10,7 @@
 ## 📌 Tarefas
 
 ### 1. Painel Geral — cards abrindo no centro da tela
-Quando o usuário clica para abrir um card, a informação aparece fora do lugar. Fazer com que as informações abram **no meio da tela**, em um modal centralizado:
+Quando o usuário clica para abrir um card, a informação aparece fora do lugar, elas aparecem como um alert(). Fazer com que as informações abram **no meio da tela**, em um modal centralizado:
 - Modal sobreposto com backdrop escurecido e botão de fechar (X).
 - Fechar ao clicar fora do modal ou pressionar `Esc`.
 
@@ -43,6 +43,12 @@ Deixar as páginas **Delegação** e **Relatório/PDF** mais organizadas, com es
 
 ### 8. Logo oficial
 Substituir a logo provisória (a letra **"N"** criada anteriormente) pela **logo oficial que está na pasta `design`** do repositório — em todas as telas (favicon, cabeçalho/sidebar e login).
+
+### 9. Modo noturno
+Quando o modo noturno está selecionado e muda de página html ele volta para o modo claro, se o modo noturno está ativado ele deve se manter ativado até que a pessoa altere para o modo claro
+
+### Localização de funcionários
+Na página de gestão de pessoas a localização de funcionários não está funcionando, quando um funcionário for cadastrado a matrícula dele já deve estar disponível para a localização de funcionários
 
 ---
 
