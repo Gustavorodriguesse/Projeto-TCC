@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>NexusPort — Inspeção & Checklist</title>
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'nexus-900': '#1E293B',
+            'nexus-500': '#445987',
+            'nexus-bg': '#F5F7FA',
+            'nexus-text': '#222222',
+            'nexus-border': '#E1E5ED',
+            'nexus-dark-bg': '#0F172A',
+            'nexus-dark-card': '#1E293B',
+            'nexus-dark-border': '#334155',
+            'success': '#2E7D32',
+            'warning': '#D97706',
+            'danger': '#C62828',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Montserrat', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <script src="js/auth-guard.js"></script>
+  <script>window.currentUserSession = NexusAuth.requireAuth();</script>
+  <script src="js/vision-layer.js"></script>
+  <script src="js/layout.js"></script>
+</head>
+<body class="bg-nexus-bg dark:bg-nexus-dark-bg text-nexus-text dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Topbar Superior -->
+  <header id="appTopbar"></header>
+
+  <!-- Layout Principal -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Sidebar Navegação -->
+    <aside id="appSidebar"></aside>
+
+    <!-- Conteúdo da Página -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      <div class="max-w-4xl mx-auto flex flex-col gap-6">
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-6 rounded-2xl border border-nexus-border dark:border-nexus-dark-border shadow-sm">
+          <div>
+            <div class="flex items-center gap-2 text-nexus-500 font-mono text-xs font-bold uppercase tracking-wider">
+              <span class="material-symbols-outlined text-sm">fact_check</span>
+              <span>Inspeção Técnica Formal</span>
+            </div>
+            <h1 class="font-display text-2xl font-bold text-nexus-900 dark:text-white mt-1">Checklist Técnico de Carga</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Validação de conformidade técnica para liberação e armazenagem (RF 9 / RN 14).</p>
+          </div>
+          <div class="p-3 rounded-xl bg-nexus-50 dark:bg-slate-800 text-nexus-500 font-mono font-bold text-xs">
+            Exclusivo Inspetor
+          </div>
+        </div>
+
+        <!-- Seletor de Carga em Inspeção -->
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-nexus-border dark:border-nexus-dark-border shadow-sm flex flex-col gap-4">
+          <label class="block font-bold text-xs uppercase text-slate-500">Selecione a Carga para Vistoria Técnico-Operacional</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <select id="inspecaoCargaSelect" class="sm:col-span-2 px-3 py-2 rounded-xl border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono text-sm font-bold">
+              <option value="">Selecione uma Carga...</option>
+            </select>
+            <button id="carregarChecklistBtn" type="button" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs transition-colors">
+              Carregar Checklist
+            </button>
+          </div>
+        </div>
+
+        <!-- Form do Checklist Dinâmico com Regra dos 100% Críticos (RN 14) -->
+        <div id="checklistFormContainer" class="hidden bg-white dark:bg-slate-900 p-6 rounded-2xl border border-nexus-border dark:border-nexus-dark-border shadow-sm flex flex-col gap-6">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-4">
+            <div>
+              <span id="cargaInspecionadaTag" class="font-mono text-xs font-bold text-nexus-500">--</span>
+              <h2 id="checklistTitulo" class="font-display font-bold text-lg text-nexus-900 dark:text-white">Checklist de Conformidade</h2>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-mono text-xs font-bold">
+              Inspeção em Andamento
+            </span>
+          </div>
+
+          <!-- Notice de Regra de Negócio RN 14 -->
+          <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5">
+            <span class="material-symbols-outlined text-[20px] text-amber-600 shrink-0 mt-0.5">warning</span>
+            <span>
+              <strong>Trava de Segurança RN 14:</strong> A aprovação da carga só é liberada se <strong>100% dos itens críticos</strong> do checklist forem avaliados como "Conforme". Caso contrário, a carga será recusada.
+            </span>
+          </div>
+
+          <!-- Tabela/Lista de Itens do Checklist -->
+          <div id="checklistItemsList" class="flex flex-col gap-3">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+
+          <!-- Motivo de Recusa (caso haja item crítico não conforme) -->
+          <div id="motivoRecusaBox" class="hidden flex flex-col gap-2 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900">
+            <label class="block font-bold text-xs text-red-900 dark:text-red-300 uppercase">Motivo Formal da Recusa (Texto Livre Obrigatório)</label>
+            <textarea id="motivoRecusaInput" rows="2" placeholder="Descreva os itens não-conformes identificados e os riscos associados..." class="w-full px-3 py-2 rounded-lg border border-red-300 dark:border-red-800 bg-white dark:bg-slate-900 text-xs"></textarea>
+          </div>
+
+          <!-- Botoes de Decisão -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-nexus-border dark:border-nexus-dark-border">
+            <button id="recusarCargaBtn" type="button" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">cancel</span>
+              <span>Recusar Carga</span>
+            </button>
+            <button id="aprovarCargaBtn" type="button" disabled class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined text-[18px]">check_circle</span>
+              <span>Aprovar Carga (100% Críticos OK)</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.example.js"></script>
+  <script src="js/config.js" onerror="this.remove()"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/inspecao.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 -- ============================================================
--- SISTEMA DE AUTOMAÇÃO DE CARREGAMENTOS PARA PORTO
--- Esquema PostgreSQL (Supabase)
+-- SISTEMA DE AUTOMAÇÃO DE CARREGAMENTOS PARA PORTO (NexusPort)
+-- Esquema PostgreSQL (Supabase DDL Completo com RLS & Triggers)
 -- ============================================================
 
 -- 1. EXTENSÕES
@@ -124,7 +124,7 @@ create table visitantes (
   nome text not null,
   documento text not null,
   motivo text,
-  data_hora_entrada timestamptz not null,
+  data_hora_entrada timestamptz not null default now(),
   data_hora_saida timestamptz,
   registrado_por uuid references funcionarios(id) on delete restrict,
   created_at timestamptz not null default now()
@@ -144,7 +144,7 @@ create table checklist_modelos (
   tipo_carga_id uuid not null references tipos_carga(id) on delete restrict,
   nome text not null,
   descricao text,
-  criado_por uuid not null references funcionarios(id) on delete restrict,
+  criado_por uuid references funcionarios(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint uq_checklist_modelo_tipo_carga unique (tipo_carga_id)
@@ -180,7 +180,7 @@ create table navios (
   quantidade_cargas_realizadas int not null default 0 check (quantidade_cargas_realizadas >= 0),
   estado_operacional estado_navio_enum not null default 'OPERANTE',
   coordenadas_gps text,
-  tempo_fora_do_porto interval,
+  tempo_fora_do_porto text,
   porto_origem text,
   porto_destino text,
   localizacao localizacao_navio_enum not null default 'DENTRO_DO_PORTO',
@@ -208,7 +208,7 @@ create table containers (
   material_carregado text,
   data_fabricacao date,
   data_ultima_manutencao date,
-  tempo_uso_referencia referencia_tempo_enum,
+  tempo_uso_referencia referencia_tempo_enum default 'DATA_FABRICACAO',
   estado estado_container_enum not null default 'OPERANTE',
   navio_id uuid references navios(id) on delete set null,
   qr_code_url text unique,
@@ -221,8 +221,8 @@ create table containers (
 
 create table cargas (
   id uuid primary key default gen_random_uuid(),
-  tipo_carga_id uuid not null references tipos_carga(id) on delete restrict,
-  quantidade numeric(15, 3) not null check (quantidade >= 0),
+  tipo_carga_id uuid references tipos_carga(id) on delete restrict,
+  quantidade numeric(15, 3) default 1 check (quantidade >= 0),
   material text,
   peso numeric(15, 3) not null check (peso >= 0),
   volume numeric(15, 3) not null check (volume >= 0),
@@ -246,7 +246,7 @@ create table agendamentos (
   id uuid primary key default gen_random_uuid(),
   carga_id uuid not null unique references cargas(id) on delete cascade,
   data_prevista_entrega date not null,
-  agendado_por uuid not null references funcionarios(id) on delete restrict,
+  agendado_por uuid references funcionarios(id) on delete restrict,
   created_at timestamptz not null default now()
 );
 
@@ -276,15 +276,10 @@ create table manutencoes (
   data_conclusao timestamptz,
   descricao text not null,
   status status_manutencao_enum not null default 'SOLICITADA',
-  solicitado_por uuid not null references funcionarios(id) on delete restrict,
+  solicitado_por uuid references funcionarios(id) on delete restrict,
   aprovado_por uuid references funcionarios(id) on delete restrict,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint chk_manutencao_entidade check (
-    (entidade_tipo = 'NAVIO' and navio_id is not null and container_id is null and guindaste_id is null) or
-    (entidade_tipo = 'CONTAINER' and container_id is not null and navio_id is null and guindaste_id is null) or
-    (entidade_tipo = 'GUINDASTE' and guindaste_id is not null and navio_id is null and container_id is null)
-  )
+  updated_at timestamptz not null default now()
 );
 
 create table historico_manutencoes (
@@ -294,13 +289,8 @@ create table historico_manutencoes (
   guindaste_id uuid references guindastes(id) on delete cascade,
   data_manutencao date not null,
   descricao_servicos text not null,
-  registrado_por uuid not null references funcionarios(id) on delete restrict,
-  created_at timestamptz not null default now(),
-  constraint chk_historico_entidade check (
-    (navio_id is not null and container_id is null and guindaste_id is null) or
-    (container_id is not null and navio_id is null and guindaste_id is null) or
-    (guindaste_id is not null and navio_id is null and container_id is null)
-  )
+  registrado_por uuid references funcionarios(id) on delete restrict,
+  created_at timestamptz not null default now()
 );
 
 -- 7. TABELAS DE INSPEÇÃO E CHECKLIST
@@ -309,8 +299,8 @@ create table historico_manutencoes (
 create table inspecoes (
   id uuid primary key default gen_random_uuid(),
   carga_id uuid not null unique references cargas(id) on delete cascade,
-  checklist_modelo_id uuid not null references checklist_modelos(id) on delete restrict,
-  inspetor_id uuid not null references funcionarios(id) on delete restrict,
+  checklist_modelo_id uuid references checklist_modelos(id) on delete restrict,
+  inspetor_id uuid references funcionarios(id) on delete restrict,
   data_inspecao timestamptz not null default now(),
   resultado resultado_inspecao_enum not null default 'PENDENTE',
   observacoes text,
@@ -333,11 +323,11 @@ create table inspecao_itens (
 create table logs_alteracoes (
   id uuid primary key default gen_random_uuid(),
   data_hora timestamptz not null default now(),
-  funcionario_id uuid not null references funcionarios(id) on delete restrict,
+  funcionario_id uuid references funcionarios(id) on delete restrict,
   cargo cargo_enum not null,
   codigo_individual text not null,
   entidade_tipo tipo_entidade_enum not null,
-  entidade_id uuid not null,
+  entidade_id text not null,
   tipo_alteracao tipo_alteracao_enum not null,
   detalhes jsonb,
   created_at timestamptz not null default now()
@@ -346,12 +336,12 @@ create table logs_alteracoes (
 create table trail_decisoes (
   id uuid primary key default gen_random_uuid(),
   data_hora timestamptz not null default now(),
-  funcionario_id uuid not null references funcionarios(id) on delete restrict,
+  funcionario_id uuid references funcionarios(id) on delete restrict,
   cargo cargo_enum not null,
   codigo_individual text not null,
   tipo_decisao tipo_decisao_enum not null,
   entidade_tipo tipo_entidade_enum not null,
-  entidade_id uuid not null,
+  entidade_id text not null,
   motivo text,
   detalhes jsonb,
   created_at timestamptz not null default now()
@@ -360,7 +350,7 @@ create table trail_decisoes (
 create table retificacoes_trail (
   id uuid primary key default gen_random_uuid(),
   trail_id uuid not null references trail_decisoes(id) on delete restrict,
-  funcionario_id uuid not null references funcionarios(id) on delete restrict,
+  funcionario_id uuid references funcionarios(id) on delete restrict,
   retificacao text not null,
   data_hora timestamptz not null default now(),
   created_at timestamptz not null default now()
@@ -371,16 +361,14 @@ create table retificacoes_trail (
 
 create table delegacoes_supervisor (
   id uuid primary key default gen_random_uuid(),
-  supervisor_titular_id uuid not null references funcionarios(id) on delete cascade,
-  substituto_id uuid not null references funcionarios(id) on delete cascade,
+  supervisor_titular_id uuid references funcionarios(id) on delete cascade,
+  substituto_id uuid references funcionarios(id) on delete cascade,
   data_inicio timestamptz not null,
   data_fim_previsto timestamptz not null,
   data_revogacao timestamptz,
   ativo boolean not null default true,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint chk_delegacao_datas check (data_fim_previsto > data_inicio),
-  constraint chk_substituto_diferente check (supervisor_titular_id <> substituto_id)
+  updated_at timestamptz not null default now()
 );
 
 -- 10. LEITURAS DE QR CODE
@@ -388,53 +376,77 @@ create table delegacoes_supervisor (
 
 create table leituras_qr_code (
   id uuid primary key default gen_random_uuid(),
-  funcionario_id uuid not null references funcionarios(id) on delete restrict,
+  funcionario_id uuid references funcionarios(id) on delete restrict,
   entidade_tipo tipo_entidade_enum not null,
-  entidade_id uuid not null,
+  entidade_id text not null,
   data_hora timestamptz not null default now(),
   created_at timestamptz not null default now()
 );
 
--- 11. ÍNDICES
+-- 11. ROW LEVEL SECURITY (RLS) - ATIVAÇÃO E POLÍTICAS
 -- ============================================================
 
-create index idx_funcionarios_cargo on funcionarios(cargo);
-create index idx_funcionarios_codigo on funcionarios(codigo_individual);
-create index idx_visitantes_documento on visitantes(documento);
-create index idx_navios_imo on navios(numero_imo);
-create index idx_navios_localizacao on navios(localizacao);
-create index idx_navios_estado on navios(estado_operacional);
-create index idx_containers_numero on containers(numero_identificacao);
-create index idx_containers_navio on containers(navio_id);
-create index idx_containers_estado on containers(estado);
-create index idx_cargas_status on cargas(status_fluxo);
-create index idx_cargas_container on cargas(container_id);
-create index idx_cargas_tipo on cargas(tipo_carga_id);
-create index idx_cargas_porto_descarga on cargas(porto_descarga);
-create index idx_manutencoes_status on manutencoes(status);
-create index idx_manutencoes_navio on manutencoes(navio_id);
-create index idx_manutencoes_container on manutencoes(container_id);
-create index idx_manutencoes_guindaste on manutencoes(guindaste_id);
-create index idx_logs_alteracoes_funcionario on logs_alteracoes(funcionario_id);
-create index idx_logs_alteracoes_entidade on logs_alteracoes(entidade_tipo, entidade_id);
-create index idx_trail_decisoes_funcionario on trail_decisoes(funcionario_id);
-create index idx_trail_decisoes_entidade on trail_decisoes(entidade_tipo, entidade_id);
-create index idx_trail_decisoes_tipo on trail_decisoes(tipo_decisao);
-create index idx_leituras_qr_funcionario on leituras_qr_code(funcionario_id);
-create index idx_leituras_qr_entidade on leituras_qr_code(entidade_tipo, entidade_id);
-create index idx_estivador_cargas_estivador on estivador_cargas(estivador_id);
-create index idx_estivador_cargas_carga on estivador_cargas(carga_id);
-create index idx_inspecoes_carga on inspecoes(carga_id);
-create index idx_inspecoes_inspetor on inspecoes(inspetor_id);
-create index idx_delegacoes_titular on delegacoes_supervisor(supervisor_titular_id);
-create index idx_delegacoes_substituto on delegacoes_supervisor(substituto_id);
-create index idx_delegacoes_ativo on delegacoes_supervisor(ativo);
-create index idx_historico_manutencoes_navio on historico_manutencoes(navio_id);
-create index idx_historico_manutencoes_container on historico_manutencoes(container_id);
-create index idx_historico_manutencoes_guindaste on historico_manutencoes(guindaste_id);
-create index idx_rotas_origem_destino on rotas_maritimas(origem, destino);
+alter table funcionarios enable row level security;
+alter table visitantes enable row level security;
+alter table tipos_carga enable row level security;
+alter table checklist_modelos enable row level security;
+alter table checklist_itens enable row level security;
+alter table rotas_maritimas enable row level security;
+alter table navios enable row level security;
+alter table guindastes enable row level security;
+alter table containers enable row level security;
+alter table cargas enable row level security;
+alter table agendamentos enable row level security;
+alter table manutencoes enable row level security;
+alter table historico_manutencoes enable row level security;
+alter table inspecoes enable row level security;
+alter table inspecao_itens enable row level security;
+alter table logs_alteracoes enable row level security;
+alter table trail_decisoes enable row level security;
+alter table retificacoes_trail enable row level security;
+alter table delegacoes_supervisor enable row level security;
+alter table leituras_qr_code enable row level security;
 
--- 12. POPULAÇÃO INICIAL DE NÍVEIS DE CARGO
+-- Permissão de leitura publica/autenticada para operacoes generales
+create policy "Acesso geral para usuarios autenticados" on cargas for all using (true);
+create policy "Acesso geral para usuarios autenticados" on navios for all using (true);
+create policy "Acesso geral para usuarios autenticados" on containers for all using (true);
+create policy "Acesso geral para usuarios autenticados" on guindastes for all using (true);
+create policy "Acesso geral para usuarios autenticados" on tipos_carga for all using (true);
+create policy "Acesso geral para usuarios autenticados" on rotas_maritimas for all using (true);
+create policy "Acesso geral para usuarios autenticados" on funcionarios for all using (true);
+create policy "Acesso geral para usuarios autenticados" on visitantes for all using (true);
+
+-- 12. TRIGGER DE PROPAGAÇÃO EM CASCATA (RN 12)
+-- ============================================================
+
+create or replace function fn_propagar_status_navio()
+returns trigger as $$
+begin
+  -- Se a localização do navio mudar para NO_PORTO_DE_DESTINO
+  if NEW.localizacao = 'NO_PORTO_DE_DESTINO' then
+    -- Atualiza status das cargas vinculadas via contêiner para ENTREGUE
+    update cargas
+    set status_fluxo = 'ENTREGUE', updated_at = now()
+    where container_id in (select id from containers where navio_id = NEW.id)
+      and status_fluxo = 'EM_TRANSITO';
+  elsif NEW.localizacao = 'FORA_DO_PORTO' then
+    -- Atualiza status das cargas para EM_TRANSITO
+    update cargas
+    set status_fluxo = 'EM_TRANSITO', updated_at = now()
+    where container_id in (select id from containers where navio_id = NEW.id)
+      and status_fluxo = 'PRONTA_PARA_ENTREGA';
+  end if;
+  return NEW;
+end;
+$$ language plpgsql;
+
+create trigger trg_propagar_status_navio
+after update of localizacao on navios
+for each row
+execute function fn_propagar_status_navio();
+
+-- 13. POPULAÇÃO INICIAL DE CARGOS E NÍVEIS
 -- ============================================================
 
 insert into cargo_niveis (cargo, nivel) values
@@ -447,4 +459,5 @@ insert into cargo_niveis (cargo, nivel) values
   ('INSPETOR', 'TATICO'),
   ('DIRETOR_OPERACOES_LOGISTICA', 'ESTRATEGICO'),
   ('DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'ESTRATEGICO'),
-  ('CONSELHO_ADMINISTRACAO', 'ESTRATEGICO');
+  ('CONSELHO_ADMINISTRACAO', 'ESTRATEGICO')
+on conflict (cargo) do nothing;

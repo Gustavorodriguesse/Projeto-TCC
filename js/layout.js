@@ -1,0 +1,181 @@
+/**
+ * Componente Layout Persistente (Sidebar e Topbar) - NexusPort
+ * Injeta dinamicamente a barra lateral e o cabeçalho superior padronizados
+ * em todas as páginas internas da aplicação.
+ */
+
+(function (window) {
+  'use strict';
+
+  function initLayout() {
+    const session = window.currentUserSession || (window.NexusAuth ? NexusAuth.getSession() : null);
+
+    // Se estiver em páginas públicas (index.html ou confirm-role.html), ignora a injeção do layout interno
+    const currentPath = window.location.pathname;
+    if (currentPath.endsWith('index.html') || currentPath.endsWith('confirm-role.html') || currentPath === '/' || currentPath === '') {
+      return;
+    }
+
+    if (!session) {
+      if (window.NexusAuth) window.NexusAuth.requireAuth();
+      return;
+    }
+
+    // Identificação do Usuário
+    const userName = session.nome || 'Operador Porto';
+    const userRoleName = session.cargo_nome || session.cargo || 'Operador';
+    const userCode = session.codigo_individual || session.codigo || '--';
+    const userMatricula = session.matricula || '--';
+
+    const isDiretor = ['DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
+    const isOperacionalSupervisor = ['INSPETOR', 'SUPERVISOR_GERENTE_OPERACOES'].includes(session.cargo);
+    const isTecnico = session.cargo === 'TECNICO_PORTOS';
+
+    const visionLayer = session.camada_visao || (isDiretor ? 'Visão Estratégica' : isOperacionalSupervisor ? 'Visão Operacional' : 'Visão Própria');
+
+    const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'OP';
+
+    // Determina link ativo baseado na URL
+    const activePage = currentPath.split('/').pop() || 'dashboard.html';
+
+    const menuItems = [
+      { id: 'dashboard.html', label: 'Painel Geral', icon: 'dashboard', href: 'dashboard.html', visible: true },
+      { id: 'cargas.html', label: 'Cargas & Pátio', icon: 'inventory_2', href: 'cargas.html', visible: true },
+      { id: 'inspecao.html', label: 'Inspeção & Checklist', icon: 'fact_check', href: 'inspecao.html', visible: true },
+      { id: 'scanner.html', label: 'Scanner QR Code', icon: 'qr_code_scanner', href: 'scanner.html', visible: true },
+      { id: 'embarcacoes.html', label: 'Embarcações & GPS', icon: 'directions_boat', href: 'embarcacoes.html', visible: true },
+      { id: 'manutencao.html', label: 'Manutenção & OS', icon: 'build', href: 'manutencao.html', visible: true },
+      { id: 'delegacao.html', label: 'Delegação Supervisor', icon: 'how_to_reg', href: 'delegacao.html', visible: true },
+      { id: 'tecnico_portos.html', label: 'Gestão de Pessoas', icon: 'badge', href: 'tecnico_portos.html', visible: isTecnico || isDiretor },
+      { id: 'relatorios.html', label: 'Relatórios & PDF', icon: 'assessment', href: 'relatorios.html', visible: true }
+    ];
+
+    // Injeta Topbar se contêiner existir
+    const topbarElem = document.getElementById('appTopbar') || document.querySelector('header');
+    if (topbarElem) {
+      topbarElem.className = 'w-full h-16 px-4 sm:px-6 flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 sticky top-0 z-40';
+      topbarElem.innerHTML = `
+        <div class="flex items-center gap-3">
+          <button id="mobileMenuToggle" type="button" class="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <span class="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+          <div class="w-9 h-9 rounded-lg bg-nexus-900 flex items-center justify-center text-white font-display font-bold text-lg shadow-sm">
+            N
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-display font-bold text-base text-nexus-900 dark:text-white leading-tight truncate">NexusPort</span>
+            <span class="font-mono text-[11px] text-slate-500 dark:text-slate-400 truncate">Terminal STS-01</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <div id="headerAvatar" class="w-7 h-7 rounded-lg bg-nexus-500 text-white flex items-center justify-center font-mono text-xs font-bold">
+              ${initials}
+            </div>
+            <div class="hidden sm:flex flex-col min-w-0">
+              <span id="headerUserName" class="text-xs font-bold text-nexus-900 dark:text-white truncate">${userName}</span>
+              <div class="flex items-center gap-1.5">
+                <span id="headerUserRole" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${userRoleName}</span>
+                <span class="text-[10px] text-slate-300 dark:text-slate-600">•</span>
+                <span id="headerUserCode" class="font-mono text-[10px] font-semibold text-nexus-500 dark:text-indigo-400">${userCode}</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="themeToggle" type="button" aria-label="Alternar tema escuro" class="p-2 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+            <span class="material-symbols-outlined text-[18px]" id="themeToggleIcon">dark_mode</span>
+          </button>
+
+          <button id="logoutBtn" type="button" aria-label="Encerrar Sessão" class="p-2 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors flex items-center gap-1 text-xs font-semibold">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+            <span class="hidden md:inline">Sair</span>
+          </button>
+        </div>
+      `;
+    }
+
+    // Injeta Sidebar se contêiner existir
+    const sidebarElem = document.getElementById('appSidebar') || document.querySelector('aside');
+    if (sidebarElem) {
+      sidebarElem.className = 'w-64 bg-nexus-900 text-white flex-col justify-between hidden md:flex border-r border-slate-800 shrink-0';
+      sidebarElem.innerHTML = `
+        <div class="p-4 flex flex-col gap-6 overflow-y-auto">
+
+          <!-- User Header in Sidebar -->
+          <div class="flex flex-col gap-2 p-3 bg-slate-800/80 rounded-xl border border-slate-700/60">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-nexus-500 text-white flex items-center justify-center font-display font-bold text-sm shadow-sm flex-shrink-0">
+                ${initials}
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="font-display font-bold text-xs text-white truncate">${userName}</span>
+                <span class="text-[11px] text-slate-400 truncate">${userRoleName}</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-700/60 font-mono text-[10px]">
+              <span class="text-slate-400">Código/Mat:</span>
+              <span class="font-bold text-indigo-400">${userCode} / ${userMatricula}</span>
+            </div>
+            <div class="mt-1 px-2 py-1 rounded bg-indigo-950/80 border border-indigo-800 text-indigo-300 font-mono text-[10px] font-bold text-center">
+              ${visionLayer} (RLS)
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <div class="flex flex-col gap-1">
+            <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3">Menu Operacional</span>
+            <nav class="flex flex-col gap-1 mt-1">
+              ${menuItems.filter(item => item.visible).map(item => {
+                const isActive = activePage === item.id;
+                return `
+                  <a href="${item.href}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive ? 'bg-nexus-500 text-white shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} text-sm font-medium transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">${item.icon}</span>
+                    <span>${item.label}</span>
+                  </a>
+                `;
+              }).join('')}
+            </nav>
+          </div>
+
+        </div>
+
+        <div class="p-4 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span>Porto de Santos • STS-01</span>
+          <a href="index.html" onclick="if(window.NexusAuth) NexusAuth.logout();" class="text-slate-400 hover:text-white flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">logout</span>
+          </a>
+        </div>
+      `;
+    }
+
+    // Configura eventos de Dark Mode e Logout no topbar
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeToggleIcon');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('nexus_theme', isDark ? 'dark' : 'light');
+        if (themeIcon) themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+      });
+    }
+
+    const logoutBtnElem = document.getElementById('logoutBtn');
+    if (logoutBtnElem) {
+      logoutBtnElem.addEventListener('click', () => {
+        if (confirm('Deseja encerrar sua sessão operacional no terminal STS-01?')) {
+          if (window.NexusAuth) window.NexusAuth.logout();
+          else window.location.href = 'index.html';
+        }
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLayout);
+  } else {
+    initLayout();
+  }
+
+  window.initNexusLayout = initLayout;
+})(window);
