@@ -9,22 +9,39 @@
 window.registrarLogAlteracao = function(entidade, tipoAlteracao, detalhes = '') {
   const session = window.currentUserSession || (window.NexusAuth ? NexusAuth.getSession() : null) || {};
   const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
-  logs.unshift({
+  const newLog = {
     data_hora: new Date().toISOString(),
     cargo: session.cargo_nome || session.cargo || 'Operador',
     codigo_usuario: session.codigo_individual || session.codigo || '--',
     entidade: entidade,
     tipo_alteracao: tipoAlteracao,
     detalhes: detalhes
-  });
+  };
+  logs.unshift(newLog);
   localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
+
+  if (window.nexusSupabase) {
+    try {
+      window.nexusSupabase.from('logs_alteracoes').insert({
+        data_hora: newLog.data_hora,
+        cargo: session.cargo || 'ESTIVADOR',
+        codigo_individual: newLog.codigo_usuario,
+        entidade_tipo: 'CARGA',
+        entidade_id: String(entidade),
+        tipo_alteracao: 'EDICAO',
+        detalhes: typeof detalhes === 'object' ? detalhes : { descricao: detalhes }
+      }).then().catch(err => console.warn('[NexusPort] Erro ao sincronizar log com Supabase:', err));
+    } catch (err) {
+      console.warn('[NexusPort] Erro ao invocar log Supabase:', err);
+    }
+  }
 };
 
 window.registrarTrailDecisao = function(decisao, entidade, motivo = '') {
   const session = window.currentUserSession || (window.NexusAuth ? NexusAuth.getSession() : null) || {};
   const trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || '[]');
   const idReg = `TRL-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-  trail.unshift({
+  const newEntry = {
     id: idReg,
     data_hora: new Date().toISOString(),
     responsavel: `${session.nome || 'Operador'} (${session.cargo_nome || session.cargo || 'Supervisor'}) - ${session.codigo_individual || session.codigo || '--'}`,
@@ -32,8 +49,26 @@ window.registrarTrailDecisao = function(decisao, entidade, motivo = '') {
     entidade: entidade,
     motivo: motivo || 'Decisão homologada conforme fluxo operacional',
     retificacao: null
-  });
+  };
+  trail.unshift(newEntry);
   localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
+
+  if (window.nexusSupabase) {
+    try {
+      window.nexusSupabase.from('trail_decisoes').insert({
+        data_hora: newEntry.data_hora,
+        cargo: session.cargo || 'SUPERVISOR_GERENTE_OPERACOES',
+        codigo_individual: session.codigo_individual || session.codigo || 'SUP-2001',
+        tipo_decisao: 'APROVOU_CARGA',
+        entidade_tipo: 'CARGA',
+        entidade_id: String(entidade),
+        motivo: newEntry.motivo
+      }).then().catch(err => console.warn('[NexusPort] Erro ao sincronizar trail com Supabase:', err));
+    } catch (err) {
+      console.warn('[NexusPort] Erro ao invocar trail Supabase:', err);
+    }
+  }
+
   if (window.registrarLogAlteracao) {
     window.registrarLogAlteracao(entidade, `Decisão Crítica: ${decisao}`, motivo);
   }
@@ -256,6 +291,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (textoRetificacao) {
       item.retificacao = `[Retificação em ${new Date().toLocaleString('pt-BR')} por ${session.codigo_individual}]: ${textoRetificacao}`;
       localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
+
+      if (window.nexusSupabase) {
+        try {
+          window.nexusSupabase.from('retificacoes_trail').insert({
+            retificacao: textoRetificacao
+          }).then().catch(err => console.warn('[NexusPort] Erro ao sincronizar retificação com Supabase:', err));
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar retificação com Supabase:', err);
+        }
+      }
+
       renderTrailDecisoesTable();
       alert(`Retificação vinculada com sucesso ao registro imutável ${idTrail}!`);
     }

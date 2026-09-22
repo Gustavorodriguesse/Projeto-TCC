@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (containerForm) {
-    containerForm.addEventListener('submit', (e) => {
+    containerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const identificacao = document.getElementById('contIdentificacao').value.trim();
       const tipo = document.getElementById('contTipo').value.trim();
@@ -122,6 +122,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
       containersList.push(newCont);
       localStorage.setItem('nexus_containers_list', JSON.stringify(containersList));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('containers').insert({
+            numero_identificacao: identificacao,
+            data_fabricacao: dataFabr || null,
+            data_ultima_manutencao: dataManut || null,
+            tempo_uso_referencia: refTempo,
+            estado: 'OPERANTE',
+            qr_code_url: `QR-${identificacao}`
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar contêiner com Supabase:', err);
+        }
+      }
 
       renderContainersTable();
       containerForm.reset();

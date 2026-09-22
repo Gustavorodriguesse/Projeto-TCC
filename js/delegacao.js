@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateDelegacaoUI();
 
   if (delegForm) {
-    delegForm.addEventListener('submit', (e) => {
+    delegForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const activeDeleg = JSON.parse(localStorage.getItem('nexus_active_delegation') || 'null');
       if (activeDeleg) {
@@ -47,6 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       localStorage.setItem('nexus_active_delegation', JSON.stringify(newDeleg));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('delegacoes_supervisor').insert({
+            data_inicio: new Date(inicio).toISOString(),
+            data_fim_previsto: new Date(fim).toISOString(),
+            ativo: true
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar delegação com Supabase:', err);
+        }
+      }
+
       updateDelegacaoUI();
 
       if (window.registrarTrailDecisao) {
@@ -58,10 +71,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (revogarBtn) {
-    revogarBtn.addEventListener('click', () => {
+    revogarBtn.addEventListener('click', async () => {
       if (confirm('ATENÇÃO: Deseja REVOGAR IMEDIATAMENTE os poderes do substituto temporário?')) {
         const activeDeleg = JSON.parse(localStorage.getItem('nexus_active_delegation') || '{}');
         localStorage.removeItem('nexus_active_delegation');
+
+        if (window.nexusSupabase) {
+          try {
+            await window.nexusSupabase.from('delegacoes_supervisor')
+              .update({ ativo: false, data_revogacao: new Date().toISOString() })
+              .eq('ativo', true);
+          } catch (err) {
+            console.warn('[NexusPort] Erro ao revogar delegação no Supabase:', err);
+          }
+        }
+
         updateDelegacaoUI();
 
         if (window.registrarTrailDecisao) {

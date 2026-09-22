@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (osForm) {
-    osForm.addEventListener('submit', (e) => {
+    osForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const equipamento = document.getElementById('osEquipamento').value;
       const prioridade = document.getElementById('osPrioridade').value;
@@ -78,6 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       localStorage.setItem('nexus_os_list', JSON.stringify(osList));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('manutencoes').insert({
+            entidade_tipo: 'CONTAINER',
+            descricao: `[${newId}][${prioridade}] Equipamento: ${equipamento} - ${descricao}`,
+            status: 'SOLICITADA'
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar OS com Supabase:', err);
+        }
+      }
+
       renderOsTable();
       osForm.reset();
       osForm.classList.add('hidden');
@@ -85,22 +98,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.executarAcaoOS = function(idOS, acao) {
+  window.executarAcaoOS = async function(idOS, acao) {
     const os = osList.find(o => o.id === idOS);
     if (!os) return;
 
+    let supabaseStatus = 'SOLICITADA';
     if (acao === 'APROVAR') {
       os.status = 'EM_MANUTENCAO';
+      supabaseStatus = 'APROVADA';
       alert(`Ordem de Serviço ${idOS} APROVADA pelo Supervisor! Equipamento ${os.equipamento} no estado EM_MANUTENCAO.`);
     } else if (acao === 'REPROVAR') {
       os.status = 'REPROVADA';
+      supabaseStatus = 'RECUSADA';
       alert(`Ordem de Serviço ${idOS} REPROVADA pelo Supervisor.`);
     } else if (acao === 'CONCLUIR') {
       os.status = 'CONCLUIDA';
+      supabaseStatus = 'CONCLUIDA';
       alert(`Manutenção da OS ${idOS} CONCLUÍDA! Equipamento ${os.equipamento} reativado e no estado OPERANTE.`);
     }
 
     localStorage.setItem('nexus_os_list', JSON.stringify(osList));
+
+    if (window.nexusSupabase) {
+      try {
+        await window.nexusSupabase.from('manutencoes')
+          .update({ status: supabaseStatus })
+          .ilike('descricao', `%${idOS}%`);
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao atualizar status da OS no Supabase:', err);
+      }
+    }
+
     renderOsTable();
   };
 
