@@ -155,13 +155,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Aprovar Carga (RN 14)
   if (aprovarBtn) {
-    aprovarBtn.addEventListener('click', () => {
+    aprovarBtn.addEventListener('click', async () => {
       if (!cargaAtual) return;
 
       cargaAtual.status = 'ARMAZENAGEM';
       cargaAtual.resultadoInspecao = 'APROVADA';
 
       localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargas));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('cargas')
+            .update({ status_fluxo: 'ARMAZENAGEM', resultado_inspecao: 'APROVADA' })
+            .eq('qr_code_url', cargaAtual.qrCode || `QR-${cargaAtual.id}`);
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar aprovação no Supabase:', err);
+        }
+      }
 
       // Grava no Trail de Decisões Imutável (T7.3)
       if (window.registrarTrailDecisao) {
@@ -175,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Recusar Carga (RN 14)
   if (recusarBtn) {
-    recusarBtn.addEventListener('click', () => {
+    recusarBtn.addEventListener('click', async () => {
       if (!cargaAtual) return;
 
       const motivo = motivoInput.value.trim();
@@ -190,6 +200,16 @@ document.addEventListener('DOMContentLoaded', () => {
       cargaAtual.motivoRecusa = motivo;
 
       localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargas));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('cargas')
+            .update({ status_fluxo: 'RECUSADA', resultado_inspecao: 'RECUSADA', motivo_recusa: motivo })
+            .eq('qr_code_url', cargaAtual.qrCode || `QR-${cargaAtual.id}`);
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar recusa no Supabase:', err);
+        }
+      }
 
       // Grava no Trail de Decisões Imutável (T7.3)
       if (window.registrarTrailDecisao) {

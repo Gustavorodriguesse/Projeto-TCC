@@ -189,17 +189,27 @@ document.addEventListener('DOMContentLoaded', () => {
       // Verifica se o código digitado é um novo código REEMITIDO pelo Técnico
       const reissuedEntry = Object.entries(storedOverrides).find(([mat, ov]) => ov.codigo === codeValue);
 
-      // Se não encontrou via Supabase ou se não há Supabase conectado, busca nos mocks
+      // Se não encontrou via Supabase ou se não há Supabase conectado, busca nos mocks e cadastros locais (nexus_func_list)
       if (!employeeFound) {
+        const customFuncList = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
+        const allLocalEmployees = [...mockEmployees, ...customFuncList.map(f => ({
+          codigo: f.codigo,
+          codigo_individual: f.codigo,
+          matricula: f.matricula,
+          nome: f.nome,
+          cargo: f.cargo,
+          ativo: true
+        }))];
+
         if (reissuedEntry) {
           const targetMatricula = reissuedEntry[0];
-          const baseEmp = mockEmployees.find(emp => emp.matricula === targetMatricula && emp.ativo);
+          const baseEmp = allLocalEmployees.find(emp => emp.matricula === targetMatricula && emp.ativo);
           if (baseEmp) {
             employeeFound = { ...baseEmp, codigo: codeValue, codigo_individual: codeValue };
           }
         } else {
           // Busca estrita apenas por código exato ou matrícula na base ativa
-          employeeFound = mockEmployees.find(emp => (emp.codigo === codeValue || emp.matricula === codeValue) && emp.ativo);
+          employeeFound = allLocalEmployees.find(emp => (emp.codigo === codeValue || emp.codigo_individual === codeValue || emp.matricula === codeValue) && emp.ativo);
         }
       }
 

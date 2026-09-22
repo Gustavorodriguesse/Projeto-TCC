@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Submissão de Agendamento com Trava de Pré-requisito (RF 2 / RN 13 / RF 17.1)
   if (agendamentoForm) {
-    agendamentoForm.addEventListener('submit', (e) => {
+    agendamentoForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const tipo = document.getElementById('agTipoCarga').value;
       const pesoVal = parseFloat(document.getElementById('agPeso').value) || 0;
@@ -168,6 +168,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       cargasFluxoList.push(novaCarga);
       localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('cargas').insert({
+            natureza: natureza || 'Carga Geral',
+            peso: pesoVal,
+            volume: volumeVal,
+            valor_declarado: valorVal,
+            porto_descarga: portoDescarga,
+            destino: destino,
+            status_fluxo: 'AGENDAMENTO',
+            qr_code_url: newQrCode
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar carga com Supabase:', err);
+        }
+      }
 
       renderTable();
       agendamentoForm.reset();
@@ -227,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Executa Ações Operacionais
-  window.executarAcaoCarga = function(idCarga, acao) {
+  window.executarAcaoCarga = async function(idCarga, acao) {
     const carga = cargasFluxoList.find(c => c.id === idCarga);
     if (!carga) return;
 
@@ -261,6 +278,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+
+    if (window.nexusSupabase) {
+      try {
+        await window.nexusSupabase.from('cargas')
+          .update({
+            status_fluxo: carga.status,
+            motivo_recusa: carga.motivoCancelamento || carga.motivo_recusa || null
+          })
+          .eq('qr_code_url', carga.qrCode || `QR-${carga.id}`);
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao atualizar status da carga no Supabase:', err);
+      }
+    }
+
     renderTable();
   };
 });

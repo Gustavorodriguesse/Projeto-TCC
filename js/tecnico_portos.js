@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (regenBtn) {
-    regenBtn.addEventListener('click', () => {
+    regenBtn.addEventListener('click', async () => {
       if (!selectedEmp) return;
 
       if (confirm(`Confirma a INVALIDAÇÃO do código atual (${resCodigo.textContent}) para ${selectedEmp.nome}?`)) {
@@ -77,6 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         localStorage.setItem('nexus_code_overrides', JSON.stringify(storedOverrides));
+
+        if (window.nexusSupabase) {
+          try {
+            await window.nexusSupabase.from('funcionarios')
+              .update({ codigo_individual: newCode })
+              .eq('matricula', selectedEmp.matricula);
+          } catch (err) {
+            console.warn('[NexusPort] Erro ao atualizar código no Supabase:', err);
+          }
+        }
 
         if (resCodigo) resCodigo.textContent = newCode;
         if (newGenCode) newGenCode.textContent = newCode;
@@ -121,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (funcForm) {
-    funcForm.addEventListener('submit', (e) => {
+    funcForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const matricula = document.getElementById('funcMatricula').value.trim();
       const nome = document.getElementById('funcNome').value.trim();
@@ -133,6 +143,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       funcList.push({ matricula, nome, cargo, codigo, doc });
       localStorage.setItem('nexus_func_list', JSON.stringify(funcList));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('funcionarios').insert({
+            matricula: matricula,
+            codigo_individual: codigo,
+            nome: nome,
+            cargo: cargo,
+            ativo: true
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar funcionário com Supabase:', err);
+        }
+      }
 
       renderFuncTable();
       funcForm.reset();
@@ -174,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (visForm) {
-    visForm.addEventListener('submit', (e) => {
+    visForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const nome = document.getElementById('visNome').value.trim();
       const documento = document.getElementById('visDocumento').value.trim();
@@ -187,6 +211,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('visitantes').insert({
+            nome: nome,
+            documento: documento,
+            motivo: motivo
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar visitante com Supabase:', err);
+        }
+      }
+
       renderVisTable();
       visForm.reset();
       visForm.classList.add('hidden');
