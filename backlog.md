@@ -1,80 +1,81 @@
-# 📋 Backlog de Desenvolvimento & Histórico de Alterações - NexusPort
+# 📋 Backlog de Alterações
 
-**Terminal STS-01 Santos**
+## BACKLOG #001 — Divisão Arquitetural e Estrutura de Páginas Dedicadas
+**Data:** 22/09/2026
+**Prioridade:** Alta
+**Tipo:** Melhoria / Arquitetura
 
-Este documento registra o histórico do que foi **desenvolvido**, **adicionado**, **removido/refatorado** e o que **permanece planejado / tarefas futuras** no sistema NexusPort.
+**Descrição:** Refatoração da arquitetura monolítica para páginas HTML dedicadas conectadas por uma Barra Lateral (Sidebar Persistente) com perfil, cargo, matrícula e guarda de autenticação RLS.
 
----
+**✅ Adicionado:**
+- Páginas HTML dedicadas por módulo: `index.html`, `dashboard.html`, `cargas.html`, `inspecao.html`, `scanner.html`, `embarcacoes.html`, `manutencao.html`, `delegacao.html`, `tecnico_portos.html` e `relatorios.html`.
+- Barra Lateral de Navegação (Sidebar Persistente) em `js/layout.js` compartilhada entre todas as telas do sistema.
+- Guarda de autenticação em `js/auth-guard.js` com validação de sessão ativa.
 
-## 🟢 1. O que foi Adicionado & Concluído (Done)
+**🗑️ Removido:**
+- Padrão de página única monolítica no `dashboard.html`.
 
-### 🔑 Autenticação, RLS e Acesso (Fase 1)
-- **Login por Código Individual Único:** Validação de código vinculado à matrícula com confirmação automática de cargo (`index.html` e `confirm-role.html`).
-- **Guarda de Autenticação (`js/auth-guard.js`):** Validação de sessão no `sessionStorage` e `localStorage` em todas as páginas internas.
-- **Camadas de Visão RLS (RF 1):**
-  - **Visão Própria:** Estivador, Conferente, Arrumador, Planejador e Técnico em Portos.
-  - **Visão Operacional:** Inspetor e Supervisor de Operações.
-  - **Visão Estratégica:** Diretores e Conselho de Administração.
-- **Invalidação e Reemissão de Códigos (T1.8 / RN 15):** Módulo do Técnico em Portos com capacidade de invalidar código antigo e reemitir novo código de acesso.
-
-### 🏢 Módulos e Páginas Dedicadas (Fase 2 a Fase 8)
-- **Barra Lateral Persistente (`js/layout.js`):** Sidebar responsiva com perfil, cargo, matrícula e botão Sair presente em todas as 9 páginas internas.
-- **`dashboard.html`:**
-  - 7 Cards Indicadores Operacionais em tempo real (RF 7).
-  - Tabela do Log Geral de Alterações (RF 12).
-  - Tabela do Trail de Decisões Críticas Imutável com anexação de retificações (`[Anexar Retificação]`, RF 13).
-  - Painel Estratégico Executivo com gráficos Chart.js para Diretores.
-- **`cargas.html`:**
-  - Tabela do Fluxo Core de Cargas nas 8 etapas.
-  - Ocultação estrita de botões por perfil/cargo (RF 1).
-  - Form e modal de agendamento com validação de pré-requisito de checklist (RN 13) e geração de QR Code em tempo real (RF 17.1).
-- **`inspecao.html`:**
-  - Inspeção técnica formal com checklist dinâmico por tipo de carga.
-  - Trava de pré-requisito RN 14 (100% dos itens críticos conforme obrigatórios para aprovação).
-- **`scanner.html`:**
-  - Scanner de QR Code via câmera do navegador com fallback para simulação manual.
-- **`embarcacoes.html`:**
-  - Tabela GPS marítima fictícia com classificação de status (`DENTRO_DO_PORTO`, `FORA_DO_PORTO`, `NO_PORTO_DE_DESTINO`).
-  - Pausa de tempo fora do porto para navios em `NO_PORTO_DE_DESTINO` (RF 5 / RN 8).
-  - CRUD de contêineres com seletor de referência de tempo (RN 7).
-- **`manutencao.html`:**
-  - Gestão de Ordens de Serviço (OS) com aprovação do Supervisor.
-  - Botão de Pânico e Alarme de Emergência.
-- **`delegacao.html`:**
-  - Designação e revogação de Supervisor Substituto com trava rígida de 1 ativo por vez (RF 14).
-- **`tecnico_portos.html`:**
-  - CRUD de Funcionários e Ficha/Livro de Visitantes Temporários.
-- **`relatorios.html`:**
-  - Emissão de Relatório PDF A4 em 4 seções sequenciais com logotipo (RF 11).
-  - Painel de produtividade da equipe (RF 16).
-
-### ⚡ Persistência em Tempo Real com Supabase (Branch `dadossupabase`)
-- Sincronização assíncrona com fallback de contingência em `localStorage`:
-  - `funcionarios` & `nexus_func_list`: Novos cadastros e reemissões sincronizados e autenticáveis no login.
-  - `visitantes`: Livro de visitantes sincronizado com a tabela `visitantes`.
-  - `cargas`: Agendamentos e atualizações de status de fluxo sincronizados na tabela `cargas`.
-  - `inspecoes`: Resultados de inspeção técnica (Aprovada/Recusada) refletidos na tabela `cargas`.
-  - `containers`: Cadastros de contêineres e referências de tempo salvos na tabela `containers`.
-  - `manutencoes`: Solicitações e aprovações de OS salvas na tabela `manutencoes`.
-  - `delegacoes_supervisor`: Ativações e revogações salvas na tabela `delegacoes_supervisor`.
-  - `logs_alteracoes` & `trail_decisoes` & `retificacoes_trail`: Auditoria e retificações gravadas no Supabase.
-
-### 🧪 Automação & Testes
-- Scripts Python com Playwright (`verify_phase3.py` a `verify_phase9.py`, `verify_t1_8.py`) cobrindo 100% do fluxo do sistema e gerando evidências visuais.
+**🔧 Corrigido:**
+- Navegação direta entre áreas do sistema preservando a sessão e a camada de visão RLS ativas.
 
 ---
 
-## 🔴 2. O que foi Removido / Refatorado (Refactored / Removed)
+## BACKLOG #002 — Persistência e Sincronização em Tempo Real com o Supabase
+**Data:** 22/09/2026
+**Prioridade:** Alta
+**Tipo:** Nova funcionalidade / Correção
 
-- **Remoção do Padrão Monolítico (`dashboard.html` único):** Substituído pela arquitetura modular de 9 páginas HTML dedicadas conectadas pela barra lateral.
-- **Remoção de Bypasses e Logins Sem Validação:** Eliminada a permissão de login com qualquer código arbritário. O login agora valida estritamente a existência do código/matrícula no Supabase e na base local cadastrada (`nexus_func_list` / `mockEmployees`).
-- **Remoção de Botões Indevidos por Cargo em `cargas.html`:** Removida a exibição de botões de ação operacionais para o perfil de Inspetor e cargos sem permissão, garantindo leitura estrita (RF 1).
-- **Correção da Contagem de Tempo de Navios em Destino:** Corrigida a exibição de navios no porto de destino que continuavam incrementando tempo fora do porto.
+**Descrição:** Integração assíncrona dos manipuladores de formulários e eventos da aplicação com as tabelas do banco de dados PostgreSQL no Supabase, mantendo contingência offline no `localStorage`.
+
+**✅ Adicionado:**
+- Inserções assíncronas no Supabase para agendamento de cargas (`cargas`), cadastros de contêineres (`containers`), ordens de serviço de manutenção (`manutencoes`), visitantes (`visitantes`), novos funcionários (`funcionarios`) e delegações de supervisor (`delegacoes_supervisor`).
+- Registro assíncrono de logs de alterações (`logs_alteracoes`), trail de decisões imutável (`trail_decisoes`) e retificações (`retificacoes_trail`).
+- Atualizações de status do fluxo de cargas, resultados de inspeção técnica (`ARMAZENAGEM` / `RECUSADA`) e status de OS de manutenção no banco de dados.
+
+**🗑️ Removido:**
+- Persistência exclusiva em `localStorage` que isolava os dados apenas na máquina local.
+
+**🔧 Corrigido:**
+- Falha onde novas cargas agendadas e registros não subiam para as tabelas do Supabase.
 
 ---
 
-## 🟡 3. O que Falta Ser Feito / Planejado (To Do)
+## BACKLOG #003 — Autenticação e Login de Novos Funcionários
+**Data:** 22/09/2026
+**Prioridade:** Alta
+**Tipo:** Correção
 
-- [ ] **Integração Real-time WebSockets do Supabase (`supabase.channel`):** Atualização automática das tabelas sem necessidade de recarregar a página quando múltiplos operadores alteram o pátio simultaneamente.
-- [ ] **Upload de Fotos de Avarias no Supabase Storage:** Permissão para anexar foto da avaria do contêiner durante a inspeção do checklist em `inspecao.html`.
-- [ ] **Expansão de Relatórios Customizados:** Exportação de dados históricos em formato Excel/CSV para a visão estratégica de Diretores.
+**Descrição:** Correção do sistema de validação da tela de login (`js/login.js`) para reconhecer cadastros locais (`nexus_func_list`) e novos funcionários inseridos via `TECNICO_PORTOS` / Supabase.
+
+**✅ Adicionado:**
+- Suporte a busca de funcionários cadastrados na chave local `nexus_func_list` durante a validação da tela de login.
+- Sincronização automática do novo funcionário cadastrado pelo Técnico em Portos com a tabela `funcionarios` no Supabase.
+
+**🗑️ Removido:**
+- Dependência exclusiva do array estático `mockEmployees` para validação de logins na máquina local.
+
+**🔧 Corrigido:**
+- Impossibilidade de realizar login com a matrícula ou código de novos funcionários criados pela conta do Técnico em Portos (`TEC-1001`).
+
+---
+
+## BACKLOG #004 — Regras de Negócio do Fluxo de Cargas, Inspeção e QR Code
+**Data:** 22/09/2026
+**Prioridade:** Alta
+**Tipo:** Nova funcionalidade / Correção
+
+**Descrição:** Implementação de travas de segurança operacionais, checklists técnicos dinâmicos, scanner QR via câmera e geração de etiquetas A4/PDF 10x10cm.
+
+**✅ Adicionado:**
+- Modal de confirmação e exibição automática do QR Code gerado em tempo real no agendamento de cargas e cadastros de contêineres.
+- Gerador de etiquetas em PDF 10x10cm com botão "Imprimir Etiqueta" e funcionalidade de reimpressão com auditoria.
+- Scanner QR Code dedicado (`scanner.html`) via câmera do dispositivo móvel com redirecionamento contextual por cargo.
+- Inspeção técnica com travamento RN 14 (exigência de 100% dos itens críticos conforme obrigatórios para aprovação).
+- Delegação de supervisor com trava rígida de 1 substituto ativo por vez e revogação imediata.
+
+**🗑️ Removido:**
+- Exibição de botões de ações operacionais (`[Receber]`, `[Vincular]`, `[Pronta]`, `[Liberar]`) na interface do Inspetor, garantindo visão de leitura estrita.
+
+**🔧 Corrigido:**
+- Inconsistência na contagem de tempo fora do porto para navios com status `NO_PORTO_DE_DESTINO`.
+- Trava de agendamento garantindo que cargas só sejam agendadas se o Tipo de Carga possuir checklist pré-cadastrado (RN 13).
