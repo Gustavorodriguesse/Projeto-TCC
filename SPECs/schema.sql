@@ -1,11 +1,12 @@
 -- ============================================================
 -- SISTEMA DE AUTOMAÇÃO DE CARREGAMENTOS PARA PORTO (NexusPort)
--- Esquema PostgreSQL (Supabase DDL Completo com RLS & Triggers)
+-- Esquema PostgreSQL + PostGIS (Supabase DDL Completo)
 -- ============================================================
 
 -- 1. EXTENSÕES
 -- ============================================================
 create extension if not exists "pgcrypto";
+create extension if not exists "postgis";
 
 -- 2. ENUMS
 -- ============================================================
@@ -37,6 +38,10 @@ create type estado_container_enum as enum (
   'EM_REFORMA',
   'APROVADO_PARA_REFORMA'
 );
+
+create type status_berco_enum as enum ('DISPONIVEL', 'OCUPADO', 'EM_MANUTENCAO', 'INDISPONIVEL');
+
+create type status_guindaste_enum as enum ('DISPONIVEL', 'OPERANDO', 'MANUTENCAO', 'INDISPONIVEL');
 
 create type estado_guindaste_enum as enum ('OPERANTE', 'EM_MANUTENCAO');
 
@@ -80,7 +85,10 @@ create type tipo_entidade_enum as enum (
   'MANUTENCAO',
   'CHECKLIST',
   'ROTA',
-  'TIPO_CARGA'
+  'TIPO_CARGA',
+  'PORTO',
+  'BERCO',
+  'PATIO'
 );
 
 create type tipo_alteracao_enum as enum (
@@ -98,7 +106,7 @@ create type status_manutencao_enum as enum ('SOLICITADA', 'APROVADA', 'RECUSADA'
 
 create type estado_carregamento_enum as enum ('EM_CARREGAMENTO', 'PARADO', 'CONCLUIDO');
 
--- 3. TABELAS DE DOMÍNIO E HIERARQUIA
+-- 3. TABELAS DE DOMÍNIO E HIERARQUIA FÍSICA
 -- ============================================================
 
 create table cargo_niveis (
@@ -159,17 +167,86 @@ create table checklist_itens (
   created_at timestamptz not null default now()
 );
 
+-- 4. INFRAESTRUTURA PORTUÁRIA (PORTOS, BERÇOS, GUINDASTES, PÁTIOS)
+-- ============================================================
+
+-- Portos
+create table portos (
+  id uuid primary key default gen_random_uuid(),
+  codigo text not null unique,
+  nome text not null,
+  pais text not null default 'Brasil',
+  cidade text,
+  latitude numeric(10, 6) not null,
+  longitude numeric(10, 6) not null,
+  localizacao geography(Point, 4326) generated always as (ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography) stored,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Berços (Um porto possui vários berços)
+create table bercos (
+  id uuid primary key default gen_random_uuid(),
+  porto_id uuid not null references portos(id) on delete cascade,
+  nome_codigo text not null,
+  capacidade numeric(12, 2) default 50000.0,
+  status status_berco_enum not null default 'DISPONIVEL',
+  caracteristicas text,
+  latitude numeric(10, 6),
+  longitude numeric(10, 6),
+  localizacao geography(Point, 4326),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Guindastes / Equipamentos (Separados dos berços)
+create table guindastes (
+  id uuid primary key default gen_random_uuid(),
+  porto_id uuid not null references portos(id) on delete cascade,
+  berco_id uuid references bercos(id) on delete set null,
+  numero_identificacao text not null unique,
+  tipo text not null default 'STAG / STS Crane',
+  capacidade numeric(12, 2) default 65.0,
+  status status_guindaste_enum not null default 'DISPONIVEL',
+  data_ultima_manutencao date,
+  latitude numeric(10, 6),
+  longitude numeric(10, 6),
+  localizacao geography(Point, 4326),
+  qr_code_url text unique,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Pátios (Áreas de armazenamento separadas)
+create table patios (
+  id uuid primary key default gen_random_uuid(),
+  porto_id uuid not null references portos(id) on delete cascade,
+  codigo text not null unique,
+  nome text not null,
+  capacidade int not null default 1000,
+  ocupacao int not null default 0,
+  status text not null default 'OPERANTE',
+  latitude numeric(10, 6),
+  longitude numeric(10, 6),
+  area_localizacao geography(Point, 4326),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Rotas Marítimas
 create table rotas_maritimas (
   id uuid primary key default gen_random_uuid(),
+  porto_origem_id uuid references portos(id) on delete cascade,
+  porto_destino_id uuid references portos(id) on delete cascade,
   origem text not null,
   destino text not null,
-  distancia_km numeric(12, 2) not null check (distancia_km > 0),
+  distancia_km numeric(12, 2) not null check (distancia_km >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint uq_rota_origem_destino unique (origem, destino)
 );
 
--- 4. TABELAS DE EQUIPAMENTOS E EMBARCAÇÕES
+-- 5. EQUIPAMENTOS E EMBARCAÇÕES (NAVIOS, CONTAINERS)
 -- ============================================================
 
 create table navios (
@@ -183,19 +260,16 @@ create table navios (
   tempo_fora_do_porto text,
   porto_origem text,
   porto_destino text,
+  porto_origem_id uuid references portos(id) on delete set null,
+  porto_destino_id uuid references portos(id) on delete set null,
+  velocidade_media numeric(8, 2) check (velocidade_media >= 0), -- Velocidade média em km/h configurável por navio
+  previsao_chegada timestamptz,
+  latitude numeric(10, 6),
+  longitude numeric(10, 6),
+  posicao_geografica geography(Point, 4326),
   localizacao localizacao_navio_enum not null default 'DENTRO_DO_PORTO',
   data_chegada timestamptz,
   data_saida timestamptz,
-  qr_code_url text unique,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create table guindastes (
-  id uuid primary key default gen_random_uuid(),
-  numero_identificacao text not null unique,
-  estado estado_guindaste_enum not null default 'OPERANTE',
-  data_ultima_manutencao date,
   qr_code_url text unique,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -211,12 +285,17 @@ create table containers (
   tempo_uso_referencia referencia_tempo_enum default 'DATA_FABRICACAO',
   estado estado_container_enum not null default 'OPERANTE',
   navio_id uuid references navios(id) on delete set null,
+  porto_id uuid references portos(id) on delete set null,
+  patio_id uuid references patios(id) on delete set null,
+  latitude numeric(10, 6),
+  longitude numeric(10, 6),
+  localizacao_atual geography(Point, 4326),
   qr_code_url text unique,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
--- 5. TABELAS DE CARGAS E FLUXO
+-- 6. TABELAS DE CARGAS E FLUXO
 -- ============================================================
 
 create table cargas (
@@ -262,7 +341,7 @@ create table estivador_cargas (
   constraint uq_estivador_carga unique (estivador_id, carga_id)
 );
 
--- 6. TABELAS DE MANUTENÇÃO
+-- 7. TABELAS DE MANUTENÇÃO E INSPEÇÕES
 -- ============================================================
 
 create table manutencoes (
@@ -293,9 +372,6 @@ create table historico_manutencoes (
   created_at timestamptz not null default now()
 );
 
--- 7. TABELAS DE INSPEÇÃO E CHECKLIST
--- ============================================================
-
 create table inspecoes (
   id uuid primary key default gen_random_uuid(),
   carga_id uuid not null unique references cargas(id) on delete cascade,
@@ -317,7 +393,7 @@ create table inspecao_itens (
   constraint uq_inspecao_item unique (inspecao_id, checklist_item_id)
 );
 
--- 8. TABELAS DE AUDITORIA E DECISÕES
+-- 8. AUDITORIA, DECISÕES E DELEGAÇÕES
 -- ============================================================
 
 create table logs_alteracoes (
@@ -356,9 +432,6 @@ create table retificacoes_trail (
   created_at timestamptz not null default now()
 );
 
--- 9. DELEGAÇÃO DE SUPERVISOR
--- ============================================================
-
 create table delegacoes_supervisor (
   id uuid primary key default gen_random_uuid(),
   supervisor_titular_id uuid references funcionarios(id) on delete cascade,
@@ -371,9 +444,6 @@ create table delegacoes_supervisor (
   updated_at timestamptz not null default now()
 );
 
--- 10. LEITURAS DE QR CODE
--- ============================================================
-
 create table leituras_qr_code (
   id uuid primary key default gen_random_uuid(),
   funcionario_id uuid references funcionarios(id) on delete restrict,
@@ -383,7 +453,130 @@ create table leituras_qr_code (
   created_at timestamptz not null default now()
 );
 
--- 11. ROW LEVEL SECURITY (RLS) - ATIVAÇÃO E POLÍTICAS
+-- 9. ÍNDICES ESPACIAIS POSTGIS (GiST)
+-- ============================================================
+create index if not exists idx_portos_localizacao on portos using gist (localizacao);
+create index if not exists idx_bercos_localizacao on bercos using gist (localizacao);
+create index if not exists idx_guindastes_localizacao on guindastes using gist (localizacao);
+create index if not exists idx_patios_localizacao on patios using gist (area_localizacao);
+create index if not exists idx_containers_localizacao on containers using gist (localizacao_atual);
+create index if not exists idx_navios_posicao on navios using gist (posicao_geografica);
+
+-- 10. FUNÇÕES E PROCEDURES POSTGIS
+-- ============================================================
+
+-- Função PostGIS: Cálculo de distância geodésica em metros e km entre dois portos
+create or replace function fn_calcular_distancia_portos(
+  p_origem_id uuid,
+  p_destino_id uuid
+)
+returns table(
+  distancia_metros numeric,
+  distancia_km numeric,
+  nota_explicativa text
+) as $$
+begin
+  return query
+  select
+    st_distance(p1.localizacao, p2.localizacao)::numeric(15, 2) as distancia_metros,
+    (st_distance(p1.localizacao, p2.localizacao) / 1000.0)::numeric(12, 2) as distancia_km,
+    'Distância calculada via PostGIS (ST_Distance geodésica em elipsoide WGS84). Não representa necessariamente a rota marítima exata.'::text as nota_explicativa
+  from portos p1, portos p2
+  where p1.id = p_origem_id and p2.id = p_destino_id;
+end;
+$$ language plpgsql;
+
+-- Função PostGIS: Cálculo do Tempo Estimado de Viagem e Previsão de Chegada (ETA)
+create or replace function fn_calcular_eta_navio(
+  p_navio_id uuid,
+  p_origem_id uuid,
+  p_destino_id uuid,
+  p_data_partida timestamptz default now()
+)
+returns table(
+  navio_nome text,
+  velocidade_media_kmh numeric,
+  distancia_km numeric,
+  tempo_horas numeric,
+  previsao_chegada timestamptz,
+  status_calculo text,
+  mensagem text
+) as $$
+declare
+  v_vel numeric;
+  v_nome text;
+  v_dist_km numeric;
+  v_horas numeric;
+  v_eta timestamptz;
+begin
+  select nome, velocidade_media into v_nome, v_vel from navios where id = p_navio_id;
+
+  if v_vel is null or v_vel <= 0 then
+    return query select
+      v_nome, v_vel, 0.0::numeric, 0.0::numeric, null::timestamptz,
+      'ERRO_VELOCIDADE_AUSENTE'::text,
+      'Não é possível calcular o tempo estimado e ETA sem a velocidade média cadastrada para a embarcação.'::text;
+    return;
+  end if;
+
+  select (st_distance(p1.localizacao, p2.localizacao) / 1000.0)::numeric(12, 2)
+  into v_dist_km
+  from portos p1, portos p2
+  where p1.id = p_origem_id and p2.id = p_destino_id;
+
+  if v_dist_km is null then
+    return query select
+      v_nome, v_vel, 0.0::numeric, 0.0::numeric, null::timestamptz,
+      'ERRO_PORTO_NAO_ENCONTRADO'::text,
+      'Porto de origem ou destino não localizado.'::text;
+    return;
+  end if;
+
+  v_horas := (v_dist_km / v_vel)::numeric(12, 2);
+  v_eta := p_data_partida + (v_horas || ' hours')::interval;
+
+  return query select
+    v_nome, v_vel, v_dist_km, v_horas, v_eta,
+    'SUCESSO'::text,
+    'Previsão calculada com base na distância geodésica e velocidade média cadastrada da embarcação.'::text;
+end;
+$$ language plpgsql;
+
+-- Função PostGIS: Busca de Equipamentos / Guindastes Próximos por Proximidade Espacial
+create or replace function fn_buscar_equipamentos_proximos(
+  p_lat numeric,
+  p_lon numeric,
+  p_raio_metros numeric default 5000.0
+)
+returns table(
+  equipamento_id uuid,
+  codigo text,
+  tipo text,
+  capacidade numeric,
+  status text,
+  distancia_metros numeric
+) as $$
+declare
+  v_ponto geography;
+begin
+  v_ponto := st_setsrid(st_makepoint(p_lon, p_lat), 4326)::geography;
+
+  return query
+  select
+    g.id as equipamento_id,
+    g.numero_identificacao as codigo,
+    g.tipo as tipo,
+    g.capacidade as capacidade,
+    g.status::text as status,
+    st_distance(v_ponto, g.localizacao)::numeric(12, 2) as distancia_metros
+  from guindastes g
+  where g.localizacao is not null
+    and st_dwithin(v_ponto, g.localizacao, p_raio_metros)
+  order by st_distance(v_ponto, g.localizacao) asc;
+end;
+$$ language plpgsql;
+
+-- 11. ROW LEVEL SECURITY (RLS)
 -- ============================================================
 
 alter table funcionarios enable row level security;
@@ -391,9 +584,12 @@ alter table visitantes enable row level security;
 alter table tipos_carga enable row level security;
 alter table checklist_modelos enable row level security;
 alter table checklist_itens enable row level security;
+alter table portos enable row level security;
+alter table bercos enable row level security;
+alter table guindastes enable row level security;
+alter table patios enable row level security;
 alter table rotas_maritimas enable row level security;
 alter table navios enable row level security;
-alter table guindastes enable row level security;
 alter table containers enable row level security;
 alter table cargas enable row level security;
 alter table agendamentos enable row level security;
@@ -408,30 +604,30 @@ alter table delegacoes_supervisor enable row level security;
 alter table leituras_qr_code enable row level security;
 
 -- Permissão de leitura publica/autenticada para operacoes generales
-create policy "Acesso geral para usuarios autenticados" on cargas for all using (true);
-create policy "Acesso geral para usuarios autenticados" on navios for all using (true);
-create policy "Acesso geral para usuarios autenticados" on containers for all using (true);
-create policy "Acesso geral para usuarios autenticados" on guindastes for all using (true);
-create policy "Acesso geral para usuarios autenticados" on tipos_carga for all using (true);
-create policy "Acesso geral para usuarios autenticados" on rotas_maritimas for all using (true);
-create policy "Acesso geral para usuarios autenticados" on funcionarios for all using (true);
-create policy "Acesso geral para usuarios autenticados" on visitantes for all using (true);
+create policy "Acesso geral portos" on portos for all using (true);
+create policy "Acesso geral bercos" on bercos for all using (true);
+create policy "Acesso geral guindastes" on guindastes for all using (true);
+create policy "Acesso geral patios" on patios for all using (true);
+create policy "Acesso geral cargas" on cargas for all using (true);
+create policy "Acesso geral navios" on navios for all using (true);
+create policy "Acesso geral containers" on containers for all using (true);
+create policy "Acesso geral tipos_carga" on tipos_carga for all using (true);
+create policy "Acesso geral rotas_maritimas" on rotas_maritimas for all using (true);
+create policy "Acesso geral funcionarios" on funcionarios for all using (true);
+create policy "Acesso geral visitantes" on visitantes for all using (true);
 
--- 12. TRIGGER DE PROPAGAÇÃO EM CASCATA (RN 12)
+-- 12. TRIGGER DE PROPAGAÇÃO EM CASCATA
 -- ============================================================
 
 create or replace function fn_propagar_status_navio()
 returns trigger as $$
 begin
-  -- Se a localização do navio mudar para NO_PORTO_DE_DESTINO
   if NEW.localizacao = 'NO_PORTO_DE_DESTINO' then
-    -- Atualiza status das cargas vinculadas via contêiner para ENTREGUE
     update cargas
     set status_fluxo = 'ENTREGUE', updated_at = now()
     where container_id in (select id from containers where navio_id = NEW.id)
       and status_fluxo = 'EM_TRANSITO';
   elsif NEW.localizacao = 'FORA_DO_PORTO' then
-    -- Atualiza status das cargas para EM_TRANSITO
     update cargas
     set status_fluxo = 'EM_TRANSITO', updated_at = now()
     where container_id in (select id from containers where navio_id = NEW.id)
@@ -446,7 +642,7 @@ after update of localizacao on navios
 for each row
 execute function fn_propagar_status_navio();
 
--- 13. POPULAÇÃO INICIAL DE CARGOS E NÍVEIS
+-- 13. POPULAÇÃO INICIAL (SEED DATA)
 -- ============================================================
 
 insert into cargo_niveis (cargo, nivel) values
@@ -461,3 +657,90 @@ insert into cargo_niveis (cargo, nivel) values
   ('DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'ESTRATEGICO'),
   ('CONSELHO_ADMINISTRACAO', 'ESTRATEGICO')
 on conflict (cargo) do nothing;
+
+-- Inserir Portos
+insert into portos (codigo, nome, pais, cidade, latitude, longitude) values
+  ('BRSSZ', 'Porto de Santos (STS-01)', 'Brasil', 'Santos', -23.960800, -46.302200),
+  ('BRPNG', 'Porto de Paranaguá', 'Brasil', 'Paranaguá', -25.501100, -48.511700),
+  ('BRRIG', 'Porto do Rio de Janeiro', 'Brasil', 'Rio de Janeiro', -22.898300, -43.181200),
+  ('BRSUA', 'Porto de Suape', 'Brasil', 'Ipojuca', -8.394400, -34.958300),
+  ('BRBGZ', 'Porto de Bragança', 'Brasil', 'Bragança', -1.053600, -46.765600)
+on conflict (codigo) do nothing;
+
+-- Inserir Berços
+insert into bercos (porto_id, nome_codigo, capacidade, status, caracteristicas, latitude, longitude, localizacao)
+select
+  p.id,
+  b.nome_codigo,
+  b.capacidade,
+  b.status::status_berco_enum,
+  b.caracteristicas,
+  b.latitude,
+  b.longitude,
+  st_setsrid(st_makepoint(b.longitude, b.latitude), 4326)::geography
+from portos p
+cross join (values
+  ('BRSSZ', 'Berço 01 - Conteineres', 80000.0, 'DISPONIVEL', 'Calado 15m - Terminal STS-01', -23.961000, -46.302000),
+  ('BRSSZ', 'Berço 02 - Carga Geral', 60000.0, 'OCUPADO', 'Calado 13.5m - Terminal STS-01', -23.961500, -46.302500),
+  ('BRSSZ', 'Berço 03 - Granel', 70000.0, 'DISPONIVEL', 'Calado 14m - Berço de Granéis', -23.962000, -46.303000),
+  ('BRPNG', 'Berço 101 - Paranaguá', 75000.0, 'DISPONIVEL', 'Terminal de Contêineres de Paranaguá', -25.501500, -48.512000),
+  ('BRRIG', 'Berço 01 - Rio de Janeiro', 65000.0, 'DISPONIVEL', 'Pier de Cargas Rio', -22.898800, -43.181800),
+  ('BRSUA', 'Berço 01 - Suape', 90000.0, 'DISPONIVEL', 'Calado Profundo Suape', -8.395000, -34.959000),
+  ('BRBGZ', 'Berço 01 - Bragança', 40000.0, 'DISPONIVEL', 'Atendimento Regional Bragança', -1.054000, -46.766000)
+) as b(codigo_porto, nome_codigo, capacidade, status, caracteristicas, latitude, longitude)
+where p.codigo = b.codigo_porto
+on conflict do nothing;
+
+-- Inserir Guindastes
+insert into guindastes (porto_id, berco_id, numero_identificacao, tipo, capacidade, status, latitude, longitude, localizacao)
+select
+  p.id,
+  bc.id,
+  g.numero_identificacao,
+  g.tipo,
+  g.capacidade,
+  g.status::status_guindaste_enum,
+  g.latitude,
+  g.longitude,
+  st_setsrid(st_makepoint(g.longitude, g.latitude), 4326)::geography
+from portos p
+cross join (values
+  ('BRSSZ', 'Berço 01 - Conteineres', 'GND-01-STS', 'Portêiner STS Super Post-Panamax', 80.0, 'DISPONIVEL', -23.961100, -46.302100),
+  ('BRSSZ', 'Berço 02 - Carga Geral', 'GND-02-STS', 'Guindaste sobre Esteiras MHC-150', 50.0, 'OPERANDO', -23.961600, -46.302600),
+  ('BRPNG', 'Berço 101 - Paranaguá', 'GND-01-PNG', 'Portêiner STS Post-Panamax', 65.0, 'DISPONIVEL', -25.501600, -48.512100),
+  ('BRRIG', 'Berço 01 - Rio de Janeiro', 'GND-01-RIG', 'Guindaste de Lança Articulada', 40.0, 'DISPONIVEL', -22.898900, -43.181900)
+) as g(codigo_porto, berco_nome, numero_identificacao, tipo, capacidade, status, latitude, longitude)
+left join bercos bc on bc.porto_id = p.id and bc.nome_codigo = g.berco_nome
+where p.codigo = g.codigo_porto
+on conflict (numero_identificacao) do nothing;
+
+-- Inserir Pátios
+insert into patios (porto_id, codigo, nome, capacidade, ocupacao, status, latitude, longitude, area_localizacao)
+select
+  p.id,
+  pt.codigo,
+  pt.nome,
+  pt.capacidade,
+  pt.ocupacao,
+  pt.status,
+  pt.latitude,
+  pt.longitude,
+  st_setsrid(st_makepoint(pt.longitude, pt.latitude), 4326)::geography
+from portos p
+cross join (values
+  ('BRSSZ', 'PATIO-A-STS', 'Pátio A - Contêineres Refrigerados / Carga Geral', 2500, 850, 'OPERANTE', -23.960500, -46.301500),
+  ('BRSSZ', 'PATIO-B-STS', 'Pátio B - Estocagem Mista e Exportação', 1800, 420, 'OPERANTE', -23.962500, -46.303500),
+  ('BRPNG', 'PATIO-01-PNG', 'Pátio de Exportação Paranaguá', 3000, 1100, 'OPERANTE', -25.502000, -48.513000)
+) as pt(codigo_porto, codigo, nome, capacidade, ocupacao, status, latitude, longitude)
+where p.codigo = pt.codigo_porto
+on conflict (codigo) do nothing;
+
+-- Inserir Navios com Velocidade Média Configurável
+insert into navios (nome, numero_imo, quantidade_cargas_realizadas, estado_operacional, porto_origem, porto_destino, velocidade_media, localizacao, latitude, longitude, posicao_geografica)
+values
+  ('MV Santos Star', 'IMO-9821034', 12, 'OPERANTE', 'Porto de Santos (STS-01)', 'Porto de Paranaguá', 20.00, 'DENTRO_DO_PORTO', -23.960800, -46.302200, st_setsrid(st_makepoint(-46.302200, -23.960800), 4326)::geography),
+  ('MV Pacific Giant', 'IMO-9742110', 8, 'OPERANTE', 'Porto de Santos (STS-01)', 'Porto de Suape', 25.00, 'FORA_DO_PORTO', -12.046300, -77.042800, st_setsrid(st_makepoint(-77.042800, -12.046300), 4326)::geography),
+  ('MV Atlantic Breeze', 'IMO-9651002', 15, 'AGENDADO_PARA_REFORMA', 'Porto de Santos (STS-01)', 'Porto do Rio de Janeiro', 22.00, 'NO_PORTO_DE_DESTINO', -22.898300, -43.181200, st_setsrid(st_makepoint(-43.181200, -22.898300), 4326)::geography),
+  ('Log-In Pantanal', 'IMO-9510022', 20, 'OPERANTE', 'Porto de Santos (STS-01)', 'Porto de Bragança', 28.00, 'FORA_DO_PORTO', -10.000000, -40.000000, st_setsrid(st_makepoint(-40.000000, -10.000000), 4326)::geography),
+  ('Cap San Lorenzo', 'IMO-9648283', 5, 'OPERANTE', 'Porto de Paranaguá', 'Porto de Santos (STS-01)', 30.00, 'DENTRO_DO_PORTO', -25.501100, -48.511700, st_setsrid(st_makepoint(-48.511700, -25.501100), 4326)::geography)
+on conflict (numero_imo) do nothing;

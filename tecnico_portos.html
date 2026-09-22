@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>NexusPort — Técnico em Portos</title>
+  <title>NexusPort — Infraestrutura Portuária & Gestão de Pessoas</title>
 
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
@@ -45,7 +45,7 @@
 
   <script src="js/auth-guard.js"></script>
   <script>
-    window.currentUserSession = NexusAuth.requireAuth(['TECNICO_PORTOS', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO']);
+    window.currentUserSession = NexusAuth.requireAuth(['TECNICO_PORTOS', 'SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO']);
   </script>
   <script src="js/vision-layer.js"></script>
   <script src="js/layout.js"></script>
@@ -68,23 +68,342 @@
         <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-6 rounded-2xl border border-nexus-border dark:border-nexus-dark-border shadow-sm">
           <div>
             <div class="flex items-center gap-2 text-nexus-500 font-mono text-xs font-bold uppercase tracking-wider">
-              <span class="material-symbols-outlined text-sm">badge</span>
-              <span>Módulo Exclusivo / Acesso Restrito</span>
+              <span class="material-symbols-outlined text-sm">anchor</span>
+              <span>Infraestrutura Portuária & PostGIS</span>
             </div>
-            <h1 class="font-display text-2xl font-bold text-nexus-900 dark:text-white mt-1">Gestão de Pessoas, Documentos & Reemissão (Técnico)</h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Invalidação e reemissão de códigos de acesso (RN 15), CRUD de funcionários e registro de visitantes (RF 15 / T2.1, T2.2).</p>
+            <h1 class="font-display text-2xl font-bold text-nexus-900 dark:text-white mt-1">Gestão de Portos, Berços, Guindastes, Pátios & Pessoas</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Controle físico da hierarquia portuária, cálculo de distância entre portos, automação logística PostGIS e gestão de acessos.</p>
           </div>
           <span class="px-3 py-1 rounded-full bg-nexus-500 text-white font-mono text-xs font-bold">
             Técnico em Portos
           </span>
         </div>
 
-        <!-- Seção 1: Invalidação e Reemissão de Códigos de Acesso (RN 15 / T1.8) -->
+        <!-- SEÇÃO 1: GESTÃO DE PORTOS & CÁLCULO DE DISTÂNCIA POSTGIS -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
           <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
             <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">key_off</span>
-              Reemissão e Invalidação de Códigos Individuais (RN 15)
+              <span class="material-symbols-outlined text-nexus-500">domain</span>
+              Gestão de Portos & Coordenadas Geográficas (PostGIS WGS84)
+            </h3>
+            <button id="togglePortoFormBtn" type="button" class="px-3 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
+              + Novo Porto
+            </button>
+          </div>
+
+          <!-- Form Novo Porto -->
+          <form id="portoForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Código UN/LOCODE</label>
+              <input type="text" id="portoCodigo" required placeholder="Ex: BRSSZ" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono uppercase" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Nome do Porto</label>
+              <input type="text" id="portoNome" required placeholder="Ex: Porto de Santos" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Cidade / País</label>
+              <input type="text" id="portoCidade" required placeholder="Ex: Santos / Brasil" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Latitude</label>
+              <input type="number" step="any" id="portoLat" required placeholder="-23.9608" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Longitude</label>
+              <input type="number" step="any" id="portoLon" required placeholder="-46.3022" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+            </div>
+            <div class="sm:col-span-2 md:col-span-5 flex justify-end">
+              <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">save</span>
+                <span>Salvar Porto</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Tabela de Portos -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                <tr>
+                  <th class="p-3">Código</th>
+                  <th class="p-3">Nome do Porto</th>
+                  <th class="p-3">Cidade / País</th>
+                  <th class="p-3">Coordenadas (Lat, Lon)</th>
+                  <th class="p-3">PostGIS Geography</th>
+                </tr>
+              </thead>
+              <tbody id="portosTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
+                <!-- Renderizado via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Módulo de Cálculo de Distância entre dois Portos -->
+          <div class="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 flex flex-col gap-3">
+            <h4 class="font-display font-bold text-xs text-indigo-900 dark:text-indigo-200 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">straighten</span>
+              Calculadora de Distância Geográfica entre Portos (PostGIS ST_Distance)
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end text-xs">
+              <div>
+                <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Porto A (Origem)</label>
+                <select id="calcDistPortoA" class="w-full px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-900 font-bold">
+                  <!-- Renderizado via JS -->
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Porto B (Destino)</label>
+                <select id="calcDistPortoB" class="w-full px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-900 font-bold">
+                  <!-- Renderizado via JS -->
+                </select>
+              </div>
+              <button id="calcDistBtn" type="button" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors h-9">
+                <span class="material-symbols-outlined text-[16px]">calculate</span>
+                <span>Calcular Distância</span>
+              </button>
+            </div>
+
+            <div id="distResultBox" class="hidden p-3 rounded-lg bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-900 text-xs flex flex-col gap-1">
+              <div class="flex items-center justify-between font-bold text-indigo-900 dark:text-indigo-200">
+                <span id="distResultText">Distância Estimada: -- km</span>
+                <span id="distResultMetersText" class="font-mono text-slate-500">(-- metros)</span>
+              </div>
+              <p id="distResultNote" class="text-[11px] text-slate-500 dark:text-slate-400 italic mt-1">
+                --
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEÇÃO 2: GESTÃO DE BERÇOS E GUINDASTES (EQUIPAMENTOS SEPARADOS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- Gestão de Berços -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">dock</span>
+                Gestão de Berços
+              </h3>
+              <button id="toggleBercoFormBtn" type="button" class="px-2.5 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
+                + Berço
+              </button>
+            </div>
+
+            <form id="bercoForm" class="hidden p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Porto</label>
+                <select id="bercoPorto" required class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold"></select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Nome / Código</label>
+                <input type="text" id="bercoNome" required placeholder="Ex: Berço 04" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Capacidade (t)</label>
+                <input type="number" id="bercoCapacidade" required placeholder="50000" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Status</label>
+                <select id="bercoStatus" required class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
+                  <option value="DISPONIVEL">DISPONÍVEL</option>
+                  <option value="OCUPADO">OCUPADO</option>
+                  <option value="EM_MANUTENCAO">EM MANUTENÇÃO</option>
+                  <option value="INDISPONIVEL">INDISPONÍVEL</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2 flex justify-end">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">Salvar Berço</button>
+              </div>
+            </form>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                  <tr>
+                    <th class="p-2.5">Nome / Código</th>
+                    <th class="p-2.5">Porto</th>
+                    <th class="p-2.5">Capacidade</th>
+                    <th class="p-2.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="bercosTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Gestão de Guindastes -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">precision_manufacturing</span>
+                Gestão de Guindastes (Separados dos Berços)
+              </h3>
+              <button id="toggleGuindasteFormBtn" type="button" class="px-2.5 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
+                + Guindaste
+              </button>
+            </div>
+
+            <form id="guindasteForm" class="hidden p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Porto</label>
+                <select id="guindastePorto" required class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold"></select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Identificação / Código</label>
+                <input type="text" id="guindasteCodigo" required placeholder="Ex: GND-03-STS" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Tipo de Guindaste</label>
+                <input type="text" id="guindasteTipo" required placeholder="Ex: Portêiner Post-Panamax" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Capacidade (t)</label>
+                <input type="number" id="guindasteCapacidade" required placeholder="65" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Status</label>
+                <select id="guindasteStatus" required class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
+                  <option value="DISPONIVEL">DISPONÍVEL</option>
+                  <option value="OPERANDO">OPERANDO</option>
+                  <option value="MANUTENCAO">MANUTENÇÃO</option>
+                  <option value="INDISPONIVEL">INDISPONÍVEL</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Berço Vinculado (Opcional)</label>
+                <select id="guindasteBerco" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold"></select>
+              </div>
+              <div class="sm:col-span-2 flex justify-end">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">Salvar Guindaste</button>
+              </div>
+            </form>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                  <tr>
+                    <th class="p-2.5">Código</th>
+                    <th class="p-2.5">Tipo</th>
+                    <th class="p-2.5">Porto / Berço</th>
+                    <th class="p-2.5">Capacidade</th>
+                    <th class="p-2.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="guindastesTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SEÇÃO 3: GESTÃO DE PÁTIOS & AUTOMAÇÃO LOGÍSTICA ESPACIAL -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- Gestão de Pátios -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">grid_view</span>
+                Gestão de Pátios de Armazenamento
+              </h3>
+              <button id="togglePatioFormBtn" type="button" class="px-2.5 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
+                + Pátio
+              </button>
+            </div>
+
+            <form id="patioForm" class="hidden p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Porto</label>
+                <select id="patioPorto" required class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold"></select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Código do Pátio</label>
+                <input type="text" id="patioCodigo" required placeholder="Ex: PATIO-C-STS" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono uppercase" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Nome do Pátio</label>
+                <input type="text" id="patioNome" required placeholder="Ex: Pátio de Carga Perigosa" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Capacidade Total (TEUs)</label>
+                <input type="number" id="patioCapacidade" required placeholder="2000" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <div class="sm:col-span-2 flex justify-end">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">Salvar Pátio</button>
+              </div>
+            </form>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                  <tr>
+                    <th class="p-2.5">Código / Nome</th>
+                    <th class="p-2.5">Porto</th>
+                    <th class="p-2.5">Capacidade</th>
+                    <th class="p-2.5">Ocupação</th>
+                    <th class="p-2.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="patiosTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Automação Logística: Localizador de Equipamentos Próximos -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">near_me</span>
+                Automação Logística — Guindastes Próximos (PostGIS)
+              </h3>
+            </div>
+            <p class="text-xs text-slate-500">Identificação automatizada de equipamentos disponíveis por proximidade geográfica da carga/contêiner via PostGIS (ST_Distance / ST_DWithin).</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs items-end">
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Latitude da Carga</label>
+                <input type="number" step="any" id="proxLat" value="-23.9608" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Longitude da Carga</label>
+                <input type="number" step="any" id="proxLon" value="-46.3022" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <button id="buscarProxBtn" type="button" class="px-3 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+                <span>Buscar Próximos</span>
+              </button>
+            </div>
+
+            <div class="overflow-x-auto mt-2">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                  <tr>
+                    <th class="p-2">Equipamento</th>
+                    <th class="p-2">Tipo</th>
+                    <th class="p-2">Capacidade</th>
+                    <th class="p-2">Distância (PostGIS)</th>
+                    <th class="p-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="equipamentosProximosTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
+                  <tr>
+                    <td colspan="5" class="p-4 text-center text-slate-400 font-mono">Clique em "Buscar Próximos" para consultar equipamentos em raio próximo.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SEÇÃO 4: REEMISSÃO DE CÓDIGOS, CRUD FUNCIONÁRIOS E VISITANTES -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">badge</span>
+              Gestão de Pessoas, Documentos & Invalidação de Códigos (RN 15)
             </h3>
             <span class="font-mono text-xs text-slate-400">Presencial na Guarita STS-01</span>
           </div>
@@ -106,7 +425,6 @@
             </button>
           </div>
 
-          <!-- Resultado da Busca -->
           <div id="empSearchResultBox" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
             <div class="flex items-center justify-between text-xs">
               <span class="font-bold text-nexus-900 dark:text-white text-sm" id="resEmpNome">--</span>
@@ -118,7 +436,6 @@
             </div>
           </div>
 
-          <!-- Alert de Sucesso -->
           <div id="codeRegenNotice" class="hidden p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 text-xs flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-[20px] text-emerald-600">check_circle</span>
@@ -128,118 +445,106 @@
           </div>
         </div>
 
-        <!-- Seção 2: CRUD de Funcionários e Documentação Interna (T2.1) -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">group</span>
-              CRUD de Funcionários & Documentação Interna (T2.1)
-            </h3>
-            <button id="toggleFuncFormBtn" type="button" class="px-3 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
-              + Cadastrar Funcionário
-            </button>
-          </div>
-
-          <form id="funcCrudForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Matrícula</label>
-              <input type="text" id="funcMatricula" required placeholder="Ex: MAT-9900" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Nome Completo</label>
-              <input type="text" id="funcNome" required placeholder="Nome do colaborador" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Cargo</label>
-              <select id="funcCargo" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
-                <option value="ESTIVADOR">Estivador</option>
-                <option value="CONFERENTE_CARGA">Conferente de Carga</option>
-                <option value="ARRUMADOR_CONSERTADOR">Arrumador e Consertador</option>
-                <option value="PLANEJADOR_PATIO_NAVIOS">Planejador de Pátio e Navios</option>
-                <option value="TECNICO_PORTOS">Técnico em Portos</option>
-                <option value="SUPERVISOR_GERENTE_OPERACOES">Supervisor de Operações</option>
-                <option value="INSPETOR">Inspetor</option>
-                <option value="DIRETOR_OPERACOES_LOGISTICA">Diretor de Operações</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Documentação Interna</label>
-              <input type="text" id="funcDoc" placeholder="Ex: Livro Registro #102" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-            </div>
-            <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-1">
-              <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">save</span>
-                <span>Salvar Funcionário</span>
+        <!-- CRUD Funcionários e Visitantes -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">group</span>
+                CRUD de Funcionários
+              </h3>
+              <button id="toggleFuncFormBtn" type="button" class="px-3 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
+                + Funcionário
               </button>
             </div>
-          </form>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                <tr>
-                  <th class="p-3">Matrícula</th>
-                  <th class="p-3">Nome</th>
-                  <th class="p-3">Cargo</th>
-                  <th class="p-3">Código Individual</th>
-                  <th class="p-3">Doc. Interna</th>
-                </tr>
-              </thead>
-              <tbody id="funcCrudTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                <!-- Renderizado via JS -->
-              </tbody>
-            </table>
+            <form id="funcCrudForm" class="hidden p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Matrícula</label>
+                <input type="text" id="funcMatricula" required placeholder="Ex: MAT-9900" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Nome Completo</label>
+                <input type="text" id="funcNome" required placeholder="Nome do colaborador" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Cargo</label>
+                <select id="funcCargo" required class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
+                  <option value="ESTIVADOR">Estivador</option>
+                  <option value="CONFERENTE_CARGA">Conferente de Carga</option>
+                  <option value="ARRUMADOR_CONSERTADOR">Arrumador e Consertador</option>
+                  <option value="PLANEJADOR_PATIO_NAVIOS">Planejador de Pátio e Navios</option>
+                  <option value="TECNICO_PORTOS">Técnico em Portos</option>
+                  <option value="SUPERVISOR_GERENTE_OPERACOES">Supervisor de Operações</option>
+                  <option value="INSPETOR">Inspetor</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Doc. Interna</label>
+                <input type="text" id="funcDoc" placeholder="Ex: Livro #102" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+              </div>
+              <div class="sm:col-span-2 flex justify-end">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">Salvar Funcionário</button>
+              </div>
+            </form>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                  <tr>
+                    <th class="p-2.5">Matrícula</th>
+                    <th class="p-2.5">Nome</th>
+                    <th class="p-2.5">Cargo</th>
+                    <th class="p-2.5">Código</th>
+                  </tr>
+                </thead>
+                <tbody id="funcCrudTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium"></tbody>
+              </table>
+            </div>
           </div>
-        </div>
 
-        <!-- Seção 3: CRUD de Visitantes Temporários (T2.2) -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">assignment_ind</span>
-              Registro do Livro de Visitantes Temporários (T2.2)
-            </h3>
-            <button id="toggleVisFormBtn" type="button" class="px-3 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
-              + Registrar Visitante
-            </button>
-          </div>
-
-          <form id="visCrudForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Nome Visitante</label>
-              <input type="text" id="visNome" required placeholder="Nome do visitante" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Documento (CPF/RG)</label>
-              <input type="text" id="visDocumento" required placeholder="Ex: CPF 123.456.789-00" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Motivo da Visita</label>
-              <input type="text" id="visMotivo" required placeholder="Ex: Fiscalização Alfandegária" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-            </div>
-            <div class="sm:col-span-3 flex justify-end gap-2 mt-1">
-              <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">check_circle</span>
-                <span>Registrar Entrada</span>
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">assignment_ind</span>
+                Registro de Visitantes
+              </h3>
+              <button id="toggleVisFormBtn" type="button" class="px-3 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
+                + Visitante
               </button>
             </div>
-          </form>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                <tr>
-                  <th class="p-3">Nome Visitante</th>
-                  <th class="p-3">Documento</th>
-                  <th class="p-3">Motivo da Visita</th>
-                  <th class="p-3">Data/Hora Entrada</th>
-                  <th class="p-3">Registrado por</th>
-                </tr>
-              </thead>
-              <tbody id="visCrudTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                <!-- Renderizado via JS -->
-              </tbody>
-            </table>
+            <form id="visCrudForm" class="hidden p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Nome Visitante</label>
+                <input type="text" id="visNome" required placeholder="Nome do visitante" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-500 mb-1">Documento (CPF/RG)</label>
+                <input type="text" id="visDocumento" required placeholder="Ex: CPF 123.456.789-00" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block font-bold text-slate-500 mb-1">Motivo da Visita</label>
+                <input type="text" id="visMotivo" required placeholder="Ex: Fiscalização Alfandegária" class="w-full px-2 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+              </div>
+              <div class="sm:col-span-2 flex justify-end">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">Registrar Entrada</button>
+              </div>
+            </form>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                  <tr>
+                    <th class="p-2.5">Nome Visitante</th>
+                    <th class="p-2.5">Documento</th>
+                    <th class="p-2.5">Motivo</th>
+                    <th class="p-2.5">Entrada</th>
+                  </tr>
+                </thead>
+                <tbody id="visCrudTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -251,6 +556,7 @@
   <script src="js/config.example.js"></script>
   <script src="js/config.js" onerror="this.remove()"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/postgis-service.js"></script>
   <script src="js/tecnico_portos.js"></script>
 </body>
 </html>

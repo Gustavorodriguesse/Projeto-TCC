@@ -1,68 +1,122 @@
-# NexusPort - Sistema de Gestão Operacional Portuária
+# NexusPort - Sistema de Automação e Gestão Operacional Portuária
 
-**Terminal STS-01 Santos**
+**Terminal STS-01 Santos & Rede Portuária Nacional**
 
-NexusPort é uma plataforma web para gestão operacional de fluxos de cargas, navios, inspeções, pátio e rastreamento em tempo real no Terminal STS-01 do Porto de Santos.
-
----
-
-## 🚀 Recursos Principais
-
-- **Autenticação & Controle de Acesso Baseado em Modos (RLS):**
-  - **Técnico em Portos:** Gestão de funcionários, visitantes, cadastros operacionais e liberação.
-  - **Supervisor de Operações:** Visão tática, delegação de substitutos e trilha de decisões.
-  - **Gerente de Operações:** Visão estratégica global, aprovação de relatórios e trilha crítica.
-- **Fluxo Core de Cargas & Pátio:** Agendamento, recebimento, checklist de avarias, armazenamento em baia, vinculação e trânsito.
-- **QR Code & Etiquetas:** Geração de QR Code com canvas em tempo real, download de etiqueta A4/PDF 10x10cm e scanner via câmera/simulação.
-- **Dashboards & Relatórios:** KPIs em tempo real, busca operacional com 5 filtros e emissão de relatório PDF A4 com logotipo.
-- **Auditoria, Trail & Delegação:** Trilha imutável de decisões críticas com anexação de retificações e gestão de substituto ativo.
-- **Localização & Tempos:** Posicionamento GPS dos navios, classificação automática de status e cálculo de ETA com velocidade fixa de 33 km/h (RN 9).
+NexusPort é uma plataforma web completa para gestão de fluxos de cargas, logística de frotas, infraestrutura portuária, controle de acessos e geolocalização com **Supabase**, **PostgreSQL** e **PostGIS**.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🏗️ Arquitetura do Sistema
 
-- **Frontend:** HTML5, Tailwind CSS, JavaScript (ES6 Modules)
-- **Supabase Backend:** PostgreSQL com Row Level Security (RLS) e Auth Client (`@supabase/supabase-js`)
-- **Bibliotecas:** `qrcode.js`, `html5-qrcode`, `jsPDF`
-- **Automação & Testes:** Python 3 (Scripts de verificação `verify_phase*.py`)
-
----
-
-## ⚙️ Configuração e Execução
-
-### 1. Clonar o repositório
-```bash
-git clone <URL_DO_REPOSITORIO>
-cd nexusport
+```
+USUÁRIO (Navegador)
+   ↓
+GitHub Pages (Hospedagem Estática HTML/CSS/JS)
+   ↓
+Supabase (BaaS)
+   ├── PostgreSQL (Banco Relacional Core)
+   ├── PostGIS (Extensão para Dados Espaciais & WGS84)
+   ├── Supabase Auth & RLS (Segurança Row Level Security)
+   └── REST / RPC APIs
 ```
 
-### 2. Configurar o Supabase
-Copie o arquivo de exemplo de configuração e insira as chaves do seu projeto Supabase:
-```bash
-cp js/config.example.js js/config.js
+- **Frontend Estático:** Desenvolvido em HTML5, Tailwind CSS, JavaScript ES6 e Leaflet.js para mapas interativos.
+- **Backend / BaaS:** Supabase PostgreSQL com suporte nativo à extensão espacial **PostGIS**.
+- **Hospedagem:** Preparado para GitHub Pages sem dependência de servidores Node.js ou bancos locais em produção.
+
+---
+
+## 🌐 PostGIS & Banco de Dados
+
+### 1. Extensão e Habilitação
+No editor SQL do Supabase ou banco PostgreSQL local, habilite as extensões:
+```sql
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "postgis";
 ```
-Edite `js/config.js`:
+
+### 2. Estrutura e Hierarquia Física das Tabelas
+A infraestrutura separa claramente os elementos físicos e logísticos do porto:
+
+- **`portos`**:
+  - `id`, `codigo` (ex: BRSSZ), `nome`, `pais`, `cidade`, `latitude`, `longitude`.
+  - `localizacao`: Tipo `geography(Point, 4326)` indexado via GiST.
+- **`bercos`**:
+  - `id`, `porto_id` (FK `portos`), `nome_codigo`, `capacidade`, `status` (`DISPONIVEL`, `OCUPADO`, `EM_MANUTENCAO`, `INDISPONIVEL`), `caracteristicas`, `localizacao`.
+- **`guindastes`**:
+  - *Separados dos berços.* `id`, `porto_id` (FK), `berco_id` (FK opcional), `numero_identificacao`, `tipo`, `capacidade`, `status` (`DISPONIVEL`, `OPERANDO`, `MANUTENCAO`, `INDISPONIVEL`), `localizacao`.
+- **`patios`**:
+  - *Áreas de armazenamento separadas.* `id`, `porto_id` (FK), `codigo`, `nome`, `capacidade`, `ocupacao`, `status`, `area_localizacao`.
+- **`containers`**:
+  - Relacionado a `carga`, `navio`, `porto_id`, `patio_id`, `localizacao_atual` `geography(Point, 4326)`.
+- **`navios`**:
+  - `id`, `nome`, `numero_imo`, `porto_origem_id`, `porto_destino_id`, `velocidade_media` (km/h configurável por navio), `posicao_geografica` `geography(Point, 4326)`, `localizacao` (`DENTRO_DO_PORTO`, `FORA_DO_PORTO`, `NO_PORTO_DE_DESTINO`).
+
+O DDL completo está disponível em `SPECs/schema.sql`.
+
+---
+
+## 📏 Cálculos de Distância, Tempo de Viagem e Previsão de Chegada (ETA)
+
+### 1. Distância Geográfica Geodésica entre Portos
+Calculada via PostGIS utilizando a função espacial `ST_Distance` em coordenadas geográficas `geography(Point, 4326)` (elipsoide WGS84):
+```sql
+SELECT (ST_Distance(p1.localizacao, p2.localizacao) / 1000.0) AS distancia_km
+FROM portos p1, portos p2
+WHERE p1.codigo = 'BRSSZ' AND p2.codigo = 'BRPNG';
+```
+> **Nota de Transparência:** A função `ST_Distance` representa a distância geodésica em linha reta (geodésica WGS84) entre as coordenadas dos portos. Não deve ser apresentada como se fosse a rota marítima navegável exata.
+
+### 2. Tempo Estimado de Viagem
+Fórmula:
+$$\text{tempo (horas)} = \frac{\text{distância (km)}}{\text{velocidade média (km/h)}}$$
+
+- **Velocidade Média Configurável:** Cada embarcação possui seu próprio parâmetro de velocidade média cadastrado (`velocidade_media` na tabela `navios`). Ex: *MV Santos Star = 20 km/h*, *MV Pacific Giant = 25 km/h*.
+- **Tratamento de Exceções:** Se a embarcação não possuir velocidade cadastrada ou o valor for $\le 0$, o sistema informa expressamente que não é possível calcular a estimativa com precisão suficiente, evitando premissas arbitrárias.
+
+### 3. Previsão Estimada de Chegada (ETA)
+$$\text{ETA} = \text{Data/Hora de Partida} + \text{Tempo Estimado de Viagem}$$
+
+---
+
+## 🎯 Automação Logística Espacial
+O sistema permite localizar automaticamente guindastes e equipamentos disponíveis próximos de uma localização ou contêiner específico utilizando consultas PostGIS:
+```sql
+SELECT g.numero_identificacao, g.tipo, ST_Distance(v_ponto, g.localizacao) AS distancia_metros
+FROM guindastes g
+WHERE ST_DWithin(v_ponto, g.localizacao, 5000) AND g.status = 'DISPONIVEL'
+ORDER BY ST_Distance(v_ponto, g.localizacao) ASC;
+```
+
+---
+
+## ⚙️ Configuração do Supabase & Hospedagem
+
+### 1. Arquivo de Configuração
+Crie ou edite `js/config.js` (copie a partir de `js/config.example.js`):
 ```javascript
 window.NEXUS_CONFIG = {
   SUPABASE_URL: "https://seu-projeto.supabase.co",
   SUPABASE_ANON_KEY: "sua-chave-anon-aqui"
 };
 ```
-*Nota: Caso o Supabase não esteja configurado, o sistema executa automaticamente em modo de simulação/offline.*
+*Atenção: Utilize APENAS a chave anônima (anon key). NUNCA coloque a service_role key no frontend.*
 
-### 3. Executar Localmente
+### 2. Executar Localmente
 ```bash
-npm start
+python3 -m http.server 3000
+# Acesse http://localhost:3000
 ```
-Acesse `http://localhost:3000` no seu navegador.
 
-### 4. Executar Testes Automatizados
+### 3. Executar Testes Automatizados
 ```bash
 npm test
 ```
 
+### 4. Deploy no GitHub Pages
+O repositório inclui a action `.github/workflows/deploy.yml` para publicação estática automática ao realizar push na branch principal.
+
 ---
 
-## 🔒 Banco de Dados e Schemas
-O script DDL com as tabelas, funções RLS e políticas de acesso está disponível em `SPECs/schema.sql`.
+## 🛡️ Segurança (RLS)
+Todas as tabelas do Supabase possuem Row Level Security (RLS) ativado com políticas de acesso configuradas para leitura e escrita seguras via chave pública anônima/autenticada.
