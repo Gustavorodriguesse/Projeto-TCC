@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>NexusPort — Painel Operacional</title>
+  <title>NexusPort — Painel Geral</title>
 
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
@@ -42,116 +42,28 @@
       }
     };
   </script>
-  <style>
-    body {
-      overscroll-behavior: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-  </style>
 
-  <!-- Chart.js via CDN para gráficos da Visão Estratégica (T1.6) -->
+  <!-- Chart.js via CDN para Visão Estratégica -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Auth Guard Inclusion (Garante execução antes da renderização do body) -->
+  <!-- Auth Guard & Layout Client-Side Scripts -->
   <script src="js/auth-guard.js"></script>
-  <script>
-    // Executa a validação do guard
-    window.currentUserSession = NexusAuth.requireAuth();
-  </script>
+  <script>window.currentUserSession = NexusAuth.requireAuth();</script>
   <script src="js/vision-layer.js"></script>
+  <script src="js/layout.js"></script>
 </head>
 <body class="bg-nexus-bg dark:bg-nexus-dark-bg text-nexus-text dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-200">
 
-  <!-- Topbar Superior -->
-  <header class="w-full h-16 px-4 sm:px-6 flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 sticky top-0 z-40">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg bg-nexus-900 flex items-center justify-center text-white font-display font-bold text-lg shadow-sm">
-        N
-      </div>
-      <div class="flex flex-col min-w-0">
-        <span class="font-display font-bold text-base text-nexus-900 dark:text-white leading-tight truncate">NexusPort</span>
-        <span class="font-mono text-[11px] text-slate-500 dark:text-slate-400 truncate">Terminal STS-01</span>
-      </div>
-    </div>
+  <!-- Topbar Superior Padronizada -->
+  <header id="appTopbar"></header>
 
-    <!-- Perfil do Usuário e Ações -->
-    <div class="flex items-center gap-3">
-      <!-- Badge de Identificação do Operador -->
-      <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-        <div id="headerAvatar" class="w-7 h-7 rounded-lg bg-nexus-500 text-white flex items-center justify-center font-mono text-xs font-bold">
-          --
-        </div>
-        <div class="hidden sm:flex flex-col min-w-0">
-          <span id="headerUserName" class="text-xs font-bold text-nexus-900 dark:text-white truncate">--</span>
-          <div class="flex items-center gap-1.5">
-            <span id="headerUserRole" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">--</span>
-            <span class="text-[10px] text-slate-300 dark:text-slate-600">•</span>
-            <span id="headerUserCode" class="font-mono text-[10px] font-semibold text-nexus-500 dark:text-indigo-400">--</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Theme Switch -->
-      <button id="themeToggle" type="button" aria-label="Alternar tema escuro" class="p-2 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-        <span class="material-symbols-outlined text-[18px]" id="themeToggleIcon">dark_mode</span>
-      </button>
-
-      <!-- Logout Button -->
-      <button id="logoutBtn" type="button" aria-label="Encerrar Sessão" class="p-2 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors flex items-center gap-1 text-xs font-semibold">
-        <span class="material-symbols-outlined text-[18px]">logout</span>
-        <span class="hidden md:inline">Sair</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- Layout Principal (Sidebar + Workspace) -->
+  <!-- Layout Principal (Sidebar Persistente + Conteúdo) -->
   <div class="flex-1 flex overflow-hidden">
 
-    <!-- Sidebar Navegação -->
-    <aside class="w-64 bg-nexus-900 text-white flex flex-col justify-between hidden md:flex border-r border-slate-800">
-      <div class="p-4 flex flex-col gap-6">
+    <!-- Sidebar Persistente -->
+    <aside id="appSidebar"></aside>
 
-        <div class="flex flex-col gap-1">
-          <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3">Menu Operacional</span>
-          <nav class="flex flex-col gap-1 mt-1">
-            <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-nexus-500 text-white text-sm font-medium transition-colors">
-              <span class="material-symbols-outlined text-[20px]">dashboard</span>
-              <span>Painel Geral</span>
-            </a>
-            <a href="#fluxoCargasPanel" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-medium transition-colors">
-              <span class="material-symbols-outlined text-[20px]">inventory_2</span>
-              <span>Cargas & Pátio</span>
-            </a>
-            <a href="#localizacaoNaviosPanel" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-medium transition-colors">
-              <span class="material-symbols-outlined text-[20px]">directions_boat</span>
-              <span>Embarcações</span>
-            </a>
-            <button type="button" id="openQrScannerSidebarBtn" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-medium transition-colors text-left">
-              <span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
-              <span>Scanner QR</span>
-            </button>
-          </nav>
-        </div>
-
-        <div class="flex flex-col gap-1 border-t border-slate-800 pt-4">
-          <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3">Governança & RLS</span>
-          <div class="px-3 py-2 bg-slate-800/80 rounded-lg flex flex-col gap-1 border border-slate-700/60 text-xs">
-            <div class="flex items-center gap-1.5 text-emerald-400 font-mono text-[11px] font-bold">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              Sessão Guard Ativa
-            </div>
-            <span id="sidebarVisionTag" class="text-slate-300 text-[11px]">--</span>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="p-4 border-t border-slate-800 text-[11px] font-mono text-slate-400">
-        Porto de Santos • STS-01
-      </div>
-    </aside>
-
-    <!-- Conteúdo do Painel -->
+    <!-- Conteúdo do Painel Geral -->
     <main class="flex-1 p-6 overflow-y-auto">
       <div class="max-w-5xl mx-auto flex flex-col gap-6">
 
@@ -179,9 +91,8 @@
           </div>
         </div>
 
-        <!-- Active Security & Vision Card -->
+        <!-- Cards de Visão Geral & RLS Active Layer -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
           <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-2">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
               <span class="text-xs font-bold uppercase tracking-wider">Cargo Registrado</span>
@@ -202,633 +113,181 @@
 
           <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-2">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
-              <span class="text-xs font-bold uppercase tracking-wider">Estado do Guard</span>
+              <span class="text-xs font-bold uppercase tracking-wider">Estado da Sessão</span>
               <span class="material-symbols-outlined text-[20px] text-success">lock</span>
             </div>
             <span class="font-display font-bold text-base text-nexus-900 dark:text-white mt-1">Sessão Autenticada</span>
-            <span class="text-xs text-slate-500 dark:text-slate-400">Validação T1.3/T1.6 em Execução</span>
+            <span class="text-xs text-slate-500 dark:text-slate-400">Guarda T1.3 em Execução</span>
           </div>
-
         </div>
 
-        <!-- Painel de Gestão de Códigos de Acesso (Exclusivo Técnico em Portos / T1.8 & Spec.md RN 15) -->
-        <div id="tecnicoAccessCodePanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[24px]">key_off</span>
-              <div>
-                <h2 class="font-display text-base font-bold text-nexus-900 dark:text-white">Gestão de Códigos de Acesso (Invalidar & Reemitir)</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Invalidação de código perdido/esquecido e geração de novo código individual vinculado à matrícula (RN 15 / T1.8).</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700">
-              Técnico em Portos
-            </span>
+        <!-- 7 Cards Indicadores Operacionais (RF 7) -->
+        <div id="cardsOperacionaisPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">grid_view</span>
+              Os 7 Cards Indicadores Operacionais do Terminal (RF 7)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Atualização Periódica Ativa</span>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div>
-              <label for="empMatriculaSearch" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Matrícula do Funcionário</label>
-              <input type="text" id="empMatriculaSearch" placeholder="Ex: MAT-1040" class="w-full px-3 py-2 rounded-xl border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-nexus-500" />
-            </div>
-
-            <button id="searchEmpBtn" type="button" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors h-9">
-              <span class="material-symbols-outlined text-[18px]">search</span>
-              <span>Localizar Funcionário</span>
-            </button>
-
-            <button id="regenCodeBtn" type="button" disabled class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors h-9 disabled:opacity-50 disabled:cursor-not-allowed">
-              <span class="material-symbols-outlined text-[18px]">autorenew</span>
-              <span>Invalidar & Gerar Novo Código</span>
-            </button>
-          </div>
-
-          <!-- Resultado da busca -->
-          <div id="empSearchResultBox" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-nexus-900 dark:text-white" id="resEmpNome">--</span>
-              <span class="font-mono text-slate-500" id="resEmpCargo">--</span>
-            </div>
-            <div class="flex items-center justify-between text-xs font-mono">
-              <span class="text-slate-500">Código Atual: <strong id="resEmpCodigo" class="text-nexus-500 dark:text-indigo-400">--</strong></span>
-              <span class="text-slate-500">Status: <strong id="resEmpStatus" class="text-emerald-600">ATIVO</strong></span>
-            </div>
-          </div>
-
-          <!-- Alert de Sucesso da Invalidação -->
-          <div id="codeRegenNotice" class="hidden p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 text-xs flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[20px] text-emerald-600">check_circle</span>
-              <span>Código antigo invalidado! Novo código gerado: <strong id="newGeneratedCode" class="font-mono text-sm underline">--</strong></span>
-            </div>
-            <span class="font-mono text-[10px] bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded">Vinculado à mesma matrícula</span>
-          </div>
-
-          <!-- Seção CRUD Funcionários (T2.1) -->
-          <div class="border-t border-nexus-border dark:border-nexus-dark-border pt-4 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">CRUD Funcionários (T2.1)</span>
-              <button id="toggleAddFuncFormBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">person_add</span>
-                <span>Novo Funcionário</span>
-              </button>
-            </div>
-
-            <!-- Form de Cadastro/Edição de Funcionários -->
-            <form id="funcCrudForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Matrícula</label>
-                <input type="text" id="funcMatricula" required placeholder="Ex: MAT-9900" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <!-- Card 1: Navios em Manutenção -->
+            <div onclick="window.detalharCardOperacional('NAVIOS_MANUTENCAO')" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3">
+              <div class="p-2.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+                <span class="material-symbols-outlined text-xl">build</span>
               </div>
               <div>
-                <label class="block font-bold text-slate-500 mb-1">Nome Completo</label>
-                <input type="text" id="funcNome" required placeholder="Nome do colaborador" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Navios em Manutenção</span>
+                <span id="cardNaviosManutencaoVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">1</span>
               </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Cargo</label>
-                <select id="funcCargo" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900">
-                  <option value="ESTIVADOR">Estivador</option>
-                  <option value="CONFERENTE_CARGA">Conferente de Carga</option>
-                  <option value="ARRUMADOR_CONSERTADOR">Arrumador e Consertador</option>
-                  <option value="PLANEJADOR_PATIO_NAVIOS">Planejador de Pátio e Navios</option>
-                  <option value="TECNICO_PORTOS">Técnico em Portos</option>
-                  <option value="SUPERVISOR_GERENTE_OPERACOES">Supervisor de Operações</option>
-                  <option value="INSPETOR">Inspetor</option>
-                  <option value="DIRETOR_OPERACOES_LOGISTICA">Diretor de Operações</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Documentação Interna</label>
-                <input type="text" id="funcDoc" placeholder="Ex: Livro Reg. #102" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-1">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">save</span>
-                  <span>Salvar Funcionário</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Matrícula</th>
-                    <th class="p-2">Nome</th>
-                    <th class="p-2">Cargo</th>
-                    <th class="p-2">Código Individual</th>
-                    <th class="p-2">Doc. Interna</th>
-                  </tr>
-                </thead>
-                <tbody id="funcCrudTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Seção CRUD Visitantes Temporários (T2.2) -->
-          <div class="border-t border-nexus-border dark:border-nexus-dark-border pt-4 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">CRUD Visitantes Temporários (T2.2)</span>
-              <button id="toggleAddVisFormBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">badge</span>
-                <span>Registrar Visitante</span>
-              </button>
             </div>
 
-            <!-- Form de Cadastro de Visitantes -->
-            <form id="visCrudForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Nome Visitante</label>
-                <input type="text" id="visNome" required placeholder="Nome do visitante" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+            <!-- Card 2: Navios Fora do Porto -->
+            <div onclick="window.detalharCardOperacional('NAVIOS_FORA')" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3">
+              <div class="p-2.5 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400">
+                <span class="material-symbols-outlined text-xl">sailing</span>
               </div>
               <div>
-                <label class="block font-bold text-slate-500 mb-1">Documento (CPF/RG)</label>
-                <input type="text" id="visDocumento" required placeholder="Ex: CPF 123.456.789-00" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Navios Fora do Porto</span>
+                <span id="cardNaviosForaVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">2</span>
               </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Motivo da Visita</label>
-                <input type="text" id="visMotivo" required placeholder="Ex: Manutenção Elétrica" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div class="sm:col-span-3 flex justify-end gap-2 mt-1">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">check_circle</span>
-                  <span>Registrar Entrada</span>
-                </button>
-              </div>
-            </form>
+            </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Nome</th>
-                    <th class="p-2">Documento</th>
-                    <th class="p-2">Motivo</th>
-                    <th class="p-2">Entrada</th>
-                    <th class="p-2">Registrado por</th>
-                  </tr>
-                </thead>
-                <tbody id="visCrudTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
+            <!-- Card 3: Cargas em Armazenagem -->
+            <div onclick="window.detalharCardOperacional('CARGAS_ARMAZENAGEM')" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3">
+              <div class="p-2.5 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400">
+                <span class="material-symbols-outlined text-xl">inventory_2</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Cargas em Armazenagem</span>
+                <span id="cardCargasArmazenagemVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">3</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Prontas Aguardando Liberação -->
+            <div onclick="window.detalharCardOperacional('CARGAS_PRONTAS')" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3">
+              <div class="p-2.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-xl">verified</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Prontas p/ Liberação</span>
+                <span id="cardCargasProntasVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">2</span>
+              </div>
+            </div>
+
+            <!-- Card 5: Cargas Recusadas -->
+            <div onclick="window.detalharCardOperacional('CARGAS_RECUSADAS')" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3">
+              <div class="p-2.5 rounded-lg bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400">
+                <span class="material-symbols-outlined text-xl">cancel</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Cargas Recusadas</span>
+                <span id="cardCargasRecusadasVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">1</span>
+              </div>
+            </div>
+
+            <!-- Card 6: Ocupação do Pátio -->
+            <div onclick="window.detalharCardOperacional('OCUPACAO_PATIO')" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3">
+              <div class="p-2.5 rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400">
+                <span class="material-symbols-outlined text-xl">pie_chart</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Ocupação do Pátio</span>
+                <span id="cardOcupacaoPatioVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">35%</span>
+              </div>
+            </div>
+
+            <!-- Card 7: Preventiva Sugerida (> 3 Anos de Uso) -->
+            <div onclick="window.detalharCardOperacional('PREVENTIVA_SUGERIDA')" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all sm:col-span-2 flex items-center gap-3">
+              <div class="p-2.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+                <span class="material-symbols-outlined text-xl">warning</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Preventiva Sugerida (>3 Anos de Uso)</span>
+                <span id="cardPreventivaVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">2 Equipamento(s)</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Painel do Supervisor (T2.3, T2.4 & T2.10) -->
-        <div id="supervisorPanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[24px]">manage_accounts</span>
-              <div>
-                <h2 class="font-display text-base font-bold text-nexus-900 dark:text-white">Gestão Tática & Operacional (Supervisor)</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Cadastros estratégicos de Tipos de Carga (T2.3), Rotas (T2.4) e Chegada de Navios (T2.10).</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700">
-              Supervisor
-            </span>
+        <!-- Tabela do Log Geral de Alterações (RF 12 / T7.1, T7.2) -->
+        <div id="auditLogPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">history</span>
+              Tabela de Log Geral de Alterações do Sistema (RF 12)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Auditoria Automática</span>
           </div>
 
-          <!-- CRUD Tipos de Carga (T2.3) -->
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">CRUD Tipos de Carga (T2.3)</span>
-              <button id="toggleAddTipoCargaBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">category</span>
-                <span>Novo Tipo de Carga</span>
-              </button>
-            </div>
-
-            <form id="tipoCargaForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Nome do Tipo</label>
-                <input type="text" id="tcNome" required placeholder="Ex: Carga Viva" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Categoria de Risco</label>
-                <input type="text" id="tcRisco" required placeholder="Ex: Alto Risco / Inflamável" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Requisitos Especiais / Checklist</label>
-                <input type="text" id="tcRequisitos" required placeholder="Ex: Refrigeração Constante" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div class="sm:col-span-3 flex justify-end gap-2 mt-1">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">save</span>
-                  <span>Salvar Tipo de Carga</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Tipo de Carga</th>
-                    <th class="p-2">Categoria de Risco</th>
-                    <th class="p-2">Requisitos Especiais</th>
-                    <th class="p-2">Status Checklist</th>
-                  </tr>
-                </thead>
-                <tbody id="tipoCargaTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Registro de Horário de Chegada de Navios (T2.10) -->
-          <div class="border-t border-nexus-border dark:border-nexus-dark-border pt-4 flex flex-col gap-3">
-            <span class="font-bold text-xs uppercase text-slate-500">Registro de Horário de Chegada de Navios ao Porto (T2.10)</span>
-            <form id="chegadaNavioForm" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Navio Atendido</label>
-                <select id="chNavioSelect" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono font-bold">
-                  <option value="MV Santos Star">MV Santos Star (IMO 9823412)</option>
-                  <option value="MV Atlantic Breeze">MV Atlantic Breeze (IMO 9123841)</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Data e Hora de Chegada ao Porto</label>
-                <input type="datetime-local" id="chDataHora" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div class="flex items-end">
-                <button type="submit" class="w-full px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-1 h-8">
-                  <span class="material-symbols-outlined text-[16px]">schedule</span>
-                  <span>Registrar Chegada (T2.10)</span>
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- CRUD Rotas Marítimas (T2.4) -->
-          <div class="border-t border-nexus-border dark:border-nexus-dark-border pt-4 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">CRUD Rotas Marítimas (T2.4)</span>
-              <button id="toggleAddRotaBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">alt_route</span>
-                <span>Nova Rota Marítima</span>
-              </button>
-            </div>
-
-            <form id="rotaForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Porto Origem</label>
-                <input type="text" id="rotaOrigem" required placeholder="Ex: Porto de Santos" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Porto Destino</label>
-                <input type="text" id="rotaDestino" required placeholder="Ex: Porto de Roterdã" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Distância (km)</label>
-                <input type="number" id="rotaDistancia" required placeholder="Ex: 10500" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div class="sm:col-span-3 flex justify-end gap-2 mt-1">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">save</span>
-                  <span>Salvar Rota</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Origem</th>
-                    <th class="p-2">Destino</th>
-                    <th class="p-2">Distância (km)</th>
-                    <th class="p-2">Tempo Estimado (33 km/h)</th>
-                  </tr>
-                </thead>
-                <tbody id="rotaTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
+          <div class="overflow-x-auto max-h-60 overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
+                <tr>
+                  <th class="p-2.5">Data / Hora</th>
+                  <th class="p-2.5">Cargo</th>
+                  <th class="p-2.5">Código Usuário</th>
+                  <th class="p-2.5">Entidade Alterada</th>
+                  <th class="p-2.5">Tipo de Alteração</th>
+                </tr>
+              </thead>
+              <tbody id="auditLogTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-mono text-[11px]">
+                <!-- Renderizado dinamicamente via JS -->
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Painel do Planejador de Pátio e Navios (T2.8 & T2.9) -->
-        <div id="planejadorPanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[24px]">map</span>
-              <div>
-                <h2 class="font-display text-base font-bold text-nexus-900 dark:text-white">Atualizações Operacionais (Planejador de Pátio & Navios)</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Atualização de estado, coordenadas GPS fictícias e tempo fora do porto para Navios (T2.8) e Contêineres (T2.9).</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700">
-              Planejador
-            </span>
+        <!-- Tabela do Trail de Decisões Críticas Imutável com Retificação (RF 13 / T7.3 - T7.5) -->
+        <div id="trailDecisoesPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-nexus-500">gavel</span>
+              Trail de Decisões Críticas Imutável [Anexar Retificação] (RF 13)
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Registro Imutável</span>
           </div>
 
-          <!-- Atualização Navio (T2.8) -->
-          <form id="planejadorNavForm" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Selecione o Navio</label>
-              <select id="plNavioSelect" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono font-bold">
-                <option value="MV Santos Star">MV Santos Star (IMO 9823412)</option>
-                <option value="MV Atlantic Breeze">MV Atlantic Breeze (IMO 9123841)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Estado Operacional</label>
-              <select id="plNavState" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono">
-                <option value="OPERANTE">Operante</option>
-                <option value="AGENDADO_PARA_REFORMA">Agendado para Reforma</option>
-                <option value="EM_REFORMA">Em Reforma</option>
-                <option value="APROVADO_PARA_REFORMA">Aprovado para Reforma</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Coordenadas GPS Marítimas</label>
-              <input type="text" id="plGps" required placeholder="Ex: 23.9535° S, 46.3009° W" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Tempo Fora do Porto</label>
-              <input type="text" id="plTempoFora" required placeholder="Ex: 14 dias 6 horas" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-            </div>
-            <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2">
-              <button type="submit" class="px-4 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">update</span>
-                <span>Atualizar Navio (T2.8)</span>
-              </button>
-            </div>
-          </form>
-
-          <!-- Atualização Contêiner (T2.9) -->
-          <form id="planejadorContForm" class="border-t border-nexus-border dark:border-nexus-dark-border pt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Contêiner</label>
-              <select id="plContSelect" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono font-bold">
-                <option value="MSCU-102938-4">MSCU-102938-4</option>
-                <option value="NYKU-881290-0">NYKU-881290-0</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Estado do Contêiner</label>
-              <select id="plContState" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono">
-                <option value="OPERANTE">Operante</option>
-                <option value="EM_REFORMA">Em Reforma</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Navio Vinculado</label>
-              <input type="text" id="plContNavio" required placeholder="Ex: MV Santos Star" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-            </div>
-            <div class="sm:col-span-3 flex justify-end gap-2">
-              <button type="submit" class="px-4 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">update</span>
-                <span>Atualizar Contêiner (T2.9)</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Painel do Inspetor (T2.5, T2.6 & T2.7) -->
-        <div id="inspetorPanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[24px]">policy</span>
-              <div>
-                <h2 class="font-display text-base font-bold text-nexus-900 dark:text-white">Cadastro Inicial de Equipamentos & Embarcações (Inspetor)</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">CRUD de Navios (T2.5), Contêineres (T2.6) e Guindastes (T2.7).</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700">
-              Inspetor
-            </span>
-          </div>
-
-          <!-- CRUD Navios (T2.5) -->
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">CRUD Navios (T2.5)</span>
-              <button id="toggleAddNavioBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">directions_boat</span>
-                <span>Novo Navio</span>
-              </button>
-            </div>
-
-            <form id="navioForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Nome do Navio</label>
-                <input type="text" id="navNome" required placeholder="Ex: MV Santos Star" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Número IMO</label>
-                <input type="text" id="navImo" required placeholder="Ex: IMO 9823412" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Porto Origem</label>
-                <input type="text" id="navOrigem" required placeholder="Ex: Porto de Roterdã" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Porto Destino</label>
-                <input type="text" id="navDestino" required placeholder="Ex: Porto de Santos" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-1">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">save</span>
-                  <span>Salvar Navio</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Nome Navio</th>
-                    <th class="p-2">IMO</th>
-                    <th class="p-2">Origem / Destino</th>
-                    <th class="p-2">Estado</th>
-                  </tr>
-                </thead>
-                <tbody id="navioTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- CRUD Contêineres (T2.6) -->
-          <div class="border-t border-nexus-border dark:border-nexus-dark-border pt-4 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">CRUD Contêineres (T2.6)</span>
-              <button id="toggleAddContainerBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">inventory_2</span>
-                <span>Novo Contêiner</span>
-              </button>
-            </div>
-
-            <form id="containerForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Identificação Contêiner</label>
-                <input type="text" id="contIdentificacao" required placeholder="Ex: MSCU-102938-4" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Tipo de Carga</label>
-                <input type="text" id="contTipo" required placeholder="Ex: Eletrônicos" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Data Fabricação</label>
-                <input type="date" id="contFabricacao" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Data Última Manutenção</label>
-                <input type="date" id="contManutencao" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Ref. Tempo Uso (Supervisor)</label>
-                <select id="contRefTempo" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900">
-                  <option value="DATA_FABRICACAO">Data de Fabricação</option>
-                  <option value="DATA_ULTIMA_MANUTENCAO">Data da Última Manutenção</option>
-                </select>
-              </div>
-              <div class="sm:col-span-2 md:col-span-3 flex justify-end gap-2 items-end">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1 h-8">
-                  <span class="material-symbols-outlined text-[16px]">save</span>
-                  <span>Salvar Contêiner</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Identificação</th>
-                    <th class="p-2">Tipo / Material</th>
-                    <th class="p-2">Datas (Fabr. / Manut.)</th>
-                    <th class="p-2">Referência Tempo Uso</th>
-                    <th class="p-2">Estado</th>
-                  </tr>
-                </thead>
-                <tbody id="containerTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- CRUD Guindastes (T2.7) -->
-          <div class="border-t border-nexus-border dark:border-nexus-dark-border pt-4 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">CRUD Guindastes (T2.7)</span>
-              <button id="toggleAddGuindasteBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">precision_manufacturing</span>
-                <span>Novo Guindaste</span>
-              </button>
-            </div>
-
-            <form id="guindasteForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Nº Identificação Guindaste</label>
-                <input type="text" id="gdIdentificacao" required placeholder="Ex: GND-01-STS" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Estado Operacional</label>
-                <select id="gdEstado" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900">
-                  <option value="OPERANTE">Operante</option>
-                  <option value="EM_MANUTENCAO">Em Manutenção</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Data Última Manutenção</label>
-                <input type="date" id="gdManutencao" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div class="sm:col-span-3 flex justify-end gap-2 mt-1">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">save</span>
-                  <span>Salvar Guindaste</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Identificação</th>
-                    <th class="p-2">Estado</th>
-                    <th class="p-2">Última Manutenção</th>
-                  </tr>
-                </thead>
-                <tbody id="guindasteTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
+                  <th class="p-3">ID Registro</th>
+                  <th class="p-3">Data/Hora</th>
+                  <th class="p-3">Responsável</th>
+                  <th class="p-3">Decisão Padronizada</th>
+                  <th class="p-3">Entidade Impactada</th>
+                  <th class="p-3">Motivo / Justificativa</th>
+                  <th class="p-3">Retificação Anexada</th>
+                  <th class="p-3 text-right">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="trailDecisoesTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
+                <!-- Renderizado dinamicamente via JS -->
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Alerta de Restrição para Visão Operacional (Spec.md RF 1) -->
-        <div id="restrictionNoticeBox" class="hidden p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3">
-          <span class="material-symbols-outlined text-[22px] text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5">admin_panel_settings</span>
-          <div>
-            <span class="font-bold text-sm block">Restrição de Acesso da Visão Operacional (RF 1):</span>
-            <p class="mt-0.5 leading-relaxed">
-              Você possui acesso de leitura a todos os dados operacionais (cargas, navios, contêineres, manutenções, checklists, logs e trail). Conforme especificação funcional, a documentação interna de funcionários e o cadastro de visitantes permanecem estritamente restritos ao Técnico em Portos.
-            </p>
-          </div>
-        </div>
-
-        <!-- Seção de Painel Executivo / Visão Estratégica (Exclusivo Diretor - T1.6) -->
+        <!-- Painel Estratégico do Diretor (Gráficos Executivos - RF 1 / T1.6) -->
         <div id="estrategicoPanel" class="hidden flex flex-col gap-6">
-
           <div class="flex items-center justify-between bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5">
             <div class="flex items-center gap-3">
-              <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-nexus-500 dark:text-indigo-400">
+              <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-nexus-500">
                 <span class="material-symbols-outlined text-[24px]">analytics</span>
               </div>
               <div>
                 <h2 class="font-display text-lg font-bold text-nexus-900 dark:text-white">Indicadores Executivos Consolidados (Visão Estratégica)</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Acesso irrestrito de leitura, gráficos analíticos e exportação de dados históricos (RF 1).</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Gráficos analíticos e exportação de dados históricos (RF 1).</p>
               </div>
             </div>
-
-            <button id="exportHistoricoBtn" type="button" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-2 transition-all shadow-sm">
+            <button id="exportHistoricoBtn" type="button" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-2 transition-all">
               <span class="material-symbols-outlined text-[18px]">download</span>
-              <span>Exportar Dados Históricos</span>
+              <span>Exportar Histórico CSV</span>
             </button>
           </div>
 
-          <!-- Cards de KPIs Executivos -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
-              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Taxa de Aprovação</span>
-              <span id="kpiAprovacao" class="font-display font-bold text-2xl text-emerald-600 dark:text-emerald-400">94.2%</span>
-              <span class="text-[10px] text-slate-400">Total acumulado de vistorias</span>
-            </div>
-
-            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
-              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Taxa de Recusa</span>
-              <span id="kpiRecusa" class="font-display font-bold text-2xl text-red-600 dark:text-red-400">5.8%</span>
-              <span class="text-[10px] text-slate-400">Motivos registrados no checklist</span>
-            </div>
-
-            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
-              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Permanência Média</span>
-              <span id="kpiPermanencia" class="font-display font-bold text-2xl text-nexus-900 dark:text-white">3.8 dias</span>
-              <span class="text-[10px] text-slate-400">Tempo de carga no pátio</span>
-            </div>
-
-            <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex flex-col gap-1">
-              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Cargas Processadas</span>
-              <span id="kpiTotalCargas" class="font-display font-bold text-2xl text-nexus-500 dark:text-indigo-400">12.480</span>
-              <span class="text-[10px] text-slate-400">Volume anual terminal STS-01</span>
-            </div>
-          </div>
-
-          <!-- Seção de Gráficos Analíticos (Chart.js) -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 flex flex-col gap-3">
               <span class="font-display text-sm font-bold text-nexus-900 dark:text-white">Produtividade Operacional por Cargo</span>
@@ -844,720 +303,12 @@
               </div>
             </div>
           </div>
-
-        </div>
-
-        <!-- Painel do Fluxo de Cargas (Fase 3: Core Business - T3.1 a T3.24) -->
-        <div id="fluxoCargasPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-6">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[26px]">local_shipping</span>
-              <div>
-                <h2 class="font-display text-base font-bold text-nexus-900 dark:text-white">Fluxo de Cargas & Pátio (Core Business - Fase 3)</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Agendamento, Recebimento, Inspeção com Checklist, Armazenagem, Vinculação, Liberação e Trânsito.</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full bg-nexus-500 text-white font-mono text-xs font-bold">
-              Etapa Operacional
-            </span>
-          </div>
-
-        <!-- Container dos Cards de Visão Geral Operacional (Fase 6: T6.1, T6.2, T6.3, T6.4) -->
-        <div id="cardsOperacionaisPanel" class="hidden flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">grid_view</span>
-              Visão Geral Operacional (Cards Indicadores)
-            </h3>
-            <span class="text-[11px] font-mono text-slate-400">Atualização periódica ativa</span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <!-- Card 1: Navios em Manutenção -->
-            <div onclick="window.detalharCardOperacional('NAVIOS_MANUTENCAO')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
-              <div class="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
-                <span class="material-symbols-outlined text-xl">build</span>
-              </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Navios em Manutenção</span>
-                <span id="cardNaviosManutencaoVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
-              </div>
-            </div>
-
-            <!-- Card 2: Navios Fora do Porto -->
-            <div onclick="window.detalharCardOperacional('NAVIOS_FORA')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
-              <div class="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400">
-                <span class="material-symbols-outlined text-xl">sailing</span>
-              </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Navios Fora do Porto</span>
-                <span id="cardNaviosForaVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
-              </div>
-            </div>
-
-            <!-- Card 3: Cargas em Armazenagem -->
-            <div onclick="window.detalharCardOperacional('CARGAS_ARMAZENAGEM')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
-              <div class="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400">
-                <span class="material-symbols-outlined text-xl">inventory_2</span>
-              </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Cargas em Armazenagem</span>
-                <span id="cardCargasArmazenagemVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
-              </div>
-            </div>
-
-            <!-- Card 4: Prontas Aguardando Liberação -->
-            <div onclick="window.detalharCardOperacional('CARGAS_PRONTAS')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
-              <div class="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
-                <span class="material-symbols-outlined text-xl">verified</span>
-              </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Prontas p/ Liberação</span>
-                <span id="cardCargasProntasVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
-              </div>
-            </div>
-
-            <!-- Card 5: Cargas Recusadas -->
-            <div onclick="window.detalharCardOperacional('CARGAS_RECUSADAS')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
-              <div class="p-2.5 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-400">
-                <span class="material-symbols-outlined text-xl">cancel</span>
-              </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Cargas Recusadas</span>
-                <span id="cardCargasRecusadasVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0</span>
-              </div>
-            </div>
-
-            <!-- Card 6: Ocupação do Pátio -->
-            <div onclick="window.detalharCardOperacional('OCUPACAO_PATIO')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all flex items-center gap-3 shadow-sm">
-              <div class="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400">
-                <span class="material-symbols-outlined text-xl">pie_chart</span>
-              </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Ocupação do Pátio</span>
-                <span id="cardOcupacaoPatioVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0%</span>
-              </div>
-            </div>
-
-            <!-- Card 7: Preventiva Sugerida (>3 anos) -->
-            <div onclick="window.detalharCardOperacional('PREVENTIVA_SUGERIDA')" class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-nexus-border dark:border-nexus-dark-border cursor-pointer hover:border-nexus-500 transition-all sm:col-span-2 lg:col-span-2 flex items-center gap-3 shadow-sm">
-              <div class="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
-                <span class="material-symbols-outlined text-xl">warning</span>
-              </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Preventiva Sugerida (>3 Anos de Uso)</span>
-                <span id="cardPreventivaVal" class="font-display font-bold text-xl text-nexus-900 dark:text-white">0 Equipamento(s)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Formulário de Pesquisa Operacional (Fase 6: T6.7 - 5 Filtros Exatos) -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">search</span>
-              Pesquisa Operacional de Cargas e Operações (5 Filtros Exatos)
-            </h3>
-            <button id="limparPesquisaBtn" type="button" class="text-xs text-slate-500 hover:text-nexus-500 font-semibold">Limpar Filtros</button>
-          </div>
-
-          <form id="searchOperacionalForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">1. Nome do Navio</label>
-              <input type="text" id="searchNavio" placeholder="Ex: MV Santos Star" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">2. Nº do Contêiner</label>
-              <input type="text" id="searchContainer" placeholder="Ex: CONT-991" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">3. Tipo de Carga</label>
-              <select id="searchTipoCarga" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800">
-                <option value="">Todos os Tipos</option>
-                <option value="Grãos Soltos">Grãos Soltos</option>
-                <option value="Eletrônicos">Eletrônicos</option>
-                <option value="Produtos Químicos">Produtos Químicos</option>
-                <option value="Maquinário Pesado">Maquinário Pesado</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">4. Período de Data</label>
-              <div class="grid grid-cols-2 gap-1">
-                <input type="date" id="searchDataInicio" class="w-full px-1.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-[11px]" />
-                <input type="date" id="searchDataFim" class="w-full px-1.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-[11px]" />
-              </div>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">5. Status do Fluxo</label>
-              <select id="searchStatus" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800">
-                <option value="">Todos os Status</option>
-                <option value="AGENDAMENTO">AGENDAMENTO</option>
-                <option value="RECEBIMENTO_INSPECAO">RECEBIMENTO_INSPECAO</option>
-                <option value="ARMAZENAGEM">ARMAZENAGEM</option>
-                <option value="PRONTA_PARA_ENTREGA">PRONTA_PARA_ENTREGA</option>
-                <option value="EM_TRANSITO">EM_TRANSITO</option>
-                <option value="ENTREGUE">ENTREGUE</option>
-                <option value="RECUSADA">RECUSADA</option>
-              </select>
-            </div>
-            <div class="sm:col-span-2 md:col-span-5 flex justify-end">
-              <button type="submit" class="px-4 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1 transition-colors">
-                <span class="material-symbols-outlined text-sm">search</span>
-                Filtrar Resultados
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Painel do Log de Alterações e Auditoria (Fase 7: T7.1, T7.2) -->
-        <div id="auditLogPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">history</span>
-              Log Geral de Alterações e Registros de Operações (T7.1, T7.2)
-            </h3>
-            <span class="text-[11px] font-mono text-slate-400">Auditoria Automática</span>
-          </div>
-
-          <div class="overflow-x-auto max-h-60 overflow-y-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead class="sticky top-0 bg-nexus-bg dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
-                <tr>
-                  <th class="p-2.5">Data / Hora</th>
-                  <th class="p-2.5">Cargo</th>
-                  <th class="p-2.5">Código Usuário</th>
-                  <th class="p-2.5">Entidade Alterada</th>
-                  <th class="p-2.5">Tipo de Alteração</th>
-                </tr>
-              </thead>
-              <tbody id="auditLogTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-mono text-[11px]">
-                <!-- Renderizado por js/dashboard.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Painel do Trail de Decisões Críticas (Fase 7: T7.3, T7.4, T7.5) -->
-        <div id="trailDecisoesPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">gavel</span>
-              Trail de Decisões Críticas Imutável (T7.3, T7.4, T7.5)
-            </h3>
-            <span class="text-[11px] font-mono text-slate-400">Registro Imutável com Retificação</span>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-nexus-bg dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
-                  <th class="p-3">ID Registro</th>
-                  <th class="p-3">Data/Hora</th>
-                  <th class="p-3">Responsável</th>
-                  <th class="p-3">Decisão Padronizada</th>
-                  <th class="p-3">Entidade Impactada</th>
-                  <th class="p-3">Motivo / Justificativa</th>
-                  <th class="p-3">Retificação Anexada</th>
-                  <th class="p-3">Ação</th>
-                </tr>
-              </thead>
-              <tbody id="trailDecisoesTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                <!-- Renderizado por js/dashboard.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Painel de Localização dos Navios & Tempos (Fase 8: T8.1 a T8.6) -->
-        <div id="localizacaoNaviosPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">explore</span>
-              Localização Marítima GPS & Monitoramento de Tempos (T8.1 - T8.6)
-            </h3>
-            <span class="text-[11px] font-mono text-slate-400">GPS Fictício • Cálculo Velocidade 33 km/h</span>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-nexus-bg dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
-                  <th class="p-3">Navio (IMO)</th>
-                  <th class="p-3">Coordenadas GPS Marítimas</th>
-                  <th class="p-3">Classificação de Localização</th>
-                  <th class="p-3">Origem / Destino</th>
-                  <th class="p-3">Estimativa Chegada (ETA @ 33km/h)</th>
-                  <th class="p-3">Tempo Fora do Porto</th>
-                </tr>
-              </thead>
-              <tbody id="localizacaoNaviosTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                <!-- Renderizado por js/dashboard.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Painel de Delegação Temporária de Supervisor (Fase 7: T7.6 - T7.9) -->
-        <div id="delegacaoSupervisorPanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">how_to_reg</span>
-              Delegação de Supervisor Titular (Designação de Substituto - T7.6 a T7.9)
-            </h3>
-            <span class="text-[11px] font-mono text-slate-400">Poderes de Liberação</span>
-          </div>
-
-          <!-- Status do Substituto Ativo -->
-          <div id="delegacaoStatusBox" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-nexus-500 text-2xl">badge</span>
-              <div>
-                <span class="font-bold text-nexus-900 dark:text-white block" id="substitutoNome">Nenhum Substituto Ativo</span>
-                <span class="text-xs text-slate-500" id="substitutoVigencia">Cada Supervisor Titular pode ter no máximo 1 substituto ativo por vez (T7.8).</span>
-              </div>
-            </div>
-            <button id="revogarDelegacaoBtn" type="button" class="hidden px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs transition-colors">
-              Revogar Delegação Imediatamente
-            </button>
-          </div>
-
-          <!-- Form de Delegação -->
-          <form id="delegacaoForm" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Funcionário Substituto (Matrícula)</label>
-              <input type="text" id="delegSubstitutoMatricula" required placeholder="Ex: MAT-6090 (Inspetor)" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Início da Vigência</label>
-              <input type="datetime-local" id="delegDataInicio" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Fim da Vigência</label>
-              <input type="datetime-local" id="delegDataFim" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono" />
-            </div>
-            <div class="sm:col-span-3 flex justify-end">
-              <button type="submit" class="px-4 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1 transition-colors">
-                Designar Substituto Temporário
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Painel do Relatório de Produtividade (Fase 6: T6.9, T6.10) -->
-        <div id="produtividadePanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-5 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">assessment</span>
-              Relatório de Produtividade Operacional por Cargo e Funcionário (T6.9, T6.10)
-            </h3>
-            <span class="text-[11px] font-mono text-slate-400">Acesso Restrito</span>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-nexus-bg dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
-                  <th class="p-3">Matrícula</th>
-                  <th class="p-3">Funcionário</th>
-                  <th class="p-3">Cargo</th>
-                  <th class="p-3">Volume de Operações</th>
-                  <th class="p-3">Última Ação</th>
-                </tr>
-              </thead>
-              <tbody id="produtividadeTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                <!-- Renderizado por js/dashboard.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 3.1 & 3.2 Cadastro e Agendamento de Carga -->
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">1. Agendamento de Carga (T3.1 - T3.5)</span>
-              <button id="toggleAgendamentoFormBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                <span>Agendar Nova Carga</span>
-              </button>
-            </div>
-
-            <form id="agendamentoCargaForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Tipo de Carga</label>
-                <select id="agTipoCarga" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
-                  <option value="">Selecione o Tipo...</option>
-                  <option value="Grãos Soltos">Grãos Soltos</option>
-                  <option value="Eletrônicos">Eletrônicos</option>
-                  <option value="Produtos Químicos">Produtos Químicos</option>
-                  <option value="Maquinário Pesado">Maquinário Pesado</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Peso (toneladas)</label>
-                <input type="number" step="0.1" id="agPeso" required placeholder="Ex: 25.5" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Volume (m³)</label>
-                <input type="number" step="0.1" id="agVolume" required placeholder="Ex: 40.0" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Valor Declarado (R$)</label>
-                <input type="number" step="100" id="agValor" required placeholder="Ex: 150000" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Natureza da Mercadoria</label>
-                <input type="text" id="agNatureza" required placeholder="Ex: Agrícola / Perecível" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Porto de Descarga</label>
-                <input type="text" id="agPortoDescarga" required placeholder="Ex: Porto de Roterdã" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Destino Final</label>
-                <input type="text" id="agDestino" required placeholder="Ex: Amsterdã, Holanda" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Data Prevista de Entrega</label>
-                <input type="date" id="agDataPrevista" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
-              </div>
-              <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-1">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">event_available</span>
-                  <span>Confirmar Agendamento com QR Code</span>
-                </button>
-              </div>
-            </form>
-
-            <!-- Tabela Principal do Fluxo de Cargas -->
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Carga / QR</th>
-                    <th class="p-2">Tipo / Natureza</th>
-                    <th class="p-2">Peso / Volume</th>
-                    <th class="p-2">Porto Descarga</th>
-                    <th class="p-2">Contêiner / Navio</th>
-                    <th class="p-2">Status do Fluxo</th>
-                    <th class="p-2">Ações Operacionais</th>
-                  </tr>
-                </thead>
-                <tbody id="fluxoCargasTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado dinamicamente via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Painel de Manutenções e Emergências (Fase 4: T4.1 a T4.10) -->
-        <div id="manutencaoEmergenciaPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-6">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[26px]">engineering</span>
-              <div>
-                <h2 class="font-display text-base font-bold text-nexus-900 dark:text-white">Gestão de Manutenções & Emergências (Fase 4)</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Ordens de Serviço (OS), Aprovação de Manutenção, Botão de Pânico e Protocolos de Emergência.</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full bg-amber-600 text-white font-mono text-xs font-bold">
-              Segurança & Ativos
-            </span>
-          </div>
-
-          <!-- Alerta de Emergência Crítica / Pânico (T4.7 & T4.8) -->
-          <div id="emergencyAlertBanner" class="hidden p-4 rounded-xl bg-red-600 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-pulse">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[36px]">warning</span>
-              <div>
-                <span class="font-display font-bold text-lg block">ALERTA DE EMERGÊNCIA CRÍTICA ATIVO!</span>
-                <p class="text-xs text-red-100">BLOQUEIO OPERACIONAL TEMPORÁRIO NO PÁTIO STS-01 ATIVADO (T4.8). Siga os protocolos de evacuação e segurança.</p>
-              </div>
-            </div>
-            <button id="resetEmergencyBtn" type="button" class="px-4 py-2 rounded-xl bg-white text-red-700 hover:bg-red-50 font-bold text-xs flex items-center gap-1 flex-shrink-0">
-              <span class="material-symbols-outlined text-[18px]">notifications_off</span>
-              <span>Desativar Alarme (T4.10)</span>
-            </button>
-          </div>
-
-          <!-- Botão de Pânico e Registro de Incidente (T4.6, T4.9) -->
-          <div class="p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-red-600 text-[32px]">campaign</span>
-              <div>
-                <span class="font-bold text-sm text-red-900 dark:text-red-200 block">Protocolo de Emergência / Botão de Pânico</span>
-                <p class="text-xs text-red-700 dark:text-red-300">Acione em caso de incêndio, vazamento de carga perigosa ou colisão no terminal.</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button id="panicButton" type="button" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-display font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-[20px]">e911_emergency</span>
-                <span>ACIONAR BOTÃO DE PÂNICO</span>
-              </button>
-              <button id="toggleIncidenteBtn" type="button" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[18px]">assignment_late</span>
-                <span>Relatório Incidente</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Form Relatório de Incidente (T4.9) -->
-          <form id="incidenteForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Local da Ocorrência</label>
-              <input type="text" id="incLocal" required placeholder="Ex: Berço 02 / Pátio de Contêineres" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Tipo de Incidente</label>
-              <select id="incTipo" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
-                <option value="Colisão de Equipamento">Colisão de Equipamento</option>
-                <option value="Vazamento Químico">Vazamento Químico</option>
-                <option value="Incêndio / Curto-circuito">Incêndio / Curto-circuito</option>
-                <option value="Avaria de Carga">Avaria de Carga</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-500 mb-1">Gravidade</label>
-              <select id="incGravidade" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold text-red-600">
-                <option value="CRITICA">Crítica (Interrupção Total)</option>
-                <option value="MODERADA">Moderada</option>
-                <option value="LEVE">Leve</option>
-              </select>
-            </div>
-            <div class="sm:col-span-3">
-              <label class="block font-bold text-slate-500 mb-1">Descrição Detalhada do Incidente</label>
-              <textarea id="incDescricao" required rows="2" placeholder="Descreva os fatos observados, equipamentos afetados e ações de contenção..." class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900"></textarea>
-            </div>
-            <div class="sm:col-span-3 flex justify-end">
-              <button type="submit" class="px-4 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">report</span>
-                <span>Registrar Relatório de Incidente (T4.9)</span>
-              </button>
-            </div>
-          </form>
-
-          <!-- Seção de Manutenção (T4.1 - T4.5) -->
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-xs uppercase text-slate-500">1. Ordens de Serviço (OS) de Manutenção (T4.1 - T4.5)</span>
-              <button id="toggleOsFormBtn" type="button" class="px-3 py-1 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">build</span>
-                <span>Nova Ordem de Serviço</span>
-              </button>
-            </div>
-
-            <form id="osForm" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Equipamento / Ativo</label>
-                <select id="osEquipamento" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
-                  <option value="MSCU-102938-4">Contêiner MSCU-102938-4</option>
-                  <option value="NYKU-881290-0">Contêiner NYKU-881290-0</option>
-                  <option value="GND-01-STS">Guindaste GND-01-STS</option>
-                  <option value="GND-02-STS">Guindaste GND-02-STS</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Prioridade</label>
-                <select id="osPrioridade" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900">
-                  <option value="ALTA">Alta</option>
-                  <option value="MEDIA">Média</option>
-                  <option value="BAIXA">Baixa</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-500 mb-1">Descrição da Falha / Manutenção</label>
-                <input type="text" id="osDescricao" required placeholder="Ex: Desgaste nas roldanas de içamento" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
-              </div>
-              <div class="sm:col-span-3 flex justify-end">
-                <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">save</span>
-                  <span>Criar Ordem de Serviço (T4.1)</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
-                  <tr>
-                    <th class="p-2">Nº OS</th>
-                    <th class="p-2">Equipamento</th>
-                    <th class="p-2">Prioridade</th>
-                    <th class="p-2">Descrição</th>
-                    <th class="p-2">Status OS</th>
-                    <th class="p-2">Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="osTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                  <!-- Renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Seção: Minhas Operações (Visão Própria / T1.4) -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500 dark:text-indigo-400 text-[22px]">assignment</span>
-              <h2 id="tableSectionTitle" class="font-display text-lg font-bold text-nexus-900 dark:text-white">Operações em Pátio</h2>
-            </div>
-            <span id="visaoPropriaCountBadge" class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-nexus-500 dark:text-indigo-400 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700">
-              0 itens
-            </span>
-          </div>
-
-          <!-- Tabela de Cargas / Operações -->
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-nexus-bg dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-mono uppercase">
-                <tr>
-                  <th class="p-3">Código Carga</th>
-                  <th class="p-3">Tipo de Carga</th>
-                  <th class="p-3">Peso</th>
-                  <th class="p-3">Contêiner</th>
-                  <th class="p-3">Status Operacional</th>
-                  <th class="p-3">Data/Hora</th>
-                </tr>
-              </thead>
-              <tbody id="visaoPropriaTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 text-nexus-900 dark:text-slate-200 font-medium">
-                <!-- Conteúdo dinâmico renderizado por js/dashboard.js -->
-              </tbody>
-            </table>
-          </div>
         </div>
 
       </div>
     </main>
-
   </div>
 
-  <!-- Bibliotecas externas CDN para QR Code, PDF e Leitor de Câmera (Fase 5) -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-  <!-- Modal de Confirmação & Etiqueta QR Code (T5.2, T5.3, T5.4, T5.5) -->
-  <div id="qrModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border max-w-md w-full p-6 shadow-xl flex flex-col gap-4">
-      <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-        <h3 class="font-display font-bold text-base text-nexus-900 dark:text-white flex items-center gap-2">
-          <span class="material-symbols-outlined text-nexus-500">qr_code_2</span>
-          Etiqueta de QR Code
-        </h3>
-        <button type="button" id="closeQrModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <span class="material-symbols-outlined text-xl">close</span>
-        </button>
-      </div>
-
-      <div class="flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-center gap-3">
-        <canvas id="qrCanvas" class="w-48 h-48 bg-white p-2 rounded border border-slate-300 shadow-sm"></canvas>
-        <div class="flex flex-col gap-0.5 text-xs">
-          <span id="qrModalEntityId" class="font-mono font-bold text-nexus-900 dark:text-white text-sm">--</span>
-          <span id="qrModalEntityType" class="text-slate-500 dark:text-slate-400 font-semibold">--</span>
-          <span id="qrModalEntitySub" class="text-slate-400 dark:text-slate-500 text-[11px] font-mono">--</span>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-end gap-2 pt-2">
-        <button type="button" id="printEtiquetaBtn" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors">
-          <span class="material-symbols-outlined text-sm">print</span>
-          Imprimir Etiqueta (PDF)
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de Resultado da Leitura do QR Code -->
-  <div id="qrResultModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4">
-      <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-        <div class="flex items-center gap-2">
-          <div class="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400">
-            <span class="material-symbols-outlined text-2xl">qr_code_scanner</span>
-          </div>
-          <div>
-            <h3 class="font-display font-bold text-base text-nexus-900 dark:text-white">Leitura de QR Code Concluída</h3>
-            <span class="text-xs text-slate-500 dark:text-slate-400 font-mono" id="qrResultCodeTag">--</span>
-          </div>
-        </div>
-        <button type="button" id="closeQrResultModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
-          <span class="material-symbols-outlined text-xl">close</span>
-        </button>
-      </div>
-
-      <!-- Detalhes da Carga/Entidade Identificada -->
-      <div class="bg-slate-50 dark:bg-slate-800/80 rounded-xl p-4 border border-nexus-border dark:border-slate-700 flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <span class="font-mono text-xs font-bold text-nexus-500 dark:text-indigo-400" id="qrResultEntityId">--</span>
-          <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-mono text-xs font-bold" id="qrResultStatus">OPERANTE</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300 font-mono">
-          <div><span class="text-slate-400 block">Tipo de Carga:</span> <strong id="qrResultTipo" class="text-nexus-900 dark:text-white">--</strong></div>
-          <div><span class="text-slate-400 block">Peso Declarado:</span> <strong id="qrResultPeso" class="text-nexus-900 dark:text-white">--</strong></div>
-          <div><span class="text-slate-400 block">Localização no Pátio:</span> <strong id="qrResultPatio" class="text-nexus-900 dark:text-white">PÁTIO-A1 (STS-01)</strong></div>
-          <div><span class="text-slate-400 block">Embarcação Vinculada:</span> <strong id="qrResultNavio" class="text-nexus-900 dark:text-white">MV Santos Star</strong></div>
-        </div>
-      </div>
-
-      <!-- Banner de Ação Orientada por Cargo (RBAC) -->
-      <div class="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900 text-indigo-900 dark:text-indigo-200 text-xs flex items-start gap-3">
-        <span class="material-symbols-outlined text-2xl text-nexus-500 dark:text-indigo-400 shrink-0">task_alt</span>
-        <div class="flex flex-col gap-1">
-          <span class="font-bold uppercase tracking-wider text-[11px]" id="qrResultRoleTitle">Ação Habilitada para o Cargo:</span>
-          <p id="qrResultRoleMsg" class="leading-relaxed">--</p>
-        </div>
-      </div>
-
-      <!-- Botão de Ação Interativa -->
-      <div class="flex items-center gap-3 pt-2">
-        <button type="button" id="qrResultActionBtn" class="flex-1 py-2.5 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-base">play_arrow</span>
-          <span id="qrResultActionBtnText">Executar Ação Operacional</span>
-        </button>
-        <button type="button" id="dismissQrResultModalBtn" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors">
-          Fechar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal do Leitor / Scanner QR Code via Câmera (T5.6, T5.7, T5.8, T5.9) -->
-  <div id="qrScannerModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border max-w-lg w-full p-6 shadow-xl flex flex-col gap-4">
-      <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-        <h3 class="font-display font-bold text-base text-nexus-900 dark:text-white flex items-center gap-2">
-          <span class="material-symbols-outlined text-nexus-500">photo_camera</span>
-          Leitor de QR Code no Pátio
-        </h3>
-        <button type="button" id="closeScannerModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <span class="material-symbols-outlined text-xl">close</span>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-500 dark:text-slate-400">
-        Aponte a câmera do dispositivo móvel para a etiqueta física no pátio para abrir diretamente a ação do seu cargo.
-      </p>
-
-      <div id="qrReader" class="w-full bg-slate-900 rounded-xl overflow-hidden border border-slate-700 min-h-[250px] flex items-center justify-center text-white text-xs"></div>
-
-      <!-- Simulação de Leitura para Testes e Ambientes sem Câmera Real -->
-      <div class="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
-        <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Simulação de Leitura Manual de QR Code:</span>
-        <div class="flex gap-2">
-          <input type="text" id="simulatedQrInput" placeholder="Ex: QR-CRG-2026-001 ou QR-CONT-991" class="flex-1 px-3 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 text-xs font-mono" />
-          <button type="button" id="simulateScanBtn" class="px-3 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs transition-colors">
-            Processar Scan
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts JavaScript Supabase & Dashboard -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.example.js"></script>
   <script src="js/config.js" onerror="this.remove()"></script>

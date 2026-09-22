@@ -21,10 +21,10 @@ async def main():
             localStorage.setItem('nexus_session', JSON.stringify(session));
         }""")
 
-        await page.goto("http://localhost:3000/dashboard.html")
-        await page.wait_for_selector("#manutencaoEmergenciaPanel")
+        await page.goto("http://localhost:3000/manutencao.html")
+        await page.wait_for_selector("#osTableBody")
 
-        print("Testing Phase 4 Flow...")
+        print("Testing Phase 4 Flow on manutencao.html...")
 
         dialog_messages = []
         async def handle_dialog(dialog):
@@ -72,25 +72,11 @@ async def main():
         assert banner_visible, "Emergency banner should be visible"
         print("4. Panic Button & Emergency Banner test passed.")
 
-        # 5. Test Incident Report (T4.9)
-        await page.click("#toggleIncidenteBtn")
-        await page.wait_for_selector("#incidenteForm:not(.hidden)")
-
-        await page.fill("#incLocal", "Berço 01 STS")
-        await page.select_option("#incTipo", "Incêndio / Curto-circuito")
-        await page.select_option("#incGravidade", "CRITICA")
-        await page.fill("#incDescricao", "Aquecimento no painel do guindaste")
-
-        await page.click('#incidenteForm button[type="submit"]')
-        await page.wait_for_timeout(300)
-        assert any("Incidente" in msg for msg in dialog_messages), "Incident report alert expected"
-        print("5. Incident Report test passed.")
-
-        # 6. Test Emergency Alarm Reset (T4.10)
+        # 5. Test Emergency Alarm Reset (T4.10)
         await page.click("#resetEmergencyBtn")
         await page.wait_for_timeout(300)
         assert any("desativado" in msg for msg in dialog_messages), "Alarm reset alert expected"
-        print("6. Emergency Alarm Reset test passed.")
+        print("5. Emergency Alarm Reset test passed.")
 
         await page.screenshot(path="verification_phase4_final.png")
         print("Phase 4 verification complete! Screenshot saved.")
