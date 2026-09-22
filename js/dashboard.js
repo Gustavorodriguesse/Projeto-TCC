@@ -1153,7 +1153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Processador de Leitura com Redirecionamento Direcionado por Cargo (T5.7, T5.8, T5.9)
-    function processarLeituraQr(rawCode) {
+    async function processarLeituraQr(rawCode) {
       let qrCodeText = rawCode;
       if (rawCode && (rawCode.includes('?scan=') || rawCode.includes('?qr='))) {
         try {
@@ -1168,13 +1168,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Consulta aos dados da Carga no Supabase se disponível ou no localStorage
+      let cargaData = null;
+      if (window.nexusSupabase) {
+        try {
+          const { data, error } = await window.nexusSupabase
+            .from('cargas')
+            .select('*')
+            .or(`qr_code_url.eq.${qrCodeText},id.eq.${qrCodeText.replace('QR-', '')}`)
+            .single();
+          if (!error && data) {
+            cargaData = data;
+          }
+        } catch (e) {
+          console.warn('[NexusPort] Erro ao consultar QR Code no Supabase:', e);
+        }
+      }
+
+      const localCargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      const localMatch = localCargas.find(c => c.id === qrCodeText || c.qrCode === qrCodeText || c.id === qrCodeText.replace('QR-', ''));
+
+      const displayId = cargaData ? (cargaData.codigo || cargaData.id) : (localMatch ? localMatch.id : qrCodeText);
+      const displayTipo = cargaData ? (cargaData.material || 'Carga Geral') : (localMatch ? localMatch.tipo : 'Carga Portuária / Contêiner');
+      const displayPeso = cargaData ? `${cargaData.peso} t • ${cargaData.volume} m³` : (localMatch ? `${localMatch.peso} • ${localMatch.volume}` : '25.5 t • 40 m³');
+      const displayStatus = cargaData ? cargaData.status_fluxo : (localMatch ? localMatch.status : 'SISTEMA ATIVO');
+      const displayNavio = cargaData ? (cargaData.navio || 'MV Santos Star') : (localMatch ? (localMatch.navio || 'MV Santos Star') : 'MV Santos Star');
+
       // Registro de Leitura (Scan) no Log (T5.8)
       const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
       logs.push({
         data_hora: new Date().toISOString(),
         cargo: session.cargo,
         codigo_usuario: session.codigo_individual || session.codigo,
-        entidade: qrCodeText,
+        entidade: displayId,
         tipo_alteracao: 'Leitura QR Code no Pátio (Scan)'
       });
       localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
@@ -1184,17 +1210,17 @@ document.addEventListener('DOMContentLoaded', () => {
       let acaoMensagem = '';
 
       if (cargo === 'ESTIVADOR') {
-        acaoMensagem = `[ESTIVADOR] Carga/Contêiner ${qrCodeText} localizado! Iniciar movimentação de pátio registrada no sistema.`;
+        acaoMensagem = `[ESTIVADOR] Carga/Contêiner ${displayId} localizado! Iniciar movimentação de pátio registrada no sistema.`;
       } else if (cargo === 'CONFERENTE_CARGA') {
-        acaoMensagem = `[CONFERENTE DE CARGA] Carga ${qrCodeText} localizada! Redirecionado para tela de registro de Recebimento Físico e Condições de Saída.`;
+        acaoMensagem = `[CONFERENTE DE CARGA] Carga ${displayId} localizada! Redirecionado para tela de registro de Recebimento Físico e Condições de Saída.`;
       } else if (cargo === 'INSPETOR') {
-        acaoMensagem = `[INSPETOR] Carga ${qrCodeText} localizada! Abertura automática do Checklist Técnico de Inspeção correspondente.`;
+        acaoMensagem = `[INSPETOR] Carga ${displayId} localizada! Abertura automática do Checklist Técnico de Inspeção correspondente.`;
       } else if (cargo === 'ARRUMADOR_CONSERTADOR') {
-        acaoMensagem = `[ARRUMADOR E CONSERTADOR] Carga ${qrCodeText} localizada! Status alterado diretamente para PRONTA PARA ENTREGA.`;
+        acaoMensagem = `[ARRUMADOR E CONSERTADOR] Carga ${displayId} localizada! Status alterado diretamente para PRONTA PARA ENTREGA.`;
       } else if (cargo === 'SUPERVISOR_GERENTE_OPERACOES') {
-        acaoMensagem = `[SUPERVISOR] Contêiner/Carga ${qrCodeText} localizado! Exibindo status consolidado de todas as cargas vinculadas a este contêiner.`;
+        acaoMensagem = `[SUPERVISOR] Contêiner/Carga ${displayId} localizado! Exibindo status consolidado de todas as cargas vinculadas a este contêiner.`;
       } else {
-        acaoMensagem = `[SISTEMA] Leitura do QR Code ${qrCodeText} realizada com sucesso pelo usuário ${session.nome} (${cargo}).`;
+        acaoMensagem = `[SISTEMA] Leitura do QR Code ${displayId} realizada com sucesso pelo usuário ${session.nome} (${cargo}).`;
       }
 
       // Preenche e abre o Modal Interativo de Resultado da Leitura (#qrResultModal)
@@ -1204,15 +1230,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const qrResultTipo = document.getElementById('qrResultTipo');
       const qrResultPeso = document.getElementById('qrResultPeso');
       const qrResultStatus = document.getElementById('qrResultStatus');
+      const qrResultNavio = document.getElementById('qrResultNavio');
       const qrResultRoleTitle = document.getElementById('qrResultRoleTitle');
       const qrResultRoleMsg = document.getElementById('qrResultRoleMsg');
       const qrResultActionBtnText = document.getElementById('qrResultActionBtnText');
 
       if (qrResultCodeTag) qrResultCodeTag.textContent = `Código Lido: ${qrCodeText}`;
-      if (qrResultEntityId) qrResultEntityId.textContent = qrCodeText;
-      if (qrResultTipo) qrResultTipo.textContent = 'Carga Portuária / Contêiner';
-      if (qrResultPeso) qrResultPeso.textContent = '25.5 t • 40 m³';
-      if (qrResultStatus) qrResultStatus.textContent = 'SISTEMA ATIVO';
+      if (qrResultEntityId) qrResultEntityId.textContent = displayId;
+      if (qrResultTipo) qrResultTipo.textContent = displayTipo;
+      if (qrResultPeso) qrResultPeso.textContent = displayPeso;
+      if (qrResultStatus) qrResultStatus.textContent = displayStatus;
+      if (qrResultNavio) qrResultNavio.textContent = displayNavio;
       if (qrResultRoleTitle) qrResultRoleTitle.textContent = `Ação Habilitada para ${session.cargo_nome || session.cargo}:`;
       if (qrResultRoleMsg) qrResultRoleMsg.textContent = acaoMensagem;
 
@@ -1305,13 +1333,13 @@ document.addEventListener('DOMContentLoaded', () => {
               motivoRecusa: row.motivo_recusa || null
             }));
 
-            // Mesclar dados sem duplicar IDs
+            // Mesclar dados sem duplicar IDs (mantendo status local priorizado)
             mappedSupabaseCargas.forEach(sc => {
               const idx = cargasFluxoList.findIndex(c => c.id === sc.id || c.qrCode === sc.qrCode);
               if (idx >= 0) {
-                cargasFluxoList[idx] = { ...cargasFluxoList[idx], ...sc };
+                cargasFluxoList[idx] = { ...sc, ...cargasFluxoList[idx] };
               } else {
-                cargasFluxoList.unshift(sc);
+                cargasFluxoList.push(sc);
               }
             });
             localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
@@ -1567,7 +1595,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Atualizar status no Supabase se ativo
+      // Atualizar imediatamente no localStorage e UI
+      localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+      renderFluxoTable();
+
+      // Atualizar status no Supabase em segundo plano
       if (window.nexusSupabase && carga.qrCode) {
         try {
           await window.nexusSupabase.from('cargas')
@@ -1578,9 +1610,6 @@ document.addEventListener('DOMContentLoaded', () => {
           console.warn('[NexusPort] Erro ao atualizar status da carga no Supabase:', spUpdErr);
         }
       }
-
-      localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
-      renderFluxoTable();
     };
   }
 
