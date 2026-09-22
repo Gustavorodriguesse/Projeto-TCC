@@ -24,6 +24,7 @@ async def main():
                 { origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 10500, eta: '318.2 horas (~13.3 dias)' }
             ];
             localStorage.setItem('nexus_crud_rotas', JSON.stringify(rotas));
+            localStorage.removeItem('nexus_cargas_fluxo');
         }""")
 
         await page.goto("http://localhost:3000/dashboard.html")
@@ -64,7 +65,7 @@ async def main():
         if entregar_btns:
             await entregar_btns[1].click()
             await page.wait_for_timeout(300)
-            assert any("ENTREGUE" in msg for msg in dialog_messages), "Delivery dialog expected"
+            assert any("ENTREGUE" in msg for msg in dialog_messages), f"Delivery dialog expected, got: {dialog_messages}"
             print("1. Delivery propagation test passed.")
 
         # 4. Test Cancellation with mandatory reason logging (T3.23 - T3.24)

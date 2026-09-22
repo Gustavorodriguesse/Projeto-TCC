@@ -148,6 +148,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (!error && data) {
             employeeFound = data;
+          } else {
+            // Consulta também por matrícula caso o código digitado seja a matrícula
+            const { data: matData, error: matErr } = await client
+              .from('funcionarios')
+              .select('*')
+              .eq('matricula', codeValue)
+              .eq('ativo', true)
+              .single();
+            if (!matErr && matData) {
+              employeeFound = matData;
+            }
           }
         }
       } catch (err) {
