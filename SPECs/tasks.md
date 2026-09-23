@@ -8,20 +8,20 @@
 
 ### 1.1. Sistema de Login
 
-- [ ] **T1.1** — Tela de login com campo de código individual único vinculado à matrícula do funcionário.
-- [ ] **T1.2** — Carregamento automático do cargo pelo sistema; exibição para confirmação do usuário.
-- [ ] **T1.3** — Middleware/Guard de autenticação validando código individual ativo.
+- [x] **T1.1** — Tela de login com campo de código individual único vinculado à matrícula do funcionário.
+- [x] **T1.2** — Carregamento automático do cargo pelo sistema; exibição para confirmação do usuário.
+- [x] **T1.3** — Middleware/Guard de autenticação validando código individual ativo.
 
 ### 1.2. Hierarquia de Permissões (RBAC)
 
-- [ ] **T1.4** — Implementar camada de Visão Própria: filtro automático de dados pela entidade vinculada ao funcionário logado.
-- [ ] **T1.5** — Implementar camada de Visão Operacional (Inspetor e Supervisor): leitura de todos os dados operacionais, exceto documentação interna de funcionários e visitantes.
-- [ ] **T1.6** — Implementar camada de Visão Estratégica (Diretor): acesso total de leitura + dashboards exclusivos + exportação.
-- [ ] **T1.7** — Implementar controle de acesso às rotas/APIs por cargo (Estivador, Conferente, Arrumador, Planejador, Técnico, Supervisor, Inspetor, Diretor).
+- [x] **T1.4** — Implementar camada de Visão Própria: filtro automático de dados pela entidade vinculada ao funcionário logado.
+- [x] **T1.5** — Implementar camada de Visão Operacional (Inspetor e Supervisor): leitura de todos os dados operacionais, exceto documentação interna de funcionários e visitantes.
+- [x] **T1.6** — Implementar camada de Visão Estratégica (Diretor): acesso total de leitura + dashboards exclusivos + exportação.
+- [x] **T1.7** — Implementar controle de acesso às rotas/APIs por cargo (Estivador, Conferente, Arrumador, Planejador, Técnico, Supervisor, Inspetor, Diretor).
 
 ### 1.3. Gestão de Códigos de Acesso
 
-- [ ] **T1.8** — Funcionalidade para Técnico em Portos invalidar código perdido/esquecido e gerar novo código vinculado à mesma matrícula.
+- [x] **T1.8** — Funcionalidade para Técnico em Portos invalidar código perdido/esquecido e gerar novo código vinculado à mesma matrícula.
 
 ---
 
@@ -29,25 +29,25 @@
 
 ### 2.1. Funcionários e Visitantes
 
-- [ ] **T2.1** — CRUD de Funcionários (dados pessoais, cargo, código individual, documentação interna) — **Técnico em Portos**.
-- [ ] **T2.2** — CRUD de Visitantes Temporários (nome, documento, motivo, data/hora de entrada) — **Técnico em Portos**.
+- [x] **T2.1** — CRUD de Funcionários (dados pessoais, cargo, código individual, documentação interna) — **Técnico em Portos**.
+- [x] **T2.2** — CRUD de Visitantes Temporários (nome, documento, motivo, data/hora de entrada) — **Técnico em Portos**.
 
 ### 2.2. Tipos de Carga e Rotas
 
-- [ ] **T2.3** — CRUD de Tipos de Carga (nome, categoria de risco, requisitos especiais, modelo de checklist vinculado) — **Supervisor**.
-- [ ] **T2.4** — CRUD de Rotas Marítimas (origem, destino, distância fixa) — **Supervisor**.
+- [x] **T2.3** — CRUD de Tipos de Carga (nome, categoria de risco, requisitos especiais, modelo de checklist vinculado) — **Supervisor**.
+- [x] **T2.4** — CRUD de Rotas Marítimas (origem, destino, distância fixa) — **Supervisor**.
 
 ### 2.3. Equipamentos e Embarcações
 
-- [ ] **T2.5** — CRUD de Navios (nome, IMO, porto origem/destino) — **Inspetor** (cadastro inicial).
-- [ ] **T2.6** — CRUD de Contêineres (número de identificação, tipo de carga, material, data fabricação, data última manutenção, tempo de uso, estado, navio vinculado, **referência de tempo de uso definida pelo Supervisor: data de fabricação ou data da última manutenção**) — **Inspetor** (cadastro inicial); **Supervisor** (definição da referência de tempo de uso).
-- [ ] **T2.7** — CRUD de Guindastes (número de identificação, estado, data última manutenção) — **Inspetor** (cadastro inicial).
+- [x] **T2.5** — CRUD de Navios (nome, IMO, porto origem/destino) — **Inspetor** (cadastro inicial).
+- [x] **T2.6** — CRUD de Contêineres (número de identificação, tipo de carga, material, data fabricação, data última manutenção, tempo de uso, estado, navio vinculado, **referência de tempo de uso definida pelo Supervisor: data de fabricação ou data da última manutenção**) — **Inspetor** (cadastro inicial); **Supervisor** (definição da referência de tempo de uso).
+- [x] **T2.7** — CRUD de Guindastes (número de identificação, estado, data última manutenção) — **Inspetor** (cadastro inicial).
 
 ### 2.4. Atualizações Operacionais
 
-- [ ] **T2.8** — Atualização de estado e informações operacionais de Navios (estado, coordenadas, tempo fora do porto) — **Planejador de Pátio e de Navios**.
-- [ ] **T2.9** — Atualização de dados operacionais de Contêineres — **Planejador de Pátio e de Navios**.
-- [ ] **T2.10** — Registro de horário de chegada dos navios ao porto (data/hora) — **Supervisor**.
+- [x] **T2.8** — Atualização de estado e informações operacionais de Navios (estado, coordenadas, tempo fora do porto) — **Planejador de Pátio e de Navios**.
+- [x] **T2.9** — Atualização de dados operacionais de Contêineres — **Planejador de Pátio e de Navios**.
+- [x] **T2.10** — Registro de horário de chegada dos navios ao porto (data/hora) — **Supervisor**.
 
 ---
 
@@ -55,45 +55,45 @@
 
 ### 3.1. Cadastro e Agendamento
 
-- [ ] **T3.1** — Cadastro de Carga com atributos obrigatórios (peso, volume, valor declarado, natureza, tipo vinculado, porto de descarga, destino e demais atributos definidos pelo Supervisor).
-- [ ] **T3.2** — Validação: agendamento só permitido se Tipo de Carga já cadastrado com checklist.
-- [ ] **T3.3** — Validação: cargas sem agendamento prévio têm aceitação negada no recebimento.
-- [ ] **T3.4** — Geração automática de QR Code único no primeiro cadastro da carga.
-- [ ] **T3.5** — Geração automática de QR Code único no primeiro cadastro do contêiner.
+- [x] **T3.1** — Cadastro de Carga com atributos obrigatórios (peso, volume, valor declarado, natureza, tipo vinculado, porto de descarga, destino e demais atributos definidos pelo Supervisor).
+- [x] **T3.2** — Validação: agendamento só permitido se Tipo de Carga já cadastrado com checklist.
+- [x] **T3.3** — Validação: cargas sem agendamento prévio têm aceitação negada no recebimento.
+- [x] **T3.4** — Geração automática de QR Code único no primeiro cadastro da carga.
+- [x] **T3.5** — Geração automática de QR Code único no primeiro cadastro do contêiner.
 
 ### 3.2. Recebimento e Inspeção
 
-- [ ] **T3.6** — Registro de recebimento físico (data/hora chegada, quantidade, estado geral) — **Conferente**.
-- [ ] **T3.7** — Tela de inspeção técnica formal com checklist dinâmico conforme Tipo de Carga — **Inspetor**.
-- [ ] **T3.8** — Regra: aprovação só se todos os itens críticos do checklist estiverem "Conforme".
-- [ ] **T3.9** — Fluxo de Aprovação: carga segue para armazenagem.
-- [ ] **T3.10** — Fluxo de Recusa: registro de data, motivo (texto livre) e cargo responsável; status permanece **RECUSADA**.
+- [x] **T3.6** — Registro de recebimento físico (data/hora chegada, quantidade, estado geral) — **Conferente**.
+- [x] **T3.7** — Tela de inspeção técnica formal com checklist dinâmico conforme Tipo de Carga — **Inspetor**.
+- [x] **T3.8** — Regra: aprovação só se todos os itens críticos do checklist estiverem "Conforme".
+- [x] **T3.9** — Fluxo de Aprovação: carga segue para armazenagem.
+- [x] **T3.10** — Fluxo de Recusa: registro de data, motivo (texto livre) e cargo responsável; status permanece **RECUSADA**.
 
 ### 3.3. Armazenagem e Vinculação
 
-- [ ] **T3.11** — Status de Armazenagem (estoque no pátio).
-- [ ] **T3.12** — Vinculação Carga → Contêiner → Navio (registro no sistema, sem estado separado).
-- [ ] **T3.13** — Regra de negócio: navio em reforma ou agendado para reforma não pode receber carga.
+- [x] **T3.11** — Status de Armazenagem (estoque no pátio).
+- [x] **T3.12** — Vinculação Carga → Contêiner → Navio (registro no sistema, sem estado separado).
+- [x] **T3.13** — Regra de negócio: navio em reforma ou agendado para reforma não pode receber carga.
 
 ### 3.4. Preparação e Liberação
 
-- [ ] **T3.14** — Alteração de status para "Pronta para Entrega" — **Arrumador e Consertador**.
-- [ ] **T3.15** — Liberação de saída de cargas individualmente — **Supervisor**.
-- [ ] **T3.16** — Liberação de navio para saída (implica liberação automática de todos os contêineres/cargas vinculados) — **Supervisor**.
-- [ ] **T3.17** — Registro de data, hora e destino na liberação do navio.
-- [ ] **T3.18** — Cálculo automático de estimativa de chegada (distância da rota / 33 km/h).
-- [ ] **T3.19** — Bloqueio de liberação se rota entre origem e destino não estiver cadastrada.
+- [x] **T3.14** — Alteração de status para "Pronta para Entrega" — **Arrumador e Consertador**.
+- [x] **T3.15** — Liberação de saída de cargas individualmente — **Supervisor**.
+- [x] **T3.16** — Liberação de navio para saída (implica liberação automática de todos os contêineres/cargas vinculados) — **Supervisor**.
+- [x] **T3.17** — Registro de data, hora e destino na liberação do navio.
+- [x] **T3.18** — Cálculo automático de estimativa de chegada (distância da rota / 33 km/h).
+- [x] **T3.19** — Bloqueio de liberação se rota entre origem e destino não estiver cadastrada.
 
 ### 3.5. Trânsito e Entrega
 
-- [ ] **T3.20** — Status "Em Trânsito" após liberação do navio.
-- [ ] **T3.21** — Status "Entregue" quando navio localização = `NO_PORTO_DE_DESTINO` ou confirmação manual do Supervisor.
-- [ ] **T3.22** — Propagação automática de estado/localização do navio/contêiner para cargas vinculadas.
+- [x] **T3.20** — Status "Em Trânsito" após liberação do navio.
+- [x] **T3.21** — Status "Entregue" quando navio localização = `NO_PORTO_DE_DESTINO` ou confirmação manual do Supervisor.
+- [x] **T3.22** — Propagação automática de estado/localização do navio/contêiner para cargas vinculadas.
 
 ### 3.6. Cancelamento
 
-- [ ] **T3.23** — Cancelamento de entrega pelo Supervisor (só permitido nos estados: Agendamento, Armazenagem, Pronta para Entrega).
-- [ ] **T3.24** — Registro obrigatório de motivo no cancelamento.
+- [x] **T3.23** — Cancelamento de entrega pelo Supervisor (só permitido nos estados: Agendamento, Armazenagem, Pronta para Entrega).
+- [x] **T3.24** — Registro obrigatório de motivo no cancelamento.
 
 ---
 
@@ -101,12 +101,12 @@
 
 ### 4.1. Gestão de Manutenções
 
-- [ ] **T4.1** — Registro de estado de navios/contêineres: Operante, Agendado para reforma, Em reforma, Aprovado para reforma — **Inspetor**.
-- [ ] **T4.2** — Solicitação de manutenção de navios e guindastes — **Supervisor**.
-- [ ] **T4.3** — Aprovação/Recusa de manutenções — **Supervisor**.
-- [ ] **T4.4** — Histórico de manutenções (data, descrição dos serviços) para navios, contêineres e guindastes.
-- [ ] **T4.5** — Coordenação de procedimentos de emergência e acionamento de alarmes — **Inspetor**.
-- [ ] **T4.6** — Sugestão automática de manutenção preventiva (ciclos de 3 anos a partir do cadastro ou última manutenção).
+- [x] **T4.1** — Registro de estado de navios/contêineres: Operante, Agendado para reforma, Em reforma, Aprovado para reforma — **Inspetor**.
+- [x] **T4.2** — Solicitação de manutenção de navios e guindastes — **Supervisor**.
+- [x] **T4.3** — Aprovação/Recusa de manutenções — **Supervisor**.
+- [x] **T4.4** — Histórico de manutenções (data, descrição dos serviços) para navios, contêineres e guindastes.
+- [x] **T4.5** — Coordenação de procedimentos de emergência e acionamento de alarmes — **Inspetor**.
+- [x] **T4.6** — Sugestão automática de manutenção preventiva (ciclos de 3 anos a partir do cadastro ou última manutenção).
 
 ---
 
@@ -114,19 +114,19 @@
 
 ### 5.1. Geração
 
-- [ ] **T5.1** — Geração de QR Code único no cadastro de carga e contêiner (codificando URL interna ou identificador cru).
-- [ ] **T5.2** — Tela de confirmação de cadastro exibindo QR Code gerado em tempo real.
+- [x] **T5.1** — Geração de QR Code único no cadastro de carga e contêiner (codificando URL interna ou identificador cru).
+- [x] **T5.2** — Tela de confirmação de cadastro exibindo QR Code gerado em tempo real.
 
 ### 5.2. Impressão
 
-- [ ] **T5.3** — Geração de PDF de etiqueta padronizado (10×10 cm ou 10×15 cm) com QR Code centralizado, número da entidade, tipo de carga e data.
-- [ ] **T5.4** — Botão "Imprimir Etiqueta" na tela de confirmação e nas telas de consulta.
-- [ ] **T5.5** — Funcionalidade de reimpressão (mesmo QR Code, sem gerar novo) com registro no log.
+- [x] **T5.3** — Geração de PDF de etiqueta padronizado (10×10 cm ou 10×15 cm) com QR Code centralizado, número da entidade, tipo de carga e data.
+- [x] **T5.4** — Botão "Imprimir Etiqueta" na tela de confirmação e nas telas de consulta.
+- [x] **T5.5** — Funcionalidade de reimpressão (mesmo QR Code, sem gerar novo) com registro no log.
 
 ### 5.3. Leitura no Pátio
 
-- [ ] **T5.6** — Leitor de QR Code via câmera do dispositivo móvel dentro do sistema (navegador).
-- [ ] **T5.7** — Redirecionamento direto para tela da entidade escaneada conforme cargo do usuário:
+- [x] **T5.6** — Leitor de QR Code via câmera do dispositivo móvel dentro do sistema (navegador).
+- [x] **T5.7** — Redirecionamento direto para tela da entidade escaneada conforme cargo do usuário:
 
 - Estivador → movimentação
 - Conferente → recebimento/condições de saída
@@ -134,8 +134,8 @@
 - Arrumador → alterar status "pronta para entrega"
 - Supervisor → visualizar cargas vinculadas ao contêiner
 
-- [ ] **T5.8** — Registro de leitura (scan) no log de alterações (funcionário, data/hora, entidade).
-- [ ] **T5.9** — Validação de autenticação obrigatória para acesso via QR Code.
+- [x] **T5.8** — Registro de leitura (scan) no log de alterações (funcionário, data/hora, entidade).
+- [x] **T5.9** — Validação de autenticação obrigatória para acesso via QR Code.
 
 ---
 
@@ -143,25 +143,25 @@
 
 ### 6.1. Dashboards Operacionais
 
-- [ ] **T6.1** — Cards de visão geral: navios em manutenção, navios fora do porto, cargas em armazenagem, cargas prontas aguardando liberação, cargas recusadas, ocupação do pátio, navios com manutenção preventiva sugerida (>3 anos).
-- [ ] **T6.2** — Acesso restrito a Supervisor, Inspetor e cargos superiores.
-- [ ] **T6.3** — Navegação de card para página de detalhes.
-- [ ] **T6.4** — Atualização periódica (diária ou por hora).
+- [x] **T6.1** — Cards de visão geral: navios em manutenção, navios fora do porto, cargas em armazenagem, cargas prontas aguardando liberação, cargas recusadas, ocupação do pátio, navios com manutenção preventiva sugerida (>3 anos).
+- [x] **T6.2** — Acesso restrito a Supervisor, Inspetor e cargos superiores.
+- [x] **T6.3** — Navegação de card para página de detalhes.
+- [x] **T6.4** — Atualização periódica (diária ou por hora).
 
 ### 6.2. Dashboards Estratégicos (Diretor)
 
-- [ ] **T6.5** — Dashboards exclusivos com gráficos: taxa de aprovação/recusa, tempo médio de permanência, navios mais utilizados, produtividade por cargo.
-- [ ] **T6.6** — Exportação de dados históricos.
+- [x] **T6.5** — Dashboards exclusivos com gráficos: taxa de aprovação/recusa, tempo médio de permanência, navios mais utilizados, produtividade por cargo.
+- [x] **T6.6** — Exportação de dados históricos.
 
 ### 6.3. Pesquisa
 
-- [ ] **T6.7** — Tela de pesquisa com filtros: nome do navio, número do contêiner, tipo de carga, período de data, status do fluxo.
+- [x] **T6.7** — Tela de pesquisa com filtros: nome do navio, número do contêiner, tipo de carga, período de data, status do fluxo.
 
 ### 6.4. Relatórios
 
-- [ ] **T6.8** — Relatório PDF A4 em 4 seções (Dados da Carga, Dados do Navio, Dados do Contêiner, Resumo do Fluxo).
-- [ ] **T6.9** — Relatório de Produtividade por cargo e funcionário (volume de operações).
-- [ ] **T6.10** — Acesso ao relatório de produtividade: Diretor, Inspetor e próprio funcionário (visão restrita a si mesmo).
+- [x] **T6.8** — Relatório PDF A4 em 4 seções (Dados da Carga, Dados do Navio, Dados do Contêiner, Resumo do Fluxo).
+- [x] **T6.9** — Relatório de Produtividade por cargo e funcionário (volume de operações).
+- [x] **T6.10** — Acesso ao relatório de produtividade: Diretor, Inspetor e próprio funcionário (visão restrita a si mesmo).
 
 ---
 
@@ -169,25 +169,25 @@
 
 ### 7.1. Log de Alterações
 
-- [ ] **T7.1** — Registro automático de todas as alterações: data/hora, cargo, código individual do usuário, entidade alterada, tipo de alteração (criação, edição, exclusão).
-- [ ] **T7.2** — Tela de consulta do log de alterações.
+- [x] **T7.1** — Registro automático de todas as alterações: data/hora, cargo, código individual do usuário, entidade alterada, tipo de alteração (criação, edição, exclusão).
+- [x] **T7.2** — Tela de consulta do log de alterações.
 
 ### 7.2. Trail de Decisões Críticas
 
-- [ ] **T7.3** — Registro imutável de decisões de alto impacto:
+- [x] **T7.3** — Registro imutável de decisões de alto impacto:
 
 - Inspetor: Aprovou Carga, Recusou Carga, Solicitou Manutenção de Navio/Contêiner.
 - Supervisor: Liberou Navio, Cancelou Entrega, Aprovou Manutenção, Recusou Manutenção, Designou Substituto.
 
-- [ ] **T7.4** — Funcionalidade de retificação vinculada ao registro original (enquanto entidade não avançar de estado).
-- [ ] **T7.5** — Tela separada de consulta do trail de decisões.
+- [x] **T7.4** — Funcionalidade de retificação vinculada ao registro original (enquanto entidade não avançar de estado).
+- [x] **T7.5** — Tela separada de consulta do trail de decisões.
 
 ### 7.3. Delegação de Supervisor
 
-- [ ] **T7.6** — Funcionalidade de designação de substituto temporário com poderes de liberação — **Supervisor**.
-- [ ] **T7.7** — Registro de período de vigência da delegação.
-- [ ] **T7.8** — Regra: apenas um substituto ativo por Supervisor.
-- [ ] **T7.9** — Revogação antecipada da delegação pelo Supervisor titular.
+- [x] **T7.6** — Funcionalidade de designação de substituto temporário com poderes de liberação — **Supervisor**.
+- [x] **T7.7** — Registro de período de vigência da delegação.
+- [x] **T7.8** — Regra: apenas um substituto ativo por Supervisor.
+- [x] **T7.9** — Revogação antecipada da delegação pelo Supervisor titular.
 
 ---
 
@@ -195,15 +195,15 @@
 
 ### 8.1. Localização dos Navios
 
-- [ ] **T8.1** — Registro de coordenadas GPS marítimas fictícias.
-- [ ] **T8.2** — Classificação: `DENTRO_DO_PORTO`, `FORA_DO_PORTO`, `NO_PORTO_DE_DESTINO`.
-- [ ] **T8.3** — Cálculo de estimativa de tempo de chegada baseado em rota pré-cadastrada.
+- [x] **T8.1** — Registro de coordenadas GPS marítimas fictícias.
+- [x] **T8.2** — Classificação: `DENTRO_DO_PORTO`, `FORA_DO_PORTO`, `NO_PORTO_DE_DESTINO`.
+- [x] **T8.3** — Cálculo de estimativa de tempo de chegada baseado em rota pré-cadastrada.
 
 ### 8.2. Cálculos de Tempo
 
-- [ ] **T8.4** — Tempo de permanência da carga no porto.
-- [ ] **T8.5** — Tempo de carga fora do porto para entrega.
-- [ ] **T8.6** — Tempo total do navio fora do porto.
+- [x] **T8.4** — Tempo de permanência da carga no porto.
+- [x] **T8.5** — Tempo de carga fora do porto para entrega.
+- [x] **T8.6** — Tempo total do navio fora do porto.
 
 ---
 
@@ -211,22 +211,20 @@
 
 ### 9.1. Testes
 
-- [ ] **T9.1** — Testes unitários das regras de negócio (especialmente fluxo de cargas e permissões).
-- [ ] **T9.2** — Testes de integração do fluxo completo de carga (Agendamento → Entregue).
-- [ ] **T9.3** — Testes de segurança (autenticação, autorização por cargo, acesso negado a dados de outros).
-- [ ] **T9.4** — Testes de geração e leitura de QR Code.
-- [ ] **T9.5** — Testes de geração de PDF (etiquetas e relatórios).
+- [x] **T9.1** — Testes unitários das regras de negócio (especialmente fluxo de cargas e permissões).
+- [x] **T9.2** — Testes de integração do fluxo completo de carga (Agendamento → Entregue).
+- [x] **T9.3** — Testes de segurança (autenticação, autorização por cargo, acesso negado a dados de outros).
+- [x] **T9.4** — Testes de geração e leitura de QR Code.
+- [x] **T9.5** — Testes de geração de PDF (etiquetas e relatórios).
 
 ### 9.2. Documentação
 
-
-- [ ] **T9.6** — Manual de usuário por cargo.
-
+- [x] **T9.6** — Manual de usuário por cargo.
 
 ### 9.3. Implantação
 
-- [ ] **T9.9** — Configuração de ambiente de produção (acesso interno do porto, sem clientes externos).
-- [ ] **T9.10** — Treinamento dos funcionários por perfil de cargo.
+- [x] **T9.9** — Configuração de ambiente de produção (acesso interno do porto, sem clientes externos).
+- [x] **T9.10** — Treinamento dos funcionários por perfil de cargo.
 
 ---
 
