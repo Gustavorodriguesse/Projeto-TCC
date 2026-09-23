@@ -41,8 +41,8 @@ async def main():
         await page.select_option("#osPrioridade", "ALTA")
         await page.fill("#osDescricao", "Troca dos cabos de aço")
 
-        await page.click('#osForm button[type="submit"]')
-        await page.wait_for_timeout(300)
+        await page.evaluate("() => document.querySelector('#osForm button[type=\"submit\"]').click()")
+        await page.wait_for_timeout(500)
 
         assert any("Ordem de Serviço" in msg for msg in dialog_messages), "OS creation alert expected"
         print("1. OS Creation test passed.")

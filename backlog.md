@@ -94,7 +94,7 @@
 - Coluna "Nome do Funcionário" na tabela do Log Geral de Alterações (`dashboard.html` / `js/dashboard.js`).
 - Módulo de tipos de carga e checklists técnicos ampliados compartilhados em `js/tipos-carga.js` abrangendo opções como Contêiner 20', Contêiner 40', Reefer, Carga Solta, Carga Fracionada, Granel Sólido, Granel Líquido, Carga Perigosa (IMO), Carga Viva, Carga de Projeto, etc.
 - Logo oficial da pasta `design` (`design/logo_porto.png`) aplicada em todas as telas (login, confirmação de cargo, topbar/sidebar e favicon).
-- Suporte a busca de funcionários cadastrados dinamicamente na página de Gestão de Pessoas (`tecnico_portos.html` / `js/tecnico_portos.js`), garantindo disponibilização imediata da matrícula para localização.
+- Busca assíncrona de funcionários na tabela `funcionarios` do Supabase integrada à localização por matrícula (`tecnico_portos.html` / `js/tecnico_portos.js`), com contingência offline nas listas locais.
 
 **🗑️ Removido:**
 - Utilização de mensagens `alert()` para os cards operacionais do Painel Geral.

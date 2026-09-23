@@ -32,28 +32,55 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   if (searchBtn && searchInput) {
-    searchBtn.addEventListener('click', () => {
+    searchBtn.addEventListener('click', async () => {
       const q = searchInput.value.trim().toUpperCase();
       if (!q) {
         alert('Informe a matrícula para buscar.');
         return;
       }
 
+      const formattedMatricula = q.startsWith('MAT-') ? q : `MAT-${q}`;
       const storedOverrides = JSON.parse(localStorage.getItem('nexus_code_overrides') || '{}');
-      const dynamicFuncs = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
+      let found = null;
 
-      // Busca na lista mock padrão e também na lista de funcionários recém-cadastrados no localStorage
-      let found = employeeList.find(e => e.matricula.toUpperCase() === q || e.matricula.toUpperCase() === `MAT-${q.replace('MAT-', '')}`);
-      if (!found && dynamicFuncs && dynamicFuncs.length > 0) {
-        const dyn = dynamicFuncs.find(f => f.matricula.toUpperCase() === q || f.matricula.toUpperCase() === `MAT-${q.replace('MAT-', '')}`);
-        if (dyn) {
-          found = {
-            codigo: dyn.codigo,
-            matricula: dyn.matricula,
-            nome: dyn.nome,
-            cargo: dyn.cargo,
-            cargo_nome: dyn.cargo
-          };
+      // 1. Busca assíncrona na tabela 'funcionarios' do Supabase
+      if (window.nexusSupabase) {
+        try {
+          const { data, error } = await window.nexusSupabase
+            .from('funcionarios')
+            .select('*')
+            .or(`matricula.eq.${q},matricula.eq.${formattedMatricula}`)
+            .maybeSingle();
+
+          if (!error && data) {
+            found = {
+              codigo: data.codigo_individual || `NX-${data.matricula.replace('MAT-', '')}-SP`,
+              matricula: data.matricula,
+              nome: data.nome,
+              cargo: data.cargo,
+              cargo_nome: data.cargo_nome || data.cargo
+            };
+          }
+        } catch (err) {
+          console.warn('[NexusPort Técnico] Falha na consulta de funcionário no Supabase:', err);
+        }
+      }
+
+      // 2. Fallback nas listas locais (mock e nexus_func_list) se não encontrar no Supabase
+      if (!found) {
+        found = employeeList.find(e => e.matricula.toUpperCase() === q || e.matricula.toUpperCase() === formattedMatricula);
+        if (!found) {
+          const dynamicFuncs = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
+          const dyn = dynamicFuncs.find(f => f.matricula.toUpperCase() === q || f.matricula.toUpperCase() === formattedMatricula);
+          if (dyn) {
+            found = {
+              codigo: dyn.codigo,
+              matricula: dyn.matricula,
+              nome: dyn.nome,
+              cargo: dyn.cargo,
+              cargo_nome: dyn.cargo
+            };
+          }
         }
       }
 
