@@ -81,11 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (window.nexusSupabase) {
         try {
-          await window.nexusSupabase.from('manutencoes').insert({
+          window.nexusSupabase.from('manutencoes').insert({
             entidade_tipo: 'CONTAINER',
             descricao: `[${newId}][${prioridade}] Equipamento: ${equipamento} - ${descricao}`,
             status: 'SOLICITADA'
-          });
+          }).then().catch(err => console.warn('[NexusPort] Erro ao sincronizar OS com Supabase:', err));
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar OS com Supabase:', err);
         }
