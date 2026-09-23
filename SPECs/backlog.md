@@ -1,4 +1,3 @@
-
 # 📋 Backlog de Alterações
 
 ## BACKLOG #001 — Divisão Arquitetural e Estrutura de Páginas Dedicadas
@@ -80,44 +79,27 @@
 **🔧 Corrigido:**
 - Inconsistência na contagem de tempo fora do porto para navios com status `NO_PORTO_DE_DESTINO`.
 - Trava de agendamento garantindo que cargas só sejam agendadas se o Tipo de Carga possuir checklist pré-cadastrado (RN 13).
-=======
-# 📋 Backlog — Instrução para o Jules
-
-> **Agente:** Jules
-> **Data da solicitação:** 22/09/2026
-> Este documento é um complemento do arquivo `correcoes.md` — aplique primeiro as correções descritas lá e depois execute a entrega abaixo.
 
 ---
 
-## 📋 Entrega obrigatória: arquivo de backlog no repositório
-
-Ao final das alterações, o Jules deve **criar o arquivo `backlog.md` dentro da pasta `SPECs/` no repositório do GitHub**, com **todas as alterações realizadas**, seguindo este formato:
-
-```markdown
-# 📋 Backlog de Alterações
-
-## BACKLOG #001 — [título da alteração]
+## BACKLOG #005 — Resolução de Pendências do Documento correcoes.md
 **Data:** 22/09/2026
-**Prioridade:** Alta/Média/Baixa
-**Tipo:** Correção / Nova funcionalidade / Melhoria
+**Prioridade:** Alta
+**Tipo:** Correção / Melhoria
 
-**Descrição:** ...
+**Descrição:** Resolução completa das pendências listadas no arquivo `correcoes.md`, incluindo modal centralizado para os cards operacionais, identificação de colaboradores no Log Geral, reestruturação do Trail de Decisões, ampliação da lista compartilhada de tipos de carga e checklists técnicos, unificação da busca por localização de funcionários, aplicação da logo oficial do porto e persistência de tema escuro entre navegações.
 
 **✅ Adicionado:**
-- ...
+- Modal centralizado sobreposto com backdrop escurecido, botão de fechar (X), fechamento por clique fora ou tecla `Esc` para o detalhamento dos 7 Cards Operacionais no Painel Geral (`dashboard.html`).
+- Coluna "Nome do Funcionário" na tabela do Log Geral de Alterações (`dashboard.html` / `js/dashboard.js`).
+- Módulo de tipos de carga e checklists técnicos ampliados compartilhados em `js/tipos-carga.js` abrangendo opções como Contêiner 20', Contêiner 40', Reefer, Carga Solta, Carga Fracionada, Granel Sólido, Granel Líquido, Carga Perigosa (IMO), Carga Viva, Carga de Projeto, etc.
+- Logo oficial da pasta `design` (`design/logo_porto.png`) aplicada em todas as telas (login, confirmação de cargo, topbar/sidebar e favicon).
+- Suporte a busca de funcionários cadastrados dinamicamente na página de Gestão de Pessoas (`tecnico_portos.html` / `js/tecnico_portos.js`), garantindo disponibilização imediata da matrícula para localização.
 
 **🗑️ Removido:**
-- ...
+- Utilização de mensagens `alert()` para os cards operacionais do Painel Geral.
+- Ícone/logo provisória com a letra "N" no aplicativo.
 
 **🔧 Corrigido:**
-- ...
-```
-
-### Regras do backlog:
-- **Numerar** cada backlog sequencialmente (#001, #002, ...).
-- **Inserir a data** das alterações em cada item (22/09/2026).
-- Em cada backlog, informar obrigatoriamente: **o que foi adicionado**, **o que foi removido** e **o que foi corrigido**.
-- Cobrir todas as alterações feitas nesta execução.
-
----
-
+- Perda do Modo Noturno (`nexus_theme`) ao alternar entre páginas HTML, garantindo aplicação imediata da classe `.dark` em `document.documentElement` no carregamento.
+- Desorganização visual no Trail de Decisões, agora apresentado em cards estruturados por hierarquia.

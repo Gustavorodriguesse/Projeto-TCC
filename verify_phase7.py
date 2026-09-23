@@ -42,8 +42,8 @@ async def main():
         print("1. Audit Log rendering passed.")
 
         # 2. Test Critical Decision Trail & Rectification Attachment on dashboard.html (T7.3, T7.4, T7.5)
-        trail_rows = await page.query_selector_all("#trailDecisoesTableBody tr")
-        assert len(trail_rows) > 0, "Trail rows expected"
+        trail_items = await page.query_selector_all("#trailDecisoesContainer > div")
+        assert len(trail_items) > 0, "Trail items expected"
 
         # Click Anexar Retificação
         retif_btns = await page.query_selector_all('button:has-text("Anexar Retificação")')

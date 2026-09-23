@@ -11,6 +11,7 @@ window.registrarLogAlteracao = function(entidade, tipoAlteracao, detalhes = '') 
   const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
   const newLog = {
     data_hora: new Date().toISOString(),
+    nome_funcionario: session.nome || 'Operador Porto',
     cargo: session.cargo_nome || session.cargo || 'Operador',
     codigo_usuario: session.codigo_individual || session.codigo || '--',
     entidade: entidade,
@@ -194,16 +195,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderCardsOperacionais();
 
+  // Modal Centralizado para Detalhamento de Indicadores Operacionais (Item 1 Correções)
+  const cardModal = document.getElementById('cardDetailModal');
+  const modalCardTitle = document.getElementById('modalCardTitle');
+  const modalCardDetailContent = document.getElementById('modalCardDetailContent');
+  const closeCardDetailModalBtn = document.getElementById('closeCardDetailModalBtn');
+  const confirmCardDetailModalBtn = document.getElementById('confirmCardDetailModalBtn');
+
+  function fecharCardModal() {
+    if (cardModal) cardModal.classList.add('hidden');
+  }
+
+  if (closeCardDetailModalBtn) closeCardDetailModalBtn.addEventListener('click', fecharCardModal);
+  if (confirmCardDetailModalBtn) confirmCardDetailModalBtn.addEventListener('click', fecharCardModal);
+
+  if (cardModal) {
+    cardModal.addEventListener('click', (e) => {
+      if (e.target === cardModal) fecharCardModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !cardModal.classList.contains('hidden')) {
+        fecharCardModal();
+      }
+    });
+  }
+
   window.detalharCardOperacional = function(tipo) {
     let titulo = '';
     let detalhe = '';
 
     if (tipo === 'NAVIOS_MANUTENCAO') {
       titulo = 'Navios e Equipamentos em Manutenção';
-      detalhe = '1. MV Atlantic Breeze (Status: AGENDADO_PARA_REFORMA)\n2. Guindaste GND-01-STS (Status: EM_MANUTENCAO)';
+      detalhe = '• MV Atlantic Breeze (Status: AGENDADO_PARA_REFORMA)\n• Guindaste GND-01-STS (Status: EM_MANUTENCAO)';
     } else if (tipo === 'NAVIOS_FORA') {
       titulo = 'Navios Fora do Porto (Em Trânsito)';
-      detalhe = '1. MV Pacific Giant (Destino: Singapura)\n2. MV Santos Star (Destino: Roterdã)';
+      detalhe = '• MV Pacific Giant (Destino: Singapura)\n• MV Santos Star (Destino: Roterdã)';
     } else if (tipo === 'CARGAS_ARMAZENAGEM') {
       titulo = 'Cargas em Armazenagem no Pátio';
       detalhe = 'Cargas estocadas em pátio aguardando vinculação e prontidão de entrega.';
@@ -218,33 +244,36 @@ document.addEventListener('DOMContentLoaded', () => {
       detalhe = 'Capacidade Operacional Atual: 35% ocupado.';
     } else if (tipo === 'PREVENTIVA_SUGERIDA') {
       titulo = 'Manutenções Preventivas Sugeridas (> 3 Anos de Uso)';
-      detalhe = '1. MV Santos Star (Cadastrado em 2021 — 5 anos sem reforma)\n2. Guindaste GND-02-STS (Última manutenção em 2022 — 4 anos)';
+      detalhe = '• MV Santos Star (Cadastrado em 2021 — 5 anos sem reforma)\n• Guindaste GND-02-STS (Última manutenção em 2022 — 4 anos)';
     }
 
-    alert(`DETALHAMENTO DO INDICADOR OPERACIONAL:\n\n${titulo}\n\n${detalhe}`);
+    if (modalCardTitle) modalCardTitle.textContent = titulo;
+    if (modalCardDetailContent) modalCardDetailContent.textContent = detalhe;
+    if (cardModal) cardModal.classList.remove('hidden');
   };
 
-  // 2. Renderiza Log Geral de Alterações (RF 12 / T7.1)
+  // 2. Renderiza Log Geral de Alterações com Nome do Funcionário (Item 2 Correções)
   function renderAuditLogTable() {
     if (!auditTableBody) return;
     let logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || 'null');
     if (!logs || logs.length === 0) {
       logs = [
-        { data_hora: new Date().toISOString(), cargo: 'Supervisor de Operações', codigo_usuario: 'SUP-2001', entidade: 'CRG-2026-001', tipo_alteracao: 'Criação / Agendamento' },
-        { data_hora: new Date(Date.now() - 3600000).toISOString(), cargo: 'Inspetor Técnico', codigo_usuario: 'INS-6090', entidade: 'CRG-2026-002', tipo_alteracao: 'Aprovação de Inspeção' },
-        { data_hora: new Date(Date.now() - 7200000).toISOString(), cargo: 'Técnico em Portos', codigo_usuario: 'TEC-5080', entidade: 'MAT-1040', tipo_alteracao: 'Reemissão de Código' }
+        { data_hora: new Date().toISOString(), nome_funcionario: 'Carlos Silva', cargo: 'Supervisor de Operações', codigo_usuario: 'SUP-2001', entidade: 'CRG-2026-001', tipo_alteracao: 'Criação / Agendamento' },
+        { data_hora: new Date(Date.now() - 3600000).toISOString(), nome_funcionario: 'Patricia Rocha', cargo: 'Inspetor Técnico', codigo_usuario: 'INS-6090', entidade: 'CRG-2026-002', tipo_alteracao: 'Aprovação de Inspeção' },
+        { data_hora: new Date(Date.now() - 7200000).toISOString(), nome_funcionario: 'Lucas Mendes', cargo: 'Técnico em Portos', codigo_usuario: 'TEC-5080', entidade: 'MAT-1040', tipo_alteracao: 'Reemissão de Código' }
       ];
       localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
     }
 
     auditTableBody.innerHTML = logs.map(l => `
       <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-        <td class="p-2.5 text-slate-500">${new Date(l.data_hora).toLocaleString('pt-BR')}</td>
-        <td class="p-2.5 font-bold text-nexus-900 dark:text-white">${l.cargo}</td>
-        <td class="p-2.5 text-nexus-500 font-bold">${l.codigo_usuario}</td>
-        <td class="p-2.5 font-bold">${l.entidade}</td>
+        <td class="p-2.5 text-slate-500 whitespace-nowrap">${new Date(l.data_hora).toLocaleString('pt-BR')}</td>
+        <td class="p-2.5 font-bold text-nexus-900 dark:text-white whitespace-nowrap">${l.nome_funcionario || 'Operador Porto'}</td>
+        <td class="p-2.5 text-slate-600 dark:text-slate-300 whitespace-nowrap">${l.cargo}</td>
+        <td class="p-2.5 text-nexus-500 font-bold whitespace-nowrap">${l.codigo_usuario}</td>
+        <td class="p-2.5 font-bold whitespace-nowrap">${l.entidade}</td>
         <td class="p-2.5">
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">${l.tipo_alteracao}</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 whitespace-nowrap">${l.tipo_alteracao}</span>
         </td>
       </tr>
     `).join('');
@@ -252,9 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderAuditLogTable();
 
-  // 3. Renderiza Trail de Decisões Críticas Imutável [Anexar Retificação] (RF 13 / T7.3 - T7.5)
+  // 3. Renderiza Trail de Decisões Críticas Imutável Organizado (Item 3 Correções)
   function renderTrailDecisoesTable() {
-    if (!trailTableBody) return;
+    const trailContainer = document.getElementById('trailDecisoesContainer');
+    if (!trailContainer) return;
+
     let trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || 'null');
     if (!trail || trail.length === 0) {
       trail = [
@@ -264,21 +295,41 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
     }
 
-    trailTableBody.innerHTML = trail.map(t => `
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-        <td class="p-3 font-mono font-bold text-nexus-500">${t.id}</td>
-        <td class="p-3 text-slate-500 font-mono text-[11px]">${new Date(t.data_hora).toLocaleString('pt-BR')}</td>
-        <td class="p-3 font-bold">${t.responsavel}</td>
-        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300">${t.decisao}</span></td>
-        <td class="p-3 font-mono font-bold">${t.entidade}</td>
-        <td class="p-3 text-slate-600 dark:text-slate-300 text-xs">${t.motivo}</td>
-        <td class="p-3 text-xs italic text-amber-700 dark:text-amber-400 font-mono">${t.retificacao || '<span class="text-slate-400 not-italic">Sem retificação</span>'}</td>
-        <td class="p-3 text-right">
-          <button type="button" onclick="window.anexarRetificacaoTrail('${t.id}')" class="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-[10px]">
-            Anexar Retificação
+    trailContainer.innerHTML = trail.map(t => `
+      <div class="p-4 rounded-xl border border-nexus-border dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex flex-col gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700/80 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="font-mono font-bold text-xs text-nexus-500">${t.id}</span>
+            <span class="text-slate-300 dark:text-slate-600">•</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300">${t.decisao}</span>
+            <span class="font-mono text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">${t.entidade}</span>
+          </div>
+          <span class="text-slate-400 font-mono text-[11px]">${new Date(t.data_hora).toLocaleString('pt-BR')}</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+          <div>
+            <span class="font-bold text-slate-500 block text-[10px] uppercase">Responsável Operacional</span>
+            <span class="font-bold text-nexus-900 dark:text-white">${t.responsavel}</span>
+          </div>
+          <div>
+            <span class="font-bold text-slate-500 block text-[10px] uppercase">Justificativa / Motivo Formal</span>
+            <span class="text-slate-700 dark:text-slate-300">${t.motivo}</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-700/60 text-xs">
+          <div class="flex items-start gap-1.5 min-w-0">
+            <span class="material-symbols-outlined text-[16px] text-amber-500 shrink-0 mt-0.5">edit_note</span>
+            <span class="font-mono text-[11px] italic text-amber-700 dark:text-amber-400 leading-snug">
+              ${t.retificacao || '<span class="text-slate-400 not-italic">Nenhuma retificação vinculada.</span>'}
+            </span>
+          </div>
+          <button type="button" onclick="window.anexarRetificacaoTrail('${t.id}')" class="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-[11px] shrink-0 transition-colors">
+            + Anexar Retificação
           </button>
-        </td>
-      </tr>
+        </div>
+      </div>
     `).join('');
   }
 

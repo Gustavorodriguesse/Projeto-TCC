@@ -6,6 +6,16 @@
 (function (window) {
   'use strict';
 
+  // Aplicação imediata do tema noturno salvo antes do render da página
+  try {
+    const savedTheme = localStorage.getItem('nexus_theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else if (savedTheme === 'light') {
+      document.documentElement.classList.remove('dark');
+    }
+  } catch (e) {}
+
   const SESSION_KEY = 'nexus_session';
 
   // Matriz de Ações x Cargos com base no Spec.md RF 1

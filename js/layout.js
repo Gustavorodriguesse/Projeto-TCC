@@ -59,9 +59,7 @@
           <button id="mobileMenuToggle" type="button" class="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
             <span class="material-symbols-outlined text-[24px]">menu</span>
           </button>
-          <div class="w-9 h-9 rounded-lg bg-nexus-900 flex items-center justify-center text-white font-display font-bold text-lg shadow-sm">
-            N
-          </div>
+          <img src="design/logo_porto.png" alt="NexusPort Logo" class="h-9 w-auto object-contain rounded-lg" />
           <div class="flex flex-col min-w-0">
             <span class="font-display font-bold text-base text-nexus-900 dark:text-white leading-tight truncate">NexusPort</span>
             <span class="font-mono text-[11px] text-slate-500 dark:text-slate-400 truncate">Terminal STS-01</span>
@@ -149,9 +147,17 @@
       `;
     }
 
-    // Configura eventos de Dark Mode e Logout no topbar
+    // Configura estado inicial do ícone e eventos de Dark Mode e Logout no topbar
     const themeBtn = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeToggleIcon');
+    const savedTheme = localStorage.getItem('nexus_theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      if (themeIcon) themeIcon.textContent = 'light_mode';
+    } else {
+      if (themeIcon) themeIcon.textContent = 'dark_mode';
+    }
+
     if (themeBtn) {
       themeBtn.addEventListener('click', () => {
         const isDark = document.documentElement.classList.toggle('dark');

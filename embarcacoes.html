@@ -74,18 +74,54 @@
           </div>
         </div>
 
+        <!-- Status de Rastreamento GPS & Indicadores Marítimos -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex items-center gap-3">
+            <div class="p-3 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400">
+              <span class="material-symbols-outlined text-2xl">sailing</span>
+            </div>
+            <div>
+              <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Sinal GPS Satelital</span>
+              <span class="font-display font-bold text-base text-nexus-900 dark:text-white">AIS Ativo • 100% Online</span>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex items-center gap-3">
+            <div class="p-3 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
+              <span class="material-symbols-outlined text-2xl">speed</span>
+            </div>
+            <div>
+              <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Velocidade Marítima Padrão</span>
+              <span class="font-display font-bold text-base text-nexus-900 dark:text-white">33 km/h (Fixa RN 8)</span>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-xl border border-nexus-border dark:border-nexus-dark-border p-4 flex items-center gap-3">
+            <div class="p-3 rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400">
+              <span class="material-symbols-outlined text-2xl">anchor</span>
+            </div>
+            <div>
+              <span class="text-slate-500 dark:text-slate-400 font-bold block text-[11px] uppercase">Terminal de Operação</span>
+              <span class="font-display font-bold text-base text-nexus-900 dark:text-white">STS-01 Santos</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Tabela de Rastreamento GPS Marítimo (RF 5 / RN 8 Fix) -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
           <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">explore</span>
-              Localização GPS Marítima & Tempo Fora do Porto (Pausado em NO_PORTO_DE_DESTINO)
-            </h3>
-            <span class="font-mono text-xs text-slate-400">Velocidade Média Fixa: 33 km/h</span>
+            <div>
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">explore</span>
+                Localização GPS Marítima & Tempo Fora do Porto
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Contagem pausada automaticamente para navios no estado NO_PORTO_DE_DESTINO.</p>
+            </div>
+            <span class="font-mono text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">Cálculo Geodésico Ativo</span>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-xs min-w-[700px]">
               <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
                 <tr>
                   <th class="p-3">Navio (IMO)</th>
