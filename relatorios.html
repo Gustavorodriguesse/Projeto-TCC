@@ -74,46 +74,74 @@
           </div>
         </div>
 
-        <!-- Seção 1: Gerador de Relatório PDF A4 (RF 11 & 16) -->
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-nexus-border dark:border-nexus-dark-border shadow-sm flex flex-col gap-4">
+        <!-- Seção 1: Gerador de Relatório PDF A4 Organizado (RF 11 & 16 / Tarefa 10) -->
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-nexus-border dark:border-nexus-dark-border shadow-sm flex flex-col gap-5">
           <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+            <h3 class="font-display font-bold text-base text-nexus-900 dark:text-white flex items-center gap-2">
               <span class="material-symbols-outlined text-nexus-500">picture_as_pdf</span>
-              Emissão do Relatório PDF A4 Estruturado em 4 Seções
+              Emissão do Relatório PDF A4 Estruturado
             </h3>
-            <span class="font-mono text-xs text-slate-400">Padrão A4 • ABNT Portuário</span>
+            <span class="font-mono text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">Padrão A4 • ABNT Portuário</span>
           </div>
 
+          <!-- Filtros e Seletores Organizados -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="block text-xs font-bold uppercase text-slate-500">Período de Referência</label>
+              <select id="relatorioPeriodoSelect" class="w-full px-3 py-2 rounded-xl border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 text-xs font-bold">
+                <option value="MENSAL">Mês Atual (Setembro/2026)</option>
+                <option value="TRIMESTRAL">3º Trimestre de 2026</option>
+                <option value="ANUAL">Ano Atual (2026)</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1 md:col-span-2">
+              <label class="block text-xs font-bold uppercase text-slate-500">Seleção da Carga para Emissão</label>
+              <select id="relatorioCargaSelect" class="w-full px-3 py-2 rounded-xl border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono text-xs font-bold">
+                <option value="">Selecione a Carga Operacional...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bloco da Estrutura das 4 Seções -->
           <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col gap-3">
-            <span class="font-bold text-xs text-nexus-900 dark:text-white">Estrutura Sequencial Obrigatória das 4 Seções (RF 16):</span>
+            <span class="font-bold text-xs text-nexus-900 dark:text-white uppercase tracking-wider">Estrutura Sequencial das 4 Seções do Documento (RF 16):</span>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono">
-              <div class="p-2.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                <span class="font-bold text-nexus-500 block">1. Dados da Carga</span>
+              <div class="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="font-bold text-nexus-500 block mb-0.5">1. Dados da Carga</span>
                 <span class="text-[10px] text-slate-400">Peso, Volume, Natureza, Valor</span>
               </div>
-              <div class="p-2.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                <span class="font-bold text-nexus-500 block">2. Dados do Navio</span>
+              <div class="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="font-bold text-nexus-500 block mb-0.5">2. Dados do Navio</span>
                 <span class="text-[10px] text-slate-400">Nome, IMO, Porto Destino</span>
               </div>
-              <div class="p-2.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                <span class="font-bold text-nexus-500 block">3. Dados do Contêiner</span>
+              <div class="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="font-bold text-nexus-500 block mb-0.5">3. Dados do Contêiner</span>
                 <span class="text-[10px] text-slate-400">Identificação, Ref. Tempo Uso</span>
               </div>
-              <div class="p-2.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                <span class="font-bold text-nexus-500 block">4. Resumo do Fluxo</span>
+              <div class="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="font-bold text-nexus-500 block mb-0.5">4. Resumo do Fluxo</span>
                 <span class="text-[10px] text-slate-400">Status, Entrada/Saída, Motivo</span>
               </div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-            <select id="relatorioCargaSelect" class="sm:col-span-2 px-3 py-2 rounded-xl border border-nexus-border dark:border-nexus-dark-border bg-nexus-bg dark:bg-slate-800 font-mono text-sm font-bold">
-              <option value="">Selecione a Carga para Emitir PDF A4...</option>
-            </select>
-            <button id="gerarPdfBtn" type="button" class="px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-sm">
-              <span class="material-symbols-outlined text-[18px]">download</span>
-              <span>Gerar Relatório PDF A4</span>
-            </button>
+          <!-- Indicador de Carregamento & Botões de Ação com Hierarquia -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-nexus-border dark:border-nexus-dark-border">
+            <div id="pdfLoadingStatus" class="hidden items-center gap-2 text-xs font-mono text-purple-700 dark:text-purple-300">
+              <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+              <span>Gerando Relatório PDF A4... Por favor, aguarde.</span>
+            </div>
+            <div id="pdfIdleStatus" class="text-xs text-slate-500">
+              Pronto para geração do documento A4.
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <button id="gerarPdfBtn" type="button" class="px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-sm w-full sm:w-auto">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                <span>Gerar Relatório PDF A4</span>
+              </button>
+            </div>
           </div>
         </div>
 

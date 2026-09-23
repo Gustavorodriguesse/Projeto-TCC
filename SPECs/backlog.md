@@ -103,3 +103,32 @@
 **🔧 Corrigido:**
 - Perda do Modo Noturno (`nexus_theme`) ao alternar entre páginas HTML, garantindo aplicação imediata da classe `.dark` em `document.documentElement` no carregamento.
 - Desorganização visual no Trail de Decisões, agora apresentado em cards estruturados por hierarquia.
+
+---
+
+## BACKLOG #006 — Resolução de Pendências do Documento correcoes(2).md
+**Data:** 22/09/2026
+**Prioridade:** Alta
+**Tipo:** Melhoria / Correção / UI & UX
+
+**Descrição:** Implementação e resolução completa das 10 tarefas listadas em `SPECs/correcoes(2).md`, abrangendo refinamento de modais centralizados, responsividade colapsável da sidebar, planilha e auditoria de gráficos executivos, padronização de botões, persistência de status de visitantes no Supabase, re-renderização imediata no CRUD de funcionários e reorganização da emissão de relatórios PDF A4.
+
+**✅ Adicionado:**
+- Modal dos Cards da Página Inicial (`dashboard.html`) refatorado e centralizado sobre a tela com overlay escurecido (`backdrop-blur-sm`), sombra pronunciada (`shadow-2xl`), cantos arredondados (`rounded-2xl`), área de rolagem interna e fechamento via botão (X), clique externo ou tecla `Esc` (Tarefa 1).
+- Comportamento de menu colapsável/drawer para a barra lateral (`js/layout.js`) em dispositivos móveis e tablets (breakpoint ≤ 1024px) com overlay escuro e botão hambúrguer para controle de visibilidade (Tarefa 2).
+- Planilha Consolidada de Indicadores Executivos em `dashboard.html` / `js/dashboard.js` com alinhamento textual e numérico correto, zebra striping, bordas sutis e linha de totais em negrito no Painel Estratégico (Tarefa 3).
+- Consolidação integral dos funcionários ativos nos gráficos do Painel Executivo (`js/dashboard.js`) integrando registros locais e do Supabase sem omissão de dados (Tarefa 4).
+- Padronização dos botões operacionais e de formulário na página de Cargas & Pátio (`cargas.html` / `js/cargas.js`) com padding, ícones, cores por tipo de ação, cantos arredondados, feito hover e agrupamento responsivo (`flex-wrap`) sem sobreposição em mobile (Tarefa 5).
+- Remoção do estilo sublinhado (`underline`) dos textos e badges de Classificação em `embarcacoes.html` / `js/embarcacoes.js` (Tarefa 6).
+- Componente unificado e reutilizável de modal e toast de feedback global (`window.mostrarFeedback`) com ícones por tipo (sucesso, alerta, erro, info), sombra, overlay e cantos arredondados em `js/layout.js` (Tarefa 7).
+- Campo e persistência de "Status do Visitante" (`EM_VISITA`, `AGUARDANDO_AUTORIZACAO`, `CONCLUIDO`) na interface de `tecnico_portos.html` e sincronização direta no banco de dados do Supabase (Tarefa 8).
+- Re-renderização imediata e tratamento do estado local no cadastro de funcionários (`js/tecnico_portos.js`) garantindo que o nome completo do funcionário apareça na lista imediatamente após o `INSERT` (Tarefa 9).
+- Reorganização visual do gerador de relatórios PDF A4 (`relatorios.html` / `js/relatorios.js`) com seletores por período, indicação de carregamento e hierarquia clara de ações (Tarefa 10).
+
+**🗑️ Removido:**
+- Uso de caixas brutas de `alert()` substituídas por modais visuais e pop-ups formatados.
+- Sublinhados indisciplinados em tabelas operacionais.
+
+**🔧 Corrigido:**
+- Quebra de layout e ocupação excessiva da sidebar em telas de celular e tablet.
+- Omissão de status de visitantes nas gravações enviadas para a tabela `visitantes` do Supabase.

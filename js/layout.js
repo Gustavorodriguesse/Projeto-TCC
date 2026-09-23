@@ -93,58 +93,108 @@
       `;
     }
 
+    // Cria Overlay Escuro para Mobile se não existir
+    let mobileOverlay = document.getElementById('sidebarMobileOverlay');
+    if (!mobileOverlay) {
+      mobileOverlay = document.createElement('div');
+      mobileOverlay.id = 'sidebarMobileOverlay';
+      mobileOverlay.className = 'fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300';
+      document.body.appendChild(mobileOverlay);
+    }
+
     // Injeta Sidebar se contêiner existir
     const sidebarElem = document.getElementById('appSidebar') || document.querySelector('aside');
     if (sidebarElem) {
-      sidebarElem.className = 'w-64 bg-nexus-900 text-white flex-col justify-between hidden md:flex border-r border-slate-800 shrink-0';
+      sidebarElem.className = 'w-64 bg-nexus-900 text-white flex-col justify-between fixed md:static inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex border-r border-slate-800 shrink-0';
       sidebarElem.innerHTML = `
-        <div class="p-4 flex flex-col gap-6 overflow-y-auto">
+        <div class="p-4 flex flex-col gap-6 overflow-y-auto h-full justify-between">
+          <div class="flex flex-col gap-6">
 
-          <!-- User Header in Sidebar -->
-          <div class="flex flex-col gap-2 p-3 bg-slate-800/80 rounded-xl border border-slate-700/60">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-nexus-500 text-white flex items-center justify-center font-display font-bold text-sm shadow-sm flex-shrink-0">
-                ${initials}
+            <!-- Cabeçalho Mobile com Fechamento -->
+            <div class="flex md:hidden items-center justify-between pb-3 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <img src="design/logo_porto.png" alt="Logo" class="h-7 w-auto object-contain rounded" />
+                <span class="font-display font-bold text-sm text-white">NexusPort</span>
               </div>
-              <div class="flex flex-col min-w-0">
-                <span class="font-display font-bold text-xs text-white truncate">${userName}</span>
-                <span class="text-[11px] text-slate-400 truncate">${userRoleName}</span>
+              <button id="closeMobileSidebarBtn" type="button" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-[22px]">close</span>
+              </button>
+            </div>
+
+            <!-- User Header in Sidebar -->
+            <div class="flex flex-col gap-2 p-3 bg-slate-800/80 rounded-xl border border-slate-700/60">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-nexus-500 text-white flex items-center justify-center font-display font-bold text-sm shadow-sm flex-shrink-0">
+                  ${initials}
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-display font-bold text-xs text-white truncate">${userName}</span>
+                  <span class="text-[11px] text-slate-400 truncate">${userRoleName}</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-700/60 font-mono text-[10px]">
+                <span class="text-slate-400">Código/Mat:</span>
+                <span class="font-bold text-indigo-400">${userCode} / ${userMatricula}</span>
+              </div>
+              <div class="mt-1 px-2 py-1 rounded bg-indigo-950/80 border border-indigo-800 text-indigo-300 font-mono text-[10px] font-bold text-center">
+                ${visionLayer} (RLS)
               </div>
             </div>
-            <div class="flex items-center justify-between pt-2 border-t border-slate-700/60 font-mono text-[10px]">
-              <span class="text-slate-400">Código/Mat:</span>
-              <span class="font-bold text-indigo-400">${userCode} / ${userMatricula}</span>
+
+            <!-- Navigation Links -->
+            <div class="flex flex-col gap-1">
+              <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3">Menu Operacional</span>
+              <nav class="flex flex-col gap-1 mt-1">
+                ${menuItems.filter(item => item.visible).map(item => {
+                  const isActive = activePage === item.id;
+                  return `
+                    <a href="${item.href}" class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive ? 'bg-nexus-500 text-white shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} text-sm font-medium transition-colors">
+                      <span class="material-symbols-outlined text-[20px]">${item.icon}</span>
+                      <span>${item.label}</span>
+                    </a>
+                  `;
+                }).join('')}
+              </nav>
             </div>
-            <div class="mt-1 px-2 py-1 rounded bg-indigo-950/80 border border-indigo-800 text-indigo-300 font-mono text-[10px] font-bold text-center">
-              ${visionLayer} (RLS)
-            </div>
+
           </div>
 
-          <!-- Navigation Links -->
-          <div class="flex flex-col gap-1">
-            <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3">Menu Operacional</span>
-            <nav class="flex flex-col gap-1 mt-1">
-              ${menuItems.filter(item => item.visible).map(item => {
-                const isActive = activePage === item.id;
-                return `
-                  <a href="${item.href}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg ${isActive ? 'bg-nexus-500 text-white shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} text-sm font-medium transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">${item.icon}</span>
-                    <span>${item.label}</span>
-                  </a>
-                `;
-              }).join('')}
-            </nav>
+          <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <span>Porto de Santos • STS-01</span>
+            <a href="index.html" onclick="if(window.NexusAuth) NexusAuth.logout();" class="text-slate-400 hover:text-white flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">logout</span>
+            </a>
           </div>
-
-        </div>
-
-        <div class="p-4 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
-          <span>Porto de Santos • STS-01</span>
-          <a href="index.html" onclick="if(window.NexusAuth) NexusAuth.logout();" class="text-slate-400 hover:text-white flex items-center gap-1">
-            <span class="material-symbols-outlined text-[16px]">logout</span>
-          </a>
         </div>
       `;
+
+      // Handlers de Abertura/Fechamento Mobile
+      function abrirSidebarMobile() {
+        sidebarElem.classList.remove('-translate-x-full');
+        mobileOverlay.classList.remove('hidden');
+      }
+
+      function fecharSidebarMobile() {
+        sidebarElem.classList.add('-translate-x-full');
+        mobileOverlay.classList.add('hidden');
+      }
+
+      const mobileToggleBtn = document.getElementById('mobileMenuToggle');
+      if (mobileToggleBtn) {
+        mobileToggleBtn.addEventListener('click', abrirSidebarMobile);
+      }
+
+      const closeMobileBtn = document.getElementById('closeMobileSidebarBtn');
+      if (closeMobileBtn) {
+        closeMobileBtn.addEventListener('click', fecharSidebarMobile);
+      }
+
+      if (mobileOverlay) {
+        mobileOverlay.addEventListener('click', fecharSidebarMobile);
+      }
+
+      const navLinks = sidebarElem.querySelectorAll('.sidebar-nav-item');
+      navLinks.forEach(link => link.addEventListener('click', fecharSidebarMobile));
     }
 
     // Configura estado inicial do ícone e eventos de Dark Mode e Logout no topbar
@@ -175,7 +225,71 @@
         }
       });
     }
+
+    // Injeta Estrutura de Modal / Toast de Feedback Global (Tarefa 7)
+    let feedbackModal = document.getElementById('globalFeedbackModal');
+    if (!feedbackModal) {
+      feedbackModal = document.createElement('div');
+      feedbackModal.id = 'globalFeedbackModal';
+      feedbackModal.className = 'fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-nexus-900/60 backdrop-blur-sm transition-all duration-200';
+      feedbackModal.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-nexus-border dark:border-slate-800 p-5 flex flex-col items-center text-center gap-3 transform transition-all scale-100">
+          <div id="globalFeedbackIconBox" class="w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-100 dark:bg-indigo-950/60 text-nexus-500 shrink-0">
+            <span id="globalFeedbackIcon" class="material-symbols-outlined text-[28px]">info</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <h4 id="globalFeedbackTitle" class="font-display font-bold text-base text-nexus-900 dark:text-white">Mensagem do Sistema</h4>
+            <p id="globalFeedbackMsg" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">--</p>
+          </div>
+          <button type="button" id="globalFeedbackBtn" class="w-full mt-2 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs transition-colors shadow-sm">
+            OK
+          </button>
+        </div>
+      `;
+      document.body.appendChild(feedbackModal);
+
+      const closeBtn = feedbackModal.querySelector('#globalFeedbackBtn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => feedbackModal.classList.add('hidden'));
+      }
+      feedbackModal.addEventListener('click', (e) => {
+        if (e.target === feedbackModal) feedbackModal.classList.add('hidden');
+      });
+    }
   }
+
+  // Função Global de Feedback Visual Padronizada (Tarefa 7)
+  window.mostrarFeedback = function(tipo = 'info', titulo = 'Notificação', mensagem = '') {
+    const modal = document.getElementById('globalFeedbackModal');
+    if (!modal) {
+      alert(`${titulo}: ${mensagem}`);
+      return;
+    }
+
+    const iconBox = modal.querySelector('#globalFeedbackIconBox');
+    const icon = modal.querySelector('#globalFeedbackIcon');
+    const titleElem = modal.querySelector('#globalFeedbackTitle');
+    const msgElem = modal.querySelector('#globalFeedbackMsg');
+
+    if (titleElem) titleElem.textContent = titulo;
+    if (msgElem) msgElem.textContent = mensagem;
+
+    if (tipo === 'sucesso' || tipo === 'success') {
+      if (iconBox) iconBox.className = 'w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0';
+      if (icon) icon.textContent = 'check_circle';
+    } else if (tipo === 'erro' || tipo === 'error' || tipo === 'danger') {
+      if (iconBox) iconBox.className = 'w-12 h-12 rounded-2xl flex items-center justify-center bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 shrink-0';
+      if (icon) icon.textContent = 'error';
+    } else if (tipo === 'alerta' || tipo === 'warning') {
+      if (iconBox) iconBox.className = 'w-12 h-12 rounded-2xl flex items-center justify-center bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shrink-0';
+      if (icon) icon.textContent = 'warning';
+    } else {
+      if (iconBox) iconBox.className = 'w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-100 dark:bg-indigo-950/60 text-nexus-500 shrink-0';
+      if (icon) icon.textContent = 'info';
+    }
+
+    modal.classList.remove('hidden');
+  };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initLayout);

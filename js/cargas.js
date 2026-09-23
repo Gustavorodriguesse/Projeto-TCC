@@ -66,32 +66,32 @@ document.addEventListener('DOMContentLoaded', () => {
       let actionButtonsHtml = '';
 
       if (c.status === 'AGENDAMENTO' && isConferente) {
-        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'RECEBER')" class="px-2 py-1 rounded bg-slate-800 text-white font-bold hover:bg-black mr-1">Receber</button>`;
+        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'RECEBER')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">download</span><span>Receber</span></button>`;
       }
 
       if (c.status === 'RECEBIMENTO_INSPECAO' && isInspetor) {
-        actionButtonsHtml += `<button type="button" onclick="window.location.href='inspecao.html?carga=${c.id}'" class="px-2 py-1 rounded bg-nexus-500 text-white font-bold hover:bg-nexus-900 mr-1">Inspecionar</button>`;
+        actionButtonsHtml += `<button type="button" onclick="window.location.href='inspecao.html?carga=${c.id}'" class="px-2.5 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">fact_check</span><span>Inspecionar</span></button>`;
       }
 
       if (c.status === 'ARMAZENAGEM') {
         if (isArrumador) {
-          actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'PRONTA')" class="px-2 py-1 rounded bg-emerald-600 text-white font-bold hover:bg-emerald-700 mr-1">Pronta</button>`;
+          actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'PRONTA')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">verified</span><span>Pronta</span></button>`;
         }
         if (isSupervisor) {
-          actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'VINCULAR')" class="px-2 py-1 rounded bg-indigo-600 text-white font-bold hover:bg-indigo-700 mr-1">Vincular</button>`;
+          actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'VINCULAR')" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">link</span><span>Vincular</span></button>`;
         }
       }
 
       if (c.status === 'PRONTA_PARA_ENTREGA' && isSupervisor) {
-        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'LIBERAR')" class="px-2 py-1 rounded bg-blue-600 text-white font-bold hover:bg-blue-700 mr-1">Liberar</button>`;
+        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'LIBERAR')" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">local_shipping</span><span>Liberar</span></button>`;
       }
 
       if (c.status === 'EM_TRANSITO' && isSupervisor) {
-        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'ENTREGAR')" class="px-2 py-1 rounded bg-green-600 text-white font-bold hover:bg-green-700 mr-1">Entregar</button>`;
+        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'ENTREGAR')" class="px-2.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">task_alt</span><span>Entregar</span></button>`;
       }
 
       if (['AGENDAMENTO', 'ARMAZENAGEM', 'PRONTA_PARA_ENTREGA'].includes(c.status) && isSupervisor) {
-        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'CANCELAR')" class="px-2 py-1 rounded bg-red-600 text-white font-bold hover:bg-red-700">Cancelar</button>`;
+        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'CANCELAR')" class="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">block</span><span>Cancelar</span></button>`;
       }
 
       if (!actionButtonsHtml) {
@@ -100,15 +100,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       return `
         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-          <td class="p-3 font-mono font-bold text-nexus-500">
+          <td class="p-3 font-mono font-bold text-nexus-500 whitespace-nowrap">
             ${c.id}
             <span class="block text-[10px] text-slate-400 font-normal">${c.qrCode || ''}</span>
           </td>
-          <td class="p-3">${c.tipo} <span class="block text-[10px] text-slate-400">${c.natureza || ''}</span></td>
-          <td class="p-3 font-mono">${c.peso} / ${c.volume}</td>
-          <td class="p-3 font-bold">${c.portoDescarga}</td>
-          <td class="p-3 font-mono text-xs">${c.container || 'Não vinculado'} / ${c.navio || 'Não vinculado'}</td>
-          <td class="p-3">
+          <td class="p-3 whitespace-nowrap">${c.tipo} <span class="block text-[10px] text-slate-400">${c.natureza || ''}</span></td>
+          <td class="p-3 font-mono whitespace-nowrap">${c.peso} / ${c.volume}</td>
+          <td class="p-3 font-bold whitespace-nowrap">${c.portoDescarga}</td>
+          <td class="p-3 font-mono text-xs whitespace-nowrap">${c.container || 'Não vinculado'} / ${c.navio || 'Não vinculado'}</td>
+          <td class="p-3 whitespace-nowrap">
             <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
               c.status === 'AGENDAMENTO' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' :
               c.status === 'ARMAZENAGEM' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300' :
@@ -119,9 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
               'bg-slate-100 text-slate-800'
             }">${c.status}</span>
           </td>
-          <td class="p-3 text-right font-mono text-[11px]">
-            <button type="button" onclick="window.exibirEtiquetaQr({id: '${c.id}', tipo: '${c.tipo}', qrCode: '${c.qrCode}', natureza: '${c.natureza}'})" class="px-2 py-1 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-bold mr-1">QR Code</button>
-            ${actionButtonsHtml}
+          <td class="p-3 text-right">
+            <div class="flex items-center justify-end gap-1.5 flex-wrap min-w-[200px]">
+              <button type="button" onclick="window.exibirEtiquetaQr({id: '${c.id}', tipo: '${c.tipo}', qrCode: '${c.qrCode}', natureza: '${c.natureza}'})" class="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-semibold text-xs flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-[14px]">qr_code</span><span>QR Code</span></button>
+              ${actionButtonsHtml}
+            </div>
           </td>
         </tr>
       `;

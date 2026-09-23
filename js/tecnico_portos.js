@@ -179,24 +179,40 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const matricula = document.getElementById('funcMatricula').value.trim();
       const nome = document.getElementById('funcNome').value.trim();
-      const cargo = document.getElementById('funcCargo').value;
+      const cargoSelect = document.getElementById('funcCargo');
+      const cargoValue = cargoSelect ? cargoSelect.value : 'ESTIVADOR';
+      const cargoText = cargoSelect && cargoSelect.options[cargoSelect.selectedIndex] ? cargoSelect.options[cargoSelect.selectedIndex].text : cargoValue;
       const doc = document.getElementById('funcDoc').value.trim();
 
       const suffix = Math.floor(1000 + Math.random() * 9000);
       const codigo = `NX-${matricula.replace('MAT-', '')}-${suffix}`;
 
-      funcList.push({ matricula, nome, cargo, codigo, doc });
+      const novoFuncionario = {
+        matricula: matricula,
+        nome: nome,
+        cargo: cargoText,
+        cargo_enum: cargoValue,
+        codigo: codigo,
+        doc: doc || 'Cadastrado no Sistema'
+      };
+
+      funcList.unshift(novoFuncionario);
       localStorage.setItem('nexus_func_list', JSON.stringify(funcList));
 
       if (window.nexusSupabase) {
         try {
-          await window.nexusSupabase.from('funcionarios').insert({
+          const { data, error } = await window.nexusSupabase.from('funcionarios').insert({
             matricula: matricula,
             codigo_individual: codigo,
             nome: nome,
-            cargo: cargo,
+            cargo: cargoValue,
             ativo: true
-          });
+          }).select().maybeSingle();
+
+          if (!error && data) {
+            novoFuncionario.nome = data.nome || nome;
+            novoFuncionario.matricula = data.matricula || matricula;
+          }
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar funcionário com Supabase:', err);
         }
@@ -205,11 +221,16 @@ document.addEventListener('DOMContentLoaded', () => {
       renderFuncTable();
       funcForm.reset();
       funcForm.classList.add('hidden');
-      alert(`Funcionário ${nome} cadastrado com sucesso! Código gerado: ${codigo}`);
+
+      if (window.mostrarFeedback) {
+        window.mostrarFeedback('sucesso', 'Funcionário Cadastrado', `Funcionário ${nome} cadastrado com sucesso! Código gerado: ${codigo}`);
+      } else {
+        alert(`Funcionário ${nome} cadastrado com sucesso! Código gerado: ${codigo}`);
+      }
     });
   }
 
-  // CRUD Visitantes (T2.2)
+  // CRUD Visitantes (T2.2 & Tarefa 8: Status de Visitante no Supabase)
   const toggleVisBtn = document.getElementById('toggleVisFormBtn');
   const visForm = document.getElementById('visCrudForm');
   const visTableBody = document.getElementById('visCrudTableBody');
@@ -217,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let visList = JSON.parse(localStorage.getItem('nexus_vis_list') || 'null');
   if (!visList) {
     visList = [
-      { nome: 'João Souza', documento: 'CPF 123.456.789-00', motivo: 'Fiscalização Alfandegária', data: '20/09/2026 08:30', por: session.matricula }
+      { nome: 'João Souza', documento: 'CPF 123.456.789-00', motivo: 'Fiscalização Alfandegária', status: 'EM_VISITA', data: '20/09/2026 08:30', por: session.matricula }
     ];
     localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
   }
@@ -229,6 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <td class="p-3 font-bold">${v.nome}</td>
         <td class="p-3 font-mono text-xs">${v.documento}</td>
         <td class="p-3 text-slate-500">${v.motivo}</td>
+        <td class="p-3">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+            v.status === 'EM_VISITA' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' :
+            v.status === 'CONCLUIDO' ? 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' :
+            'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+          }">${v.status || 'EM_VISITA'}</span>
+        </td>
         <td class="p-3 font-mono text-xs text-slate-400">${v.data}</td>
         <td class="p-3 font-mono text-xs font-bold text-nexus-500">${v.por}</td>
       </tr>
@@ -247,13 +275,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const nome = document.getElementById('visNome').value.trim();
       const documento = document.getElementById('visDocumento').value.trim();
       const motivo = document.getElementById('visMotivo').value.trim();
+      const statusElem = document.getElementById('visStatus');
+      const status = statusElem ? statusElem.value : 'EM_VISITA';
 
-      visList.push({
-        nome, documento, motivo,
+      const novoVisitante = {
+        nome, documento, motivo, status,
         data: new Date().toLocaleString('pt-BR'),
         por: session.matricula
-      });
+      };
 
+      visList.push(novoVisitante);
       localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
 
       if (window.nexusSupabase) {
@@ -261,7 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
           await window.nexusSupabase.from('visitantes').insert({
             nome: nome,
             documento: documento,
-            motivo: motivo
+            motivo: motivo,
+            status: status
           });
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar visitante com Supabase:', err);
@@ -271,7 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderVisTable();
       visForm.reset();
       visForm.classList.add('hidden');
-      alert(`Entrada do visitante ${nome} registrada no livro de visitantes.`);
+      if (window.mostrarFeedback) {
+        window.mostrarFeedback('sucesso', 'Visitante Registrado', `Entrada do visitante ${nome} (Status: ${status}) registrada com sucesso.`);
+      } else {
+        alert(`Entrada do visitante ${nome} (Status: ${status}) registrada no livro de visitantes.`);
+      }
     });
   }
 });
