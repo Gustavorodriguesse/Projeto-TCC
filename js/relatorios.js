@@ -24,14 +24,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   popularCargas();
 
+  const loadingStatus = document.getElementById('pdfLoadingStatus');
+  const idleStatus = document.getElementById('pdfIdleStatus');
+
   if (gerarPdfBtn) {
     gerarPdfBtn.addEventListener('click', () => {
       const idCarga = selectCarga ? selectCarga.value : '';
       if (!idCarga) {
-        alert('Por favor, selecione uma carga para gerar o relatório PDF A4.');
+        if (window.mostrarFeedback) {
+          window.mostrarFeedback('alerta', 'Seleção Necessária', 'Por favor, selecione uma carga operacional para gerar o relatório PDF A4.');
+        } else {
+          alert('Por favor, selecione uma carga para gerar o relatório PDF A4.');
+        }
         return;
       }
-      gerarRelatorioPdfA4(idCarga);
+
+      if (loadingStatus) loadingStatus.classList.remove('hidden');
+      if (idleStatus) idleStatus.classList.add('hidden');
+      gerarPdfBtn.disabled = true;
+
+      setTimeout(() => {
+        gerarRelatorioPdfA4(idCarga);
+        if (loadingStatus) loadingStatus.classList.add('hidden');
+        if (idleStatus) idleStatus.classList.remove('hidden');
+        gerarPdfBtn.disabled = false;
+      }, 600);
     });
   }
 
