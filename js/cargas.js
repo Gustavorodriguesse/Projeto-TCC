@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
     roleNoticeTag.textContent = `Ações Ativas para: ${session.cargo_nome || session.cargo}`;
   }
 
+  // Preenche o select de tipos de carga usando a lista compartilhada NEXUS_TIPOS_CARGA
+  const selectTipoCarga = document.getElementById('agTipoCarga');
+  if (selectTipoCarga && window.NEXUS_TIPOS_CARGA) {
+    selectTipoCarga.innerHTML = '<option value="">Selecione o Tipo de Carga...</option>';
+    window.NEXUS_TIPOS_CARGA.forEach(t => {
+      selectTipoCarga.innerHTML += `<option value="${t.nome}">${t.nome}</option>`;
+    });
+  }
+
   let currentEntityData = null;
 
   // Carrega lista de cargas
@@ -137,12 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const portoDescarga = document.getElementById('agPortoDescarga').value.trim();
       const destino = document.getElementById('agDestino').value.trim();
 
-      // Trava RF 2 & RN 13: Valida se Tipo de Carga está cadastrado com checklist pelo Supervisor
+      // Trava RF 2 & RN 13: Valida se Tipo de Carga possui checklist pré-cadastrado
+      const tipoCompartilhado = window.getNexusTipoCarga ? window.getNexusTipoCarga(tipo) : null;
       const tiposCadastrados = JSON.parse(localStorage.getItem('nexus_crud_tipos_carga') || '[]');
-      const tipoEncontrado = tiposCadastrados.find(t => t.nome === tipo);
-      const isTipoPadraoValido = ['Grãos Soltos', 'Eletrônicos', 'Produtos Químicos', 'Maquinário Pesado'].includes(tipo);
+      const tipoEncontradoLocal = tiposCadastrados.find(t => t.nome === tipo);
 
-      if (!tipoEncontrado && !isTipoPadraoValido) {
+      if (!tipoCompartilhado && !tipoEncontradoLocal) {
         alert('BLOQUEIO DE SEGURANÇA (RN 13): O agendamento só é permitido se o Tipo de Carga possuir checklist pré-cadastrado pelo Supervisor!');
         return;
       }

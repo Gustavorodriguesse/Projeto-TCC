@@ -40,12 +40,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const storedOverrides = JSON.parse(localStorage.getItem('nexus_code_overrides') || '{}');
-      selectedEmp = employeeList.find(e => e.matricula === q);
+      const dynamicFuncs = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
+
+      // Busca na lista mock padrão e também na lista de funcionários recém-cadastrados no localStorage
+      let found = employeeList.find(e => e.matricula.toUpperCase() === q || e.matricula.toUpperCase() === `MAT-${q.replace('MAT-', '')}`);
+      if (!found && dynamicFuncs && dynamicFuncs.length > 0) {
+        const dyn = dynamicFuncs.find(f => f.matricula.toUpperCase() === q || f.matricula.toUpperCase() === `MAT-${q.replace('MAT-', '')}`);
+        if (dyn) {
+          found = {
+            codigo: dyn.codigo,
+            matricula: dyn.matricula,
+            nome: dyn.nome,
+            cargo: dyn.cargo,
+            cargo_nome: dyn.cargo
+          };
+        }
+      }
+
+      selectedEmp = found;
 
       if (selectedEmp) {
         if (resultBox) resultBox.classList.remove('hidden');
         if (resNome) resNome.textContent = selectedEmp.nome;
-        if (resCargo) resCargo.textContent = `${selectedEmp.cargo_nome} (${selectedEmp.matricula})`;
+        if (resCargo) resCargo.textContent = `${selectedEmp.cargo_nome || selectedEmp.cargo} (${selectedEmp.matricula})`;
 
         const currentCode = storedOverrides[selectedEmp.matricula]?.codigo || selectedEmp.codigo;
         if (resCodigo) resCodigo.textContent = currentCode;

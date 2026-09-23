@@ -18,29 +18,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const motivoBox = document.getElementById('motivoRecusaBox');
   const motivoInput = document.getElementById('motivoRecusaInput');
 
-  // Mapeamento de checklists por tipo de carga
-  const checklistTemplates = {
-    'Grãos Soltos': [
-      { id: 'i1', desc: 'Teor de Umidade e Temperatura da Massa de Grãos', critico: true },
-      { id: 'i2', desc: 'Ausência de Pragas, Insetos ou Mofo', critico: true },
-      { id: 'i3', desc: 'Integridade do Revestimento Interno do Lote', critico: false }
-    ],
-    'Eletrônicos': [
-      { id: 'i1', desc: 'Integridade do Lacre de Segurança e Embalagem Antiestática', critico: true },
-      { id: 'i2', desc: 'Ausência de Umidade ou Sinais de Impacto Físico', critico: true },
-      { id: 'i3', desc: 'Conferência de Número de Série e Nota Fiscal', critico: false }
-    ],
-    'Produtos Químicos': [
-      { id: 'i1', desc: 'Validação da Ficha de FISPQ e Rotulagem de Risco IMO', critico: true },
-      { id: 'i2', desc: 'Ausência Total de Vazamentos ou Contaminação Externa', critico: true },
-      { id: 'i3', desc: 'Temperatura Controlada do Recipiente', critico: true }
-    ],
-    'Maquinário Pesado': [
-      { id: 'i1', desc: 'Fixação e Ancoragem para Transporte Marítimo', critico: true },
-      { id: 'i2', desc: 'Verificação de Calibragem e Ausência de Vazamento de Óleo', critico: true },
-      { id: 'i3', desc: 'Inspeção Visual da Pintura e Lataria', critico: false }
-    ]
-  };
+  // Obtém modelo de checklist técnico ampliado via módulo compartilhado ou fallback
+  function getChecklistTemplate(tipoNome) {
+    if (window.getNexusTipoCarga) {
+      const tipoObj = window.getNexusTipoCarga(tipoNome);
+      if (tipoObj && tipoObj.checklist && tipoObj.checklist.length > 0) {
+        return tipoObj.checklist;
+      }
+    }
+    return [
+      { id: 'i1', desc: 'Conferência de Documentação Fiscal, Manifesto e BL', critico: true, categoria: 'Documentação' },
+      { id: 'i2', desc: 'Conferência de Lacre de Segurança e Placas de Identificação', critico: true, categoria: 'Identificação' },
+      { id: 'i3', desc: 'Inspeção Visual de Embalagem e Integridade Física do Lote', critico: true, categoria: 'Condições Físicas' },
+      { id: 'i4', desc: 'Verificação de Requisitos Ambientais e EPIs da Equipe', critico: false, categoria: 'Segurança' },
+      { id: 'i5', desc: 'Aferição de Peso Bruto e Volume com Declaração do Cliente', critico: true, categoria: 'Conformidade' }
+    ];
+  }
 
   let cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
   let cargaAtual = null;
@@ -87,10 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (cargaTag) cargaTag.textContent = `${cargaAtual.id} • ${cargaAtual.tipo} • Porto: ${cargaAtual.portoDescarga}`;
 
-    const items = checklistTemplates[cargaAtual.tipo] || [
-      { id: 'i1', desc: 'Inspeção Geral de Avarias e Embalagem', critico: true },
-      { id: 'i2', desc: 'Conferência de Peso e Volume Declarado', critico: true }
-    ];
+    const items = getChecklistTemplate(cargaAtual.tipo);
 
     itemsEstado = {};
     checklistItemsList.innerHTML = items.map((item, index) => {
@@ -100,24 +90,37 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="flex items-start gap-2.5">
             <span class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">${index + 1}</span>
             <div>
-              <span class="font-bold text-xs text-nexus-900 dark:text-white block">${item.desc}</span>
-              ${item.critico ? '<span class="px-2 py-0.5 rounded bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-300 font-mono text-[10px] font-bold uppercase mt-1 inline-block">Item Crítico (100% Requerido)</span>' : '<span class="text-[10px] text-slate-400 font-mono">Item Operacional Secundário</span>'}
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-xs text-nexus-900 dark:text-white block">${item.desc}</span>
+                ${item.categoria ? `<span class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-mono text-[9px] font-semibold">${item.categoria}</span>` : ''}
+              </div>
+              ${item.critico ? '<span class="px-2 py-0.5 rounded bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-300 font-mono text-[10px] font-bold uppercase mt-1 inline-block">Item Crítico (100% Requerido)</span>' : '<span class="text-[10px] text-slate-400 font-mono mt-0.5 inline-block">Item Operacional Secundário</span>'}
             </div>
           </div>
 
           <div class="flex items-center gap-3 shrink-0 self-end sm:self-center">
-            <label class="flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 cursor-pointer">
+            <label class="flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 cursor-pointer bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
               <input type="radio" name="chk_${item.id}" value="CONFORME" onchange="window.atualizarChecklistItem('${item.id}', true)" class="accent-emerald-600 w-4 h-4" />
               <span>Conforme</span>
             </label>
-            <label class="flex items-center gap-1 text-xs font-bold text-red-700 dark:text-red-400 cursor-pointer">
+            <label class="flex items-center gap-1 text-xs font-bold text-red-700 dark:text-red-400 cursor-pointer bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
               <input type="radio" name="chk_${item.id}" value="NAO_CONFORME" onchange="window.atualizarChecklistItem('${item.id}', false)" class="accent-red-600 w-4 h-4" />
               <span>Não Conforme</span>
             </label>
           </div>
         </div>
       `;
-    }).join('');
+    }).join('') + `
+      <div class="mt-4 p-4 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2 font-mono">
+          <span class="material-symbols-outlined text-nexus-500">draw</span>
+          <span><strong>Inspetor Responsável:</strong> ${session.nome || 'Inspetor'} (${session.codigo_individual || session.codigo || 'INS-6090'})</span>
+        </div>
+        <div class="font-mono text-slate-500">
+          <span>Data/Hora: ${new Date().toLocaleString('pt-BR')}</span>
+        </div>
+      </div>
+    `;
 
     formContainer.classList.remove('hidden');
     avaliarConformidadeCritica();

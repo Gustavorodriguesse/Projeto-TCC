@@ -222,10 +222,11 @@
           </div>
 
           <div class="overflow-x-auto max-h-60 overflow-y-auto">
-            <table class="w-full text-left border-collapse text-xs">
+            <table class="w-full text-left border-collapse text-xs min-w-[650px]">
               <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
                 <tr>
                   <th class="p-2.5">Data / Hora</th>
+                  <th class="p-2.5">Nome do Funcionário</th>
                   <th class="p-2.5">Cargo</th>
                   <th class="p-2.5">Código Usuário</th>
                   <th class="p-2.5">Entidade Alterada</th>
@@ -239,34 +240,22 @@
           </div>
         </div>
 
-        <!-- Tabela do Trail de Decisões Críticas Imutável com Retificação (RF 13 / T7.3 - T7.5) -->
+        <!-- Trail de Decisões Críticas Imutável Organizado (RF 13) -->
         <div id="trailDecisoesPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
           <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">gavel</span>
-              Trail de Decisões Críticas Imutável [Anexar Retificação] (RF 13)
-            </h3>
-            <span class="text-[11px] font-mono text-slate-400">Registro Imutável</span>
+            <div>
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">gavel</span>
+                Trail de Decisões Críticas Imutável (RF 13)
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Histórico hierárquico de decisões operacionais estratégicas e retificações anexadas.</p>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">Auditoria RLS Ativa</span>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase font-mono font-bold text-[10px]">
-                  <th class="p-3">ID Registro</th>
-                  <th class="p-3">Data/Hora</th>
-                  <th class="p-3">Responsável</th>
-                  <th class="p-3">Decisão Padronizada</th>
-                  <th class="p-3">Entidade Impactada</th>
-                  <th class="p-3">Motivo / Justificativa</th>
-                  <th class="p-3">Retificação Anexada</th>
-                  <th class="p-3 text-right">Ação</th>
-                </tr>
-              </thead>
-              <tbody id="trailDecisoesTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
-                <!-- Renderizado dinamicamente via JS -->
-              </tbody>
-            </table>
+          <!-- Timeline Organizada do Trail de Decisões -->
+          <div id="trailDecisoesContainer" class="flex flex-col gap-3">
+            <!-- Renderizado dinamicamente via JS -->
           </div>
         </div>
 
@@ -307,6 +296,42 @@
 
       </div>
     </main>
+  </div>
+
+  <!-- Modal Centralizado para Detalhamento de Indicadores Operacionais (Item 1 Correções) -->
+  <div id="cardDetailModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-nexus-900/60 backdrop-blur-sm transition-opacity">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-2xl border border-nexus-border dark:border-slate-800 p-6 flex flex-col gap-4 relative transform transition-all scale-100">
+
+      <!-- Cabeçalho do Modal -->
+      <div class="flex items-start justify-between pb-3 border-b border-nexus-border dark:border-slate-800">
+        <div class="flex items-center gap-3">
+          <div id="modalCardIconBox" class="p-2.5 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-nexus-500 dark:text-indigo-400">
+            <span id="modalCardIcon" class="material-symbols-outlined text-[24px]">info</span>
+          </div>
+          <div>
+            <h3 id="modalCardTitle" class="font-display text-base font-bold text-nexus-900 dark:text-white">Detalhamento Indicador</h3>
+            <span class="text-[11px] font-mono text-slate-400">NexusPort Terminal STS-01</span>
+          </div>
+        </div>
+        <button type="button" id="closeCardDetailModalBtn" class="text-slate-400 hover:text-nexus-900 dark:hover:text-white p-1 rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Conteúdo do Detalhamento -->
+      <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/80">
+        <p id="modalCardDetailContent" class="text-xs font-mono whitespace-pre-wrap text-slate-700 dark:text-slate-200 leading-relaxed">
+          Carregando informações...
+        </p>
+      </div>
+
+      <!-- Rodapé do Modal com Ação -->
+      <div class="flex justify-end pt-1">
+        <button type="button" id="confirmCardDetailModalBtn" class="px-5 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-semibold text-xs transition-colors">
+          Fechar
+        </button>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

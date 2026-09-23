@@ -40,7 +40,8 @@ async def main():
         # Click on card for details
         await page.click("#cardsOperacionaisPanel > div.grid > div:first-child")
         await page.wait_for_timeout(300)
-        assert any("DETALHAMENTO DO INDICADOR OPERACIONAL" in msg for msg in dialog_messages), "Card detail alert expected"
+        modal_visible = await page.is_visible("#cardDetailModal")
+        assert modal_visible, "Card detail modal expected to be visible"
         print("1. Operational Cards & detail modal passed.")
 
         # 2. Test Reports and Productivity on relatorios.html (T6.8, T6.9, T6.10)
