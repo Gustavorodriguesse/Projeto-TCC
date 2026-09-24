@@ -132,9 +132,9 @@
           </div>
         </form>
 
-        <!-- Tabela do Fluxo de Cargas -->
+        <!-- Tabela do Fluxo de Cargas com Barra de Pesquisa e Filtros (RF 10) -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-nexus-border dark:border-nexus-dark-border">
             <span class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
               <span class="material-symbols-outlined text-nexus-500">table_rows</span>
               Tabela de Cargas no Fluxo Operacional
@@ -142,6 +142,42 @@
             <span id="roleNoticeTag" class="text-xs font-mono text-nexus-500 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded border border-indigo-200 dark:border-indigo-900">
               Visualização por Cargo (RF 1)
             </span>
+          </div>
+
+          <!-- Painel de Pesquisa e Filtros (RF 10) -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Nome do Navio</label>
+              <input type="text" id="filterNavio" placeholder="Ex: Santos Star" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Número do Contêiner</label>
+              <input type="text" id="filterContainer" placeholder="Ex: CONT-991" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Tipo de Carga</label>
+              <input type="text" id="filterTipo" placeholder="Ex: Grãos, Eletrônicos" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Status do Fluxo</label>
+              <select id="filterStatus" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
+                <option value="">Todos os Status</option>
+                <option value="AGENDAMENTO">AGENDAMENTO</option>
+                <option value="RECEBIMENTO_INSPECAO">RECEBIMENTO_INSPECAO</option>
+                <option value="ARMAZENAGEM">ARMAZENAGEM</option>
+                <option value="PRONTA_PARA_ENTREGA">PRONTA_PARA_ENTREGA</option>
+                <option value="EM_TRANSITO">EM_TRANSITO</option>
+                <option value="ENTREGUE">ENTREGUE</option>
+                <option value="RECUSADA">RECUSADA</option>
+                <option value="CANCELADA">CANCELADA</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button id="limparFiltrosBtn" type="button" class="w-full px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">filter_alt_off</span>
+                <span>Limpar Filtros</span>
+              </button>
+            </div>
           </div>
 
           <div class="overflow-x-auto">

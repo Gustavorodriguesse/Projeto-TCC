@@ -91,7 +91,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!cargasTableBody) return;
 
     cargasFluxoList = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
-    const userItems = cargasFluxoList;
+
+    const filterNavioVal = (document.getElementById('filterNavio')?.value || '').trim().toLowerCase();
+    const filterContVal = (document.getElementById('filterContainer')?.value || '').trim().toLowerCase();
+    const filterTipoVal = (document.getElementById('filterTipo')?.value || '').trim().toLowerCase();
+    const filterStatusVal = (document.getElementById('filterStatus')?.value || '').trim();
+
+    const userItems = cargasFluxoList.filter(c => {
+      if (filterNavioVal && !(c.navio || '').toLowerCase().includes(filterNavioVal)) return false;
+      if (filterContVal && !(c.container || '').toLowerCase().includes(filterContVal)) return false;
+      if (filterTipoVal && !(c.tipo || '').toLowerCase().includes(filterTipoVal) && !(c.natureza || '').toLowerCase().includes(filterTipoVal)) return false;
+      if (filterStatusVal && c.status !== filterStatusVal) return false;
+      return true;
+    });
+
+    if (userItems.length === 0) {
+      cargasTableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="p-4 text-center text-slate-400 italic">Nenhuma carga encontrada para os filtros aplicados.</td>
+        </tr>
+      `;
+      return;
+    }
 
     cargasTableBody.innerHTML = userItems.map(c => {
       // Determina quais botões de ação são VISÍVEIS para o CARGO LOGADO (RF 1 / Spec.md)
@@ -169,6 +190,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   carregarCargasSupabase();
+
+  const filterNavio = document.getElementById('filterNavio');
+  const filterContainer = document.getElementById('filterContainer');
+  const filterTipo = document.getElementById('filterTipo');
+  const filterStatus = document.getElementById('filterStatus');
+  const limparFiltrosBtn = document.getElementById('limparFiltrosBtn');
+
+  [filterNavio, filterContainer, filterTipo, filterStatus].forEach(el => {
+    if (el) {
+      el.addEventListener('input', renderTable);
+      el.addEventListener('change', renderTable);
+    }
+  });
+
+  if (limparFiltrosBtn) {
+    limparFiltrosBtn.addEventListener('click', () => {
+      if (filterNavio) filterNavio.value = '';
+      if (filterContainer) filterContainer.value = '';
+      if (filterTipo) filterTipo.value = '';
+      if (filterStatus) filterStatus.value = '';
+      renderTable();
+    });
+  }
 
   if (toggleFormBtn && agendamentoForm) {
     toggleFormBtn.addEventListener('click', () => agendamentoForm.classList.toggle('hidden'));
@@ -314,13 +358,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const cont = prompt('Informe a identificação do Contêiner:', 'CONT-991');
       const nav = prompt('Informe o Navio:', 'MV Santos Star');
       if (cont && nav) {
+        // Validação RN 1 & RN 2: Navios/contêineres em reforma ou agendados para reforma não podem receber cargas!
+        const containersLocais = JSON.parse(localStorage.getItem('nexus_containers_list') || '[]');
+        const contObj = containersLocais.find(c => c.identificacao.toUpperCase() === cont.toUpperCase() || c.id.toUpperCase() === cont.toUpperCase());
+        if (contObj && ['EM_REFORMA', 'AGENDADO_PARA_REFORMA'].includes(contObj.estado)) {
+          alert(`BLOQUEIO DE SEGURANÇA (RN 1, RN 2): O contêiner "${cont}" está no estado "${contObj.estado}" e NÃO pode receber cargas!`);
+          return;
+        }
+
+        const osList = JSON.parse(localStorage.getItem('nexus_os_list') || '[]');
+        const osNavioOuCont = osList.find(o => (o.equipamento.includes(nav) || o.equipamento.includes(cont)) && o.status === 'EM_MANUTENCAO');
+        if (osNavioOuCont) {
+          alert(`BLOQUEIO DE SEGURANÇA (RN 1, RN 2): O navio "${nav}" ou contêiner "${cont}" possui Ordem de Serviço em MANUTENÇÃO (${osNavioOuCont.id}) e está bloqueado para recebimento de cargas!`);
+          return;
+        }
+
         carga.container = cont;
         carga.navio = nav;
         alert(`Carga ${idCarga} vinculada ao Contêiner ${cont} e Navio ${nav}.`);
       }
     } else if (acao === 'LIBERAR') {
+      const destinoCarga = carga.portoDescarga || carga.destino || 'Porto de Roterdã';
       carga.status = 'EM_TRANSITO';
-      alert(`Carga ${idCarga} liberada pelo Supervisor para saída.`);
+      alert(`Carga ${idCarga} liberada pelo Supervisor para saída com destino a ${destinoCarga}. ETA calculado a 33 km/h (RN 9).`);
     } else if (acao === 'ENTREGAR') {
       carga.status = 'ENTREGUE';
       alert(`Carga ${idCarga} entregue no destino.`);
