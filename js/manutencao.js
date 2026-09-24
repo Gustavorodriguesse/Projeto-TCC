@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const session = window.currentUserSession || NexusAuth.getSession();
   if (!session) return;
 
+  const toggleGuindasteBtn = document.getElementById('toggleGuindasteFormBtn');
+  const guindasteForm = document.getElementById('guindasteForm');
+  const guindastesTableBody = document.getElementById('guindastesTableBody');
+
   const toggleOsBtn = document.getElementById('toggleOsFormBtn');
   const osForm = document.getElementById('osForm');
   const osTableBody = document.getElementById('osTableBody');
@@ -14,6 +18,196 @@ document.addEventListener('DOMContentLoaded', () => {
   const panicBtn = document.getElementById('panicButton');
   const resetEmergencyBtn = document.getElementById('resetEmergencyBtn');
   const emergencyBanner = document.getElementById('emergencyAlertBanner');
+
+  const isInspetor = ['INSPETOR', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
+  const isSupervisor = ['SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
+
+  if (toggleGuindasteBtn && !isInspetor) {
+    toggleGuindasteBtn.classList.add('hidden');
+  }
+
+  // Lista e CRUD de Guindastes (Point 2 / Spec.md RF 2, T2.7)
+  let guindastesList = JSON.parse(localStorage.getItem('nexus_guindastes_list') || 'null');
+  if (!guindastesList) {
+    guindastesList = [
+      { id: 'GND-01-STS', identificacao: 'GND-01-STS', estado: 'OPERANTE', dataManut: '2025-02-10' },
+      { id: 'GND-02-STS', identificacao: 'GND-02-STS', estado: 'EM_MANUTENCAO', dataManut: '2022-05-15' },
+      { id: 'GND-03-STS', identificacao: 'GND-03-STS', estado: 'OPERANTE', dataManut: '2024-11-20' }
+    ];
+    localStorage.setItem('nexus_guindastes_list', JSON.stringify(guindastesList));
+  }
+
+  async function carregarGuindastesSupabase() {
+    if (window.nexusSupabase) {
+      try {
+        const { data, error } = await window.nexusSupabase.from('guindastes').select('*');
+        if (!error && data && data.length > 0) {
+          const supGnds = data.map(g => ({
+            id: g.id || g.numero_identificacao,
+            identificacao: g.numero_identificacao,
+            estado: g.estado || 'OPERANTE',
+            dataManut: g.data_ultima_manutencao || '2025-01-01'
+          }));
+
+          const idSet = new Set(supGnds.map(x => x.identificacao));
+          guindastesList.forEach(defG => {
+            if (!idSet.has(defG.identificacao)) supGnds.push(defG);
+          });
+
+          guindastesList = supGnds;
+          localStorage.setItem('nexus_guindastes_list', JSON.stringify(guindastesList));
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao carregar guindastes do Supabase:', err);
+      }
+    }
+    renderGuindastesTable();
+  }
+
+  function renderGuindastesTable() {
+    if (!guindastesTableBody) return;
+
+    guindastesTableBody.innerHTML = guindastesList.map(g => `
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+        <td class="p-3 font-mono font-bold text-nexus-500">${g.identificacao}</td>
+        <td class="p-3">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+            g.estado === 'OPERANTE' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' :
+            'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+          }">${g.estado}</span>
+        </td>
+        <td class="p-3 font-mono text-xs">${g.dataManut}</td>
+        <td class="p-3 text-right">
+          ${g.estado === 'OPERANTE' && isSupervisor ? `
+            <button type="button" onclick="window.solicitarManutencaoGuindaste('${g.identificacao}')" class="px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs">Solicitar Manutenção</button>
+          ` : g.estado === 'EM_MANUTENCAO' && isSupervisor ? `
+            <button type="button" onclick="window.concluirManutencaoGuindaste('${g.identificacao}')" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs">Concluir Manutenção</button>
+          ` : `<span class="text-slate-400 font-mono italic text-[11px]">Sem Ação Permissível</span>`}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  carregarGuindastesSupabase();
+
+  if (toggleGuindasteBtn && guindasteForm) {
+    toggleGuindasteBtn.addEventListener('click', () => {
+      if (!isInspetor) {
+        alert('Acesso Restrito: Apenas Inspetores têm permissão para cadastrar novos guindastes (Spec.md RF 1)!');
+        return;
+      }
+      guindasteForm.classList.toggle('hidden');
+    });
+  }
+
+  if (guindasteForm) {
+    guindasteForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!isInspetor) {
+        alert('Acesso Restrito: Cadastro de guindastes é de responsabilidade exclusiva do Inspetor!');
+        return;
+      }
+
+      const identificacao = document.getElementById('gndNumero').value.trim().toUpperCase();
+      const dataManut = document.getElementById('gndDataManut').value;
+      const estado = document.getElementById('gndEstado').value;
+
+      const novoGnd = { id: identificacao, identificacao, estado, dataManut };
+      guindastesList.push(novoGnd);
+      localStorage.setItem('nexus_guindastes_list', JSON.stringify(guindastesList));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('guindastes').insert({
+            numero_identificacao: identificacao,
+            estado,
+            data_ultima_manutencao: dataManut || null
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar guindaste com Supabase:', err);
+        }
+      }
+
+      renderGuindastesTable();
+      guindasteForm.reset();
+      guindasteForm.classList.add('hidden');
+      alert(`Guindaste ${identificacao} cadastrado com sucesso pelo Inspetor!`);
+    });
+  }
+
+  window.solicitarManutencaoGuindaste = async function(identificacao) {
+    if (!isSupervisor) {
+      alert('Acesso Restrito: Apenas o Supervisor pode solicitar manutenção de guindastes!');
+      return;
+    }
+
+    const descricao = prompt(`Informe a justificativa/falha para solicitar manutenção do Guindaste ${identificacao}:`, 'Revisão periódica dos cabos de aço e motores');
+    if (!descricao) return;
+
+    const gnd = guindastesList.find(x => x.identificacao === identificacao);
+    if (gnd) gnd.estado = 'EM_MANUTENCAO';
+
+    const newOsId = `OS-2026-${Math.floor(100 + Math.random() * 900)}`;
+    osList.unshift({
+      id: newOsId,
+      equipamento: identificacao,
+      prioridade: 'ALTA',
+      descricao: `Manutenção de Guindaste: ${descricao}`,
+      status: 'EM_MANUTENCAO',
+      data: new Date().toISOString().split('T')[0]
+    });
+
+    localStorage.setItem('nexus_guindastes_list', JSON.stringify(guindastesList));
+    localStorage.setItem('nexus_os_list', JSON.stringify(osList));
+
+    if (window.nexusSupabase) {
+      try {
+        await window.nexusSupabase.from('guindastes')
+          .update({ estado: 'EM_MANUTENCAO' })
+          .eq('numero_identificacao', identificacao);
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao atualizar guindaste no Supabase:', err);
+      }
+    }
+
+    renderGuindastesTable();
+    renderOsTable();
+    alert(`Manutenção solicitada para o Guindaste ${identificacao}! Ordem de Serviço ${newOsId} criada.`);
+  };
+
+  window.concluirManutencaoGuindaste = async function(identificacao) {
+    if (!isSupervisor) {
+      alert('Acesso Restrito: Apenas o Supervisor pode aprovar/concluir manutenção de guindastes!');
+      return;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const gnd = guindastesList.find(x => x.identificacao === identificacao);
+    if (gnd) {
+      gnd.estado = 'OPERANTE';
+      gnd.dataManut = todayStr;
+    }
+
+    const os = osList.find(o => o.equipamento === identificacao && o.status === 'EM_MANUTENCAO');
+    if (os) os.status = 'CONCLUIDA';
+
+    localStorage.setItem('nexus_guindastes_list', JSON.stringify(guindastesList));
+    localStorage.setItem('nexus_os_list', JSON.stringify(osList));
+
+    if (window.nexusSupabase) {
+      try {
+        await window.nexusSupabase.from('guindastes')
+          .update({ estado: 'OPERANTE', data_ultima_manutencao: todayStr })
+          .eq('numero_identificacao', identificacao);
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao atualizar guindaste no Supabase:', err);
+      }
+    }
+
+    renderGuindastesTable();
+    renderOsTable();
+    alert(`Manutenção do Guindaste ${identificacao} CONCLUÍDA! Equipamento reativado e no estado OPERANTE.`);
+  };
 
   let osList = JSON.parse(localStorage.getItem('nexus_os_list') || 'null');
   if (!osList) {

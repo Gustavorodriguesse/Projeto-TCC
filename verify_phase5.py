@@ -42,7 +42,11 @@ async def main():
         await page.fill("#agVolume", "50")
         await page.fill("#agValor", "100000")
         await page.fill("#agNatureza", "Agrícola")
-        await page.fill("#agPortoDescarga", "Porto de Roterdã")
+        tag_name = await page.eval_on_selector("#agPortoDescarga", "el => el.tagName.toLowerCase()")
+        if tag_name == "select":
+            await page.select_option("#agPortoDescarga", index=1)
+        else:
+            await page.fill("#agPortoDescarga", "Porto de Roterdã")
         await page.fill("#agDestino", "Roterdã")
         await page.fill("#agDataPrevista", "2026-10-15")
 

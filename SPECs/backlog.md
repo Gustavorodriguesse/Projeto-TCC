@@ -132,3 +132,25 @@
 **🔧 Corrigido:**
 - Quebra de layout e ocupação excessiva da sidebar em telas de celular e tablet.
 - Omissão de status de visitantes nas gravações enviadas para a tabela `visitantes` do Supabase.
+
+---
+
+## BACKLOG #007 — Controle de Acesso por Cargo, Módulo de Guindastes e Berços Livres para Descarga
+**Data:** 24/09/2026
+**Prioridade:** Alta
+**Tipo:** Nova funcionalidade / Segurança / Conformidade SPEC
+
+**Descrição:** Implementação estrita das restrições de permissões por cargo (`cargo`), módulo completo de gestão e manutenção de guindastes (`guindastes`) e direcionamento de ponto de descarga através do painel de berços livres no terminal.
+
+**✅ Adicionado:**
+- Matriz de controle de acesso por rota/página (`PAGE_PERMISSIONS`) em `js/auth-guard.js` e filtragem dinâmica dos itens do menu lateral em `js/layout.js` para garantir que cada funcionário acesse apenas as páginas e ações permitidas para o seu cargo.
+- Ocultação e desativação de botões e formulários operacionais por cargo em todas as páginas (`cargas.js`, `embarcacoes.js`, `manutencao.js`, `inspecao.js`, `tecnico_portos.js`), impedindo ações não autorizadas (ex: agendamento exclusivo para Supervisor/Inspetor, cadastro de navios/contêineres/guindastes para Inspetor, reemissão de código e ficha de funcionários para Técnico em Portos).
+- Módulo de Gestão de Guindastes e Pórticos de Pátio (Ship-to-Shore) em `manutencao.html` e `js/manutencao.js` com cadastro pelo Inspetor, solicitações/conclusão de ordens de serviço (OS) pelo Supervisor e sincronização com Supabase/localStorage.
+- Painel de Berços de Descarga do Terminal STS-01 em `cargas.html` e `js/cargas.js`, com lista visual de berços em tempo real (`LIVRE`/`OCUPADO`), obrigatoriedade de seleção de um Berço Livre no agendamento/recebimento e desalocação do berço na saída da carga.
+
+**🗑️ Removido:**
+- Acesso universal a todas as funções e menus por qualquer usuário logado independentemente do cargo.
+
+**🔧 Corrigido:**
+- Falta do módulo e cadastro de guindastes no sistema.
+- Campo genérico de texto para porto de descarga, substituído pelo direcionamento obrigatório a Berços Livres ativas do terminal.
