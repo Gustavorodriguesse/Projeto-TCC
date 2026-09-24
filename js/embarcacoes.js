@@ -115,13 +115,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   carregarNaviosSupabase();
 
+  const isInspetorRole = ['INSPETOR', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
+
   if (toggleNavioBtn && navioForm) {
-    toggleNavioBtn.addEventListener('click', () => navioForm.classList.toggle('hidden'));
+    if (!isInspetorRole) toggleNavioBtn.classList.add('hidden');
+    toggleNavioBtn.addEventListener('click', () => {
+      if (!isInspetorRole) {
+        alert('Acesso Restrito: Apenas Inspetores têm permissão para cadastrar novos navios (Spec.md RF 1)!');
+        return;
+      }
+      navioForm.classList.toggle('hidden');
+    });
   }
 
   if (navioForm) {
     navioForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!isInspetorRole) {
+        alert('Acesso Restrito: Cadastro de navios é de responsabilidade do Inspetor!');
+        return;
+      }
       const nome = document.getElementById('navioNome').value.trim();
       const imo = document.getElementById('navioImo').value.trim();
       const origem = document.getElementById('navioOrigem').value.trim();
@@ -223,12 +236,23 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarContainersSupabase();
 
   if (toggleContainerBtn && containerForm) {
-    toggleContainerBtn.addEventListener('click', () => containerForm.classList.toggle('hidden'));
+    if (!isInspetorRole) toggleContainerBtn.classList.add('hidden');
+    toggleContainerBtn.addEventListener('click', () => {
+      if (!isInspetorRole) {
+        alert('Acesso Restrito: Apenas Inspetores têm permissão para cadastrar novos contêineres (Spec.md RF 1)!');
+        return;
+      }
+      containerForm.classList.toggle('hidden');
+    });
   }
 
   if (containerForm) {
     containerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!isInspetorRole) {
+        alert('Acesso Restrito: Cadastro de contêineres é de responsabilidade do Inspetor!');
+        return;
+      }
       const identificacao = document.getElementById('contIdentificacao').value.trim();
       const tipo = document.getElementById('contTipo').value.trim();
       const dataFabr = document.getElementById('contFabricacao').value;

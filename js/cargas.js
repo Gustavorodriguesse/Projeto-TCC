@@ -27,6 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
     roleNoticeTag.textContent = `Ações Ativas para: ${session.cargo_nome || session.cargo}`;
   }
 
+  const isSupervisorRole = ['SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(userCargo);
+  const isInspetorRole = ['INSPETOR', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(userCargo);
+  const isConferenteRole = ['CONFERENTE_CARGA', 'SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(userCargo);
+  const isArrumadorRole = ['ARRUMADOR_CONSERTADOR', 'INSPETOR', 'SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(userCargo);
+  const isEstivadorRole = ['ESTIVADOR', 'INSPETOR', 'SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(userCargo);
+
+  // Oculta/Restringe o formulário de agendamento se o usuário não tiver privilégio de Supervisor / Inspetor / Diretor
+  if (toggleFormBtn && !isSupervisorRole && !isInspetorRole) {
+    toggleFormBtn.classList.add('hidden');
+  }
+
   // Preenche o select de tipos de carga usando a lista compartilhada NEXUS_TIPOS_CARGA
   const selectTipoCarga = document.getElementById('agTipoCarga');
   if (selectTipoCarga && window.NEXUS_TIPOS_CARGA) {
@@ -36,15 +47,90 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Gestão e Painel de Berços Livres (Point 3)
+  const bercosGrid = document.getElementById('bercosGrid');
+  const bercosLivresTag = document.getElementById('bercosLivresCountTag');
+  const selectPortoDescarga = document.getElementById('agPortoDescarga');
+
+  let bercosList = JSON.parse(localStorage.getItem('nexus_bercos_list') || 'null');
+  if (!bercosList) {
+    bercosList = [
+      { id: 'BERCO-01', nome: 'Berço 01 - STS', estado: 'LIVRE', carga_id: null },
+      { id: 'BERCO-02', nome: 'Berço 02 - STS', estado: 'LIVRE', carga_id: null },
+      { id: 'BERCO-03', nome: 'Berço 03 - STS', estado: 'LIVRE', carga_id: null },
+      { id: 'BERCO-04', nome: 'Berço 04 - STS', estado: 'OCUPADO', carga_id: 'CRG-2026-001' },
+      { id: 'BERCO-05', nome: 'Berço 05 - STS', estado: 'LIVRE', carga_id: null }
+    ];
+    localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
+  }
+
+  function renderBercosPanel() {
+    bercosList = JSON.parse(localStorage.getItem('nexus_bercos_list') || '[]');
+    const livres = bercosList.filter(b => b.estado === 'LIVRE');
+
+    if (bercosLivresTag) {
+      bercosLivresTag.textContent = `${livres.length} Berço(s) Livre(s)`;
+    }
+
+    if (bercosGrid) {
+      bercosGrid.innerHTML = bercosList.map(b => `
+        <div class="p-3 rounded-xl border ${
+          b.estado === 'LIVRE' ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/60' :
+          b.estado === 'OCUPADO' ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/60' :
+          'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700'
+        } flex flex-col gap-1 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-nexus-900 dark:text-white">${b.nome}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+              b.estado === 'LIVRE' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' :
+              b.estado === 'OCUPADO' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' :
+              'bg-slate-200 text-slate-800'
+            }">${b.estado}</span>
+          </div>
+          <span class="text-[11px] text-slate-500 font-mono">
+            ${b.estado === 'OCUPADO' ? `Alocado: <strong class="text-nexus-500">${b.carga_id || 'Carga Ativa'}</strong>` : 'Pronto para atracação'}
+          </span>
+          ${b.estado === 'OCUPADO' && isSupervisorRole ? `
+            <button type="button" onclick="window.liberarBercoManualmente('${b.id}')" class="mt-1 py-0.5 px-2 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-bold text-[10px] self-start">Desocupar Berço</button>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    if (selectPortoDescarga) {
+      selectPortoDescarga.innerHTML = '<option value="">Selecione um Berço Livre (Point 3)...</option>';
+      if (livres.length === 0) {
+        selectPortoDescarga.innerHTML = '<option value="" disabled>Nenhum Berço Livre disponível no momento</option>';
+      } else {
+        livres.forEach(b => {
+          selectPortoDescarga.innerHTML += `<option value="${b.nome}">${b.nome} (Livre)</option>`;
+        });
+      }
+    }
+  }
+
+  window.liberarBercoManualmente = function(bercoId) {
+    const b = bercosList.find(x => x.id === bercoId);
+    if (b) {
+      b.estado = 'LIVRE';
+      b.carga_id = null;
+      localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
+      renderBercosPanel();
+      alert(`Berço ${b.nome} desocupado com sucesso!`);
+    }
+  };
+
+  renderBercosPanel();
+
   let currentEntityData = null;
 
   // Carrega lista de cargas
   let cargasFluxoList = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || 'null');
   if (!cargasFluxoList) {
     cargasFluxoList = [
-      { id: 'CRG-2026-001', tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola', portoDescarga: 'Porto de Roterdã', destino: 'Amsterdã', status: 'RECEBIMENTO_INSPECAO', container: 'CONT-991', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-001' },
-      { id: 'CRG-2026-002', tipo: 'Eletrônicos', peso: '12.0 t', volume: '20 m³', valor: 'R$ 450.000', natureza: 'Industrial', portoDescarga: 'Porto de Santos', destino: 'São Paulo', status: 'ARMAZENAGEM', container: 'CONT-992', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-002' },
-      { id: 'CRG-2026-003', tipo: 'Produtos Químicos', peso: '18.2 t', volume: '30 m³', valor: 'R$ 210.000', natureza: 'Química', portoDescarga: 'Porto de Singapura', destino: 'Singapura', status: 'PRONTA_PARA_ENTREGA', container: 'CONT-993', navio: 'MV Pacific Giant', qrCode: 'QR-CRG-2026-003' }
+      { id: 'CRG-2026-001', tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola', portoDescarga: 'Berço 04 - STS', destino: 'Amsterdã', status: 'RECEBIMENTO_INSPECAO', container: 'CONT-991', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-001' },
+      { id: 'CRG-2026-002', tipo: 'Eletrônicos', peso: '12.0 t', volume: '20 m³', valor: 'R$ 450.000', natureza: 'Industrial', portoDescarga: 'Berço 01 - STS', destino: 'São Paulo', status: 'ARMAZENAGEM', container: 'CONT-992', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-002' },
+      { id: 'CRG-2026-003', tipo: 'Produtos Químicos', peso: '18.2 t', volume: '30 m³', valor: 'R$ 210.000', natureza: 'Química', portoDescarga: 'Berço 02 - STS', destino: 'Singapura', status: 'PRONTA_PARA_ENTREGA', container: 'CONT-993', navio: 'MV Pacific Giant', qrCode: 'QR-CRG-2026-003' }
     ];
     localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
   }
@@ -123,6 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const isEstivador = ['ESTIVADOR', 'INSPETOR', 'SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(userCargo);
 
       let actionButtonsHtml = '';
+
+      if (isEstivador) {
+        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'MOVIMENTAR')" class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">forklift</span><span>Movimentar</span></button>`;
+      }
 
       if (c.status === 'AGENDAMENTO' && isConferente) {
         actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'RECEBER')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">download</span><span>Receber</span></button>`;
@@ -222,13 +312,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (agendamentoForm) {
     agendamentoForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!isSupervisorRole && !isInspetorRole) {
+        alert('Acesso Restrito: Apenas Supervisores ou Inspetores podem registrar/agendar novas cargas!');
+        return;
+      }
+
       const tipo = document.getElementById('agTipoCarga').value;
       const pesoVal = parseFloat(document.getElementById('agPeso').value) || 0;
       const volumeVal = parseFloat(document.getElementById('agVolume').value) || 0;
       const valorVal = parseFloat(document.getElementById('agValor').value) || 0;
       const natureza = document.getElementById('agNatureza').value.trim();
-      const portoDescarga = document.getElementById('agPortoDescarga').value.trim();
+      const portoDescarga = document.getElementById('agPortoDescarga').value;
       const destino = document.getElementById('agDestino').value.trim();
+
+      if (!portoDescarga) {
+        alert('BLOQUEIO (Point 3): É obrigatório selecionar um Berço Livre como Ponto de Descarga na chegada da carga!');
+        return;
+      }
 
       // Trava RF 2 & RN 13: Valida se Tipo de Carga possui checklist pré-cadastrado
       const tipoCompartilhado = window.getNexusTipoCarga ? window.getNexusTipoCarga(tipo) : null;
@@ -258,6 +358,15 @@ document.addEventListener('DOMContentLoaded', () => {
         navio: '',
         qrCode: newQrCode
       };
+
+      // Ocupa o Berço Livre selecionado para a carga (Point 3)
+      const targetBerco = bercosList.find(b => b.nome === portoDescarga);
+      if (targetBerco) {
+        targetBerco.estado = 'OCUPADO';
+        targetBerco.carga_id = newId;
+        localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
+        renderBercosPanel();
+      }
 
       cargasFluxoList.push(novaCarga);
       localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
@@ -348,9 +457,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const carga = cargasFluxoList.find(c => c.id === idCarga);
     if (!carga) return;
 
-    if (acao === 'RECEBER') {
+    if (acao === 'MOVIMENTAR') {
+      if (!isEstivadorRole) {
+        alert('Acesso Restrito: Apenas Estivadores podem registrar movimentação e estado de carregamento de cargas!');
+        return;
+      }
+      const estadoMov = prompt(`Selecione o estado do carregamento para ${idCarga}:\n1 - EM_CARREGAMENTO\n2 - PARADO\n3 - CONCLUIDO`, '1');
+      if (estadoMov === '1') {
+        carga.estadoMovimentacao = 'EM_CARREGAMENTO';
+        carga.estivadorMatricula = session.matricula;
+        alert(`Status de carregamento da carga ${idCarga} atualizado para EM_CARREGAMENTO por Estivador (${session.nome}).`);
+      } else if (estadoMov === '2') {
+        carga.estadoMovimentacao = 'PARADO';
+        carga.estivadorMatricula = session.matricula;
+        alert(`Status de carregamento da carga ${idCarga} atualizado para PARADO.`);
+      } else if (estadoMov === '3') {
+        carga.estadoMovimentacao = 'CONCLUIDO';
+        carga.estivadorMatricula = session.matricula;
+        alert(`Movimentação da carga ${idCarga} CONCLUÍDA com sucesso!`);
+      }
+    } else if (acao === 'RECEBER') {
+      if (!isConferenteRole) {
+        alert('Acesso Restrito: Apenas Conferentes de Carga podem registrar o recebimento físico!');
+        return;
+      }
       carga.status = 'RECEBIMENTO_INSPECAO';
-      alert(`Recebimento da carga ${idCarga} registrado pelo Conferente.`);
+      carga.dataChegada = new Date().toLocaleString('pt-BR');
+      carga.conferenteMatricula = session.matricula;
+      alert(`Recebimento físico da carga ${idCarga} registrado pelo Conferente em ${carga.dataChegada}.`);
     } else if (acao === 'PRONTA') {
       carga.status = 'PRONTA_PARA_ENTREGA';
       alert(`Carga ${idCarga} marcada como Pronta para Entrega.`);
