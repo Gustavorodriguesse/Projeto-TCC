@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (window.nexusSupabase) {
         try {
-          const { data: cargaIns, error: cargaErr } = await window.nexusSupabase.from('cargas').insert({
+          window.nexusSupabase.from('cargas').insert({
             natureza: natureza || 'Carga Geral',
             peso: pesoVal,
             volume: volumeVal,
@@ -229,14 +229,14 @@ document.addEventListener('DOMContentLoaded', () => {
             destino: destino,
             status_fluxo: 'AGENDAMENTO',
             qr_code_url: newQrCode
-          }).select().maybeSingle();
-
-          if (!cargaErr && cargaIns) {
-            await window.nexusSupabase.from('agendamentos').insert({
-              carga_id: cargaIns.id,
-              data_prevista_entrega: new Date().toISOString().split('T')[0]
-            });
-          }
+          }).select().maybeSingle().then(res => {
+            if (res && res.data) {
+              window.nexusSupabase.from('agendamentos').insert({
+                carga_id: res.data.id,
+                data_prevista_entrega: new Date().toISOString().split('T')[0]
+              }).then().catch(() => {});
+            }
+          }).catch(err => console.warn('[NexusPort] Erro ao sincronizar carga com Supabase:', err));
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar agendamento com Supabase:', err);
         }
