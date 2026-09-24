@@ -16,14 +16,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultCodeTag = document.getElementById('resultCodeTag');
   const resEntityId = document.getElementById('resEntityId');
   const resTipo = document.getElementById('resTipo');
+  const resNatureza = document.getElementById('resNatureza');
   const resPeso = document.getElementById('resPeso');
+  const resValor = document.getElementById('resValor');
+  const resPorto = document.getElementById('resPorto');
+  const resDestino = document.getElementById('resDestino');
+  const resContainer = document.getElementById('resContainer');
   const resNavio = document.getElementById('resNavio');
+  const resStatus = document.getElementById('resStatus');
   const resRoleTitle = document.getElementById('resRoleTitle');
   const resRoleMsg = document.getElementById('resRoleMsg');
   const executarBtn = document.getElementById('executarAcaoScanBtn');
+  const irChecklistBtn = document.getElementById('irChecklistBtn');
 
   let html5QrCodeScanner = null;
   let targetRedirectUrl = 'cargas.html';
+  let targetChecklistUrl = 'inspecao.html';
 
   if (iniciarCameraBtn) {
     iniciarCameraBtn.addEventListener('click', () => {
@@ -78,8 +86,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const displayId = match ? match.id : rawCode;
     const displayTipo = match ? match.tipo : 'Carga Geral / Contêiner';
+    const displayNatureza = match ? (match.natureza || 'Agrícola / Industrial') : 'Carga Geral';
     const displayPeso = match ? `${match.peso} / ${match.volume}` : '25.5 t / 40 m³';
+    const displayValor = match ? (match.valor || 'R$ 150.000,00') : 'R$ 100.000,00';
+    const displayPorto = match ? (match.portoDescarga || 'Porto de Roterdã') : 'Porto de Santos';
+    const displayDestino = match ? (match.destino || 'Destino Internacional') : 'Destino Geral';
+    const displayContainer = match ? (match.container || 'CONT-991') : 'CONT-991';
     const displayNavio = match ? (match.navio || 'MV Santos Star') : 'MV Santos Star';
+    const displayStatus = match ? (match.status || 'RECEBIMENTO_INSPECAO') : 'ARMAZENAGEM';
+
+    targetChecklistUrl = `inspecao.html?carga=${displayId}`;
 
     // Grava log de leitura QR Code no pátio (T5.8 & Supabase leituras_qr_code)
     const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
@@ -131,12 +147,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resultCodeTag) resultCodeTag.textContent = `Código Lido: ${rawCode}`;
     if (resEntityId) resEntityId.textContent = displayId;
     if (resTipo) resTipo.textContent = displayTipo;
+    if (resNatureza) resNatureza.textContent = displayNatureza;
     if (resPeso) resPeso.textContent = displayPeso;
+    if (resValor) resValor.textContent = displayValor;
+    if (resPorto) resPorto.textContent = displayPorto;
+    if (resDestino) resDestino.textContent = displayDestino;
+    if (resContainer) resContainer.textContent = displayContainer;
     if (resNavio) resNavio.textContent = displayNavio;
+    if (resStatus) resStatus.textContent = displayStatus;
     if (resRoleTitle) resRoleTitle.textContent = `Direcionamento para ${session.cargo_nome || session.cargo}:`;
     if (resRoleMsg) resRoleMsg.textContent = msgAcao;
 
     if (resultCard) resultCard.classList.remove('hidden');
+  }
+
+  if (irChecklistBtn) {
+    irChecklistBtn.addEventListener('click', () => {
+      window.location.href = targetChecklistUrl;
+    });
   }
 
   if (executarBtn) {

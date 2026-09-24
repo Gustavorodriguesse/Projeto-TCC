@@ -116,11 +116,17 @@
             </span>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 text-xs font-mono bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs font-mono bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl">
             <div><span class="text-slate-400 block">Identificação:</span> <strong id="resEntityId" class="text-nexus-900 dark:text-white text-sm">--</strong></div>
             <div><span class="text-slate-400 block">Tipo:</span> <strong id="resTipo" class="text-nexus-900 dark:text-white">--</strong></div>
-            <div><span class="text-slate-400 block">Peso/Volume:</span> <strong id="resPeso" class="text-nexus-900 dark:text-white">--</strong></div>
+            <div><span class="text-slate-400 block">Natureza:</span> <strong id="resNatureza" class="text-nexus-900 dark:text-white">--</strong></div>
+            <div><span class="text-slate-400 block">Peso / Volume:</span> <strong id="resPeso" class="text-nexus-900 dark:text-white">--</strong></div>
+            <div><span class="text-slate-400 block">Valor Declarado:</span> <strong id="resValor" class="text-nexus-900 dark:text-white">--</strong></div>
+            <div><span class="text-slate-400 block">Porto Descarga:</span> <strong id="resPorto" class="text-nexus-900 dark:text-white">--</strong></div>
+            <div><span class="text-slate-400 block">Destino Final:</span> <strong id="resDestino" class="text-nexus-900 dark:text-white">--</strong></div>
+            <div><span class="text-slate-400 block">Contêiner:</span> <strong id="resContainer" class="text-nexus-900 dark:text-white">--</strong></div>
             <div><span class="text-slate-400 block">Navio Vinculado:</span> <strong id="resNavio" class="text-nexus-900 dark:text-white">--</strong></div>
+            <div class="col-span-2 md:col-span-3"><span class="text-slate-400 block">Status no Fluxo:</span> <strong id="resStatus" class="text-indigo-600 dark:text-indigo-400 text-sm font-bold">--</strong></div>
           </div>
 
           <!-- Banner da Ação Direcionada por Cargo (T5.7) -->
@@ -132,7 +138,11 @@
             </div>
           </div>
 
-          <div class="flex justify-end gap-2 pt-2">
+          <div class="flex flex-wrap justify-end gap-2 pt-2">
+            <button id="irChecklistBtn" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm">
+              <span class="material-symbols-outlined text-[18px]">fact_check</span>
+              <span>Ir para Checklist da Carga</span>
+            </button>
             <button id="executarAcaoScanBtn" type="button" class="px-5 py-2.5 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs transition-colors">
               Ir para Tela de Ação do Cargo
             </button>
