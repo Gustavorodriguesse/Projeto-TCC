@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectCarga = document.getElementById('inspecaoCargaSelect');
   const carregarBtn = document.getElementById('carregarChecklistBtn');
   const formContainer = document.getElementById('checklistFormContainer');
+  const scanChecklistBtn = document.getElementById('scanChecklistBtn');
+  const checklistQrViewport = document.getElementById('checklistQrViewport');
   const cargaTag = document.getElementById('cargaInspecionadaTag');
   const checklistItemsList = document.getElementById('checklistItemsList');
   const aprovarBtn = document.getElementById('aprovarCargaBtn');
@@ -57,6 +59,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   popularSeletor();
+
+  // Leitura de QR Code na mesma página de checklist (RN 17)
+  if (scanChecklistBtn && checklistQrViewport) {
+    scanChecklistBtn.addEventListener('click', () => {
+      checklistQrViewport.classList.toggle('hidden');
+      if (!checklistQrViewport.classList.contains('hidden') && typeof Html5Qrcode !== 'undefined') {
+        const scanner = new Html5Qrcode("inspecaoQrReader");
+        scanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 200, height: 200 } },
+          (decodedText) => {
+            let rawCode = decodedText;
+            if (rawCode.includes('?carga=')) {
+              try {
+                const url = new URL(rawCode, window.location.origin);
+                rawCode = url.searchParams.get('carga') || rawCode;
+              } catch (e) {}
+            }
+            rawCode = rawCode.replace('QR-', '');
+            selectCarga.value = rawCode;
+            carregarChecklistParaCarga(rawCode);
+            scanner.stop();
+            checklistQrViewport.classList.add('hidden');
+          },
+          () => {}
+        ).catch(err => {
+          console.warn("Câmera indisponível no checklist:", err);
+        });
+      }
+    });
+  }
 
   if (carregarBtn) {
     carregarBtn.addEventListener('click', () => {
