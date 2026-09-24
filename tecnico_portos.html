@@ -192,15 +192,18 @@
           </div>
         </div>
 
-        <!-- Seção 3: CRUD de Visitantes Temporários (T2.2) -->
+        <!-- Seção 3: CRUD de Visitantes Ativos (No Porto) -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
           <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
-            <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-nexus-500">assignment_ind</span>
-              Registro do Livro de Visitantes Temporários (T2.2)
-            </h3>
+            <div>
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">assignment_ind</span>
+                Visitantes Ativos / No Porto
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Visitantes com entrada registrada no porto. Ao concluir a visita, a data de saída e o parecer da vistoria são salvos e o visitante é movido para o histórico.</p>
+            </div>
             <button id="toggleVisFormBtn" type="button" class="px-3 py-1.5 rounded-lg bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs">
-              + Registrar Visitante
+              + Registrar Novo Visitante
             </button>
           </div>
 
@@ -218,11 +221,10 @@
               <input type="text" id="visMotivo" required placeholder="Ex: Fiscalização Alfandegária" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
             </div>
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Status do Visitante</label>
+              <label class="block font-bold text-slate-500 mb-1">Status Inicial</label>
               <select id="visStatus" required class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
                 <option value="EM_VISITA">EM_VISITA (No Porto)</option>
                 <option value="AGUARDANDO_AUTORIZACAO">AGUARDANDO_AUTORIZACAO</option>
-                <option value="CONCLUIDO">CONCLUIDO (Saída)</option>
               </select>
             </div>
             <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-1">
@@ -240,12 +242,48 @@
                   <th class="p-3">Nome Visitante</th>
                   <th class="p-3">Documento</th>
                   <th class="p-3">Motivo da Visita</th>
-                  <th class="p-3">Status Visitante</th>
+                  <th class="p-3">Status</th>
                   <th class="p-3">Data/Hora Entrada</th>
                   <th class="p-3">Registrado por</th>
+                  <th class="p-3 text-right">Ação / Registrar Saída & Vistoria</th>
                 </tr>
               </thead>
               <tbody id="visCrudTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
+                <!-- Renderizado via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Seção 4: Histórico de Visitas & Vistorias Concluídas no Ano -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-nexus-border dark:border-nexus-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border pb-3">
+            <div>
+              <h3 class="font-display font-bold text-sm text-nexus-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-nexus-500">history_edu</span>
+                Histórico de Visitas e Vistorias Concluídas no Ano
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Registro permanente das visitas finalizadas e o parecer das vistorias realizadas durante o ano.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 font-mono text-xs font-bold text-slate-600 dark:text-slate-300">
+              Livro do Ano
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono uppercase">
+                <tr>
+                  <th class="p-3">Nome Visitante</th>
+                  <th class="p-3">Documento</th>
+                  <th class="p-3">Motivo da Visita</th>
+                  <th class="p-3">Data/Hora Entrada</th>
+                  <th class="p-3">Data/Hora Saída</th>
+                  <th class="p-3">Parecer da Vistoria</th>
+                  <th class="p-3">Registrado por</th>
+                </tr>
+              </thead>
+              <tbody id="visHistoricoTableBody" class="divide-y divide-nexus-border dark:divide-slate-800 font-medium">
                 <!-- Renderizado via JS -->
               </tbody>
             </table>

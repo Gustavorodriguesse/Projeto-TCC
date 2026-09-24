@@ -9,9 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!session) return;
 
   const gpsTableBody = document.getElementById('embarcacoesGpsTableBody');
+  const toggleNavioBtn = document.getElementById('toggleNavioFormBtn');
+  const navioForm = document.getElementById('navioForm');
   const toggleContainerBtn = document.getElementById('toggleContainerFormBtn');
   const containerForm = document.getElementById('containerForm');
   const containersTableBody = document.getElementById('containersTableBody');
+
+  let naviosList = [
+    { nome: 'MV Santos Star', imo: 'IMO-9821034', gps: '23.9608° S, 46.3022° W', localizacao: 'DENTRO_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 10200, dataSaida: null },
+    { nome: 'MV Pacific Giant', imo: 'IMO-9742110', gps: '12.0463° S, 77.0428° W', localizacao: 'FORA_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Singapura', distancia: 18500, dataSaida: new Date(Date.now() - 86400000 * 3).toISOString() },
+    { nome: 'MV Atlantic Breeze', imo: 'IMO-9651002', gps: '01.2902° N, 103.8519° E', localizacao: 'NO_PORTO_DE_DESTINO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 0, dataSaida: new Date(Date.now() - 86400000 * 12).toISOString() }
+  ];
 
   // Cálculo de ETA a 33 km/h
   function calcularETA(distanciaKm) {
@@ -23,17 +31,48 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${dias}d ${horas}h (Distância: ${distanciaKm} km @ 33 km/h)`;
   }
 
+  // Carrega navios do Supabase
+  async function carregarNaviosSupabase() {
+    if (window.nexusSupabase) {
+      try {
+        const { data, error } = await window.nexusSupabase
+          .from('navios')
+          .select('*');
+
+        if (!error && data && data.length > 0) {
+          const mapSupabase = data.map(n => ({
+            nome: n.nome,
+            imo: n.numero_imo,
+            gps: n.coordenadas_gps || '23.9608° S, 46.3022° W',
+            localizacao: n.localizacao || 'DENTRO_DO_PORTO',
+            origem: n.porto_origem || 'Porto de Santos',
+            destino: n.porto_destino || 'Porto de Roterdã',
+            distancia: 10200,
+            dataSaida: n.data_saida || (n.localizacao === 'FORA_DO_PORTO' ? new Date(Date.now() - 86400000 * 2).toISOString() : null)
+          }));
+
+          // Mescla sem duplicar pelo IMO
+          const imoSet = new Set(mapSupabase.map(x => x.imo));
+          naviosList.forEach(defaultNavio => {
+            if (!imoSet.has(defaultNavio.imo)) {
+              mapSupabase.push(defaultNavio);
+            }
+          });
+
+          naviosList = mapSupabase;
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao carregar navios do Supabase:', err);
+      }
+    }
+    renderGpsTable();
+  }
+
   // Renderiza Tabela de GPS com Fix para NO_PORTO_DE_DESTINO (RF 5 / RN 8)
   function renderGpsTable() {
     if (!gpsTableBody) return;
 
-    const navios = [
-      { nome: 'MV Santos Star', imo: 'IMO-9821034', gps: '23.9608° S, 46.3022° W', localizacao: 'DENTRO_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 10200, dataSaida: null },
-      { nome: 'MV Pacific Giant', imo: 'IMO-9742110', gps: '12.0463° S, 77.0428° W', localizacao: 'FORA_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Singapura', distancia: 18500, dataSaida: new Date(Date.now() - 86400000 * 3).toISOString() },
-      { nome: 'MV Atlantic Breeze', imo: 'IMO-9651002', gps: '01.2902° N, 103.8519° E', localizacao: 'NO_PORTO_DE_DESTINO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 0, dataSaida: new Date(Date.now() - 86400000 * 12).toISOString() }
-    ];
-
-    gpsTableBody.innerHTML = navios.map(n => {
+    gpsTableBody.innerHTML = naviosList.map(n => {
       let etaText = '';
       let tempoForaText = '';
 
@@ -74,7 +113,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  renderGpsTable();
+  carregarNaviosSupabase();
+
+  if (toggleNavioBtn && navioForm) {
+    toggleNavioBtn.addEventListener('click', () => navioForm.classList.toggle('hidden'));
+  }
+
+  if (navioForm) {
+    navioForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('navioNome').value.trim();
+      const imo = document.getElementById('navioImo').value.trim();
+      const origem = document.getElementById('navioOrigem').value.trim();
+      const destino = document.getElementById('navioDestino').value.trim();
+      const localizacao = document.getElementById('navioLocalizacao').value;
+      const gps = document.getElementById('navioGps').value.trim() || '23.9608° S, 46.3022° W';
+      const distancia = parseFloat(document.getElementById('navioDistancia').value) || 10200;
+
+      const novoNavio = {
+        nome, imo, gps, localizacao, origem, destino, distancia, dataSaida: localizacao === 'FORA_DO_PORTO' ? new Date().toISOString() : null
+      };
+
+      naviosList.unshift(novoNavio);
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('navios').insert({
+            nome,
+            numero_imo: imo,
+            porto_origem: origem,
+            porto_destino: destino,
+            localizacao,
+            coordenadas_gps: gps,
+            estado_operacional: 'OPERANTE',
+            qr_code_url: `QR-${imo}`
+          });
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao sincronizar navio com Supabase:', err);
+        }
+      }
+
+      renderGpsTable();
+      navioForm.reset();
+      navioForm.classList.add('hidden');
+      alert(`Navio ${nome} (${imo}) cadastrado e sincronizado com sucesso no Supabase!`);
+    });
+  }
 
   // CRUD de Contêineres (T2.6 / RN 7)
   let containersList = JSON.parse(localStorage.getItem('nexus_containers_list') || 'null');
@@ -84,6 +168,42 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'CONT-992', identificacao: 'MSCU-102938-4', tipo: 'Eletrônicos', dataFabr: '2021-08-20', dataManut: '2024-11-02', refTempo: 'DATA_ULTIMA_MANUTENCAO', navio: 'MV Santos Star', estado: 'OPERANTE' }
     ];
     localStorage.setItem('nexus_containers_list', JSON.stringify(containersList));
+  }
+
+  async function carregarContainersSupabase() {
+    if (window.nexusSupabase) {
+      try {
+        const { data, error } = await window.nexusSupabase
+          .from('containers')
+          .select('*');
+
+        if (!error && data && data.length > 0) {
+          const supConts = data.map(c => ({
+            id: c.id || `CONT-${c.numero_identificacao}`,
+            identificacao: c.numero_identificacao,
+            tipo: c.material_carregado || 'Carga Geral',
+            dataFabr: c.data_fabricacao || '2021-01-01',
+            dataManut: c.data_ultima_manutencao || '2025-01-01',
+            refTempo: c.tempo_uso_referencia || 'DATA_FABRICACAO',
+            navio: 'MV Santos Star',
+            estado: c.estado || 'OPERANTE'
+          }));
+
+          const idSet = new Set(supConts.map(x => x.identificacao));
+          containersList.forEach(defaultCont => {
+            if (!idSet.has(defaultCont.identificacao)) {
+              supConts.push(defaultCont);
+            }
+          });
+
+          containersList = supConts;
+          localStorage.setItem('nexus_containers_list', JSON.stringify(containersList));
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao carregar contêineres do Supabase:', err);
+      }
+    }
+    renderContainersTable();
   }
 
   function renderContainersTable() {
@@ -100,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  renderContainersTable();
+  carregarContainersSupabase();
 
   if (toggleContainerBtn && containerForm) {
     toggleContainerBtn.addEventListener('click', () => containerForm.classList.toggle('hidden'));

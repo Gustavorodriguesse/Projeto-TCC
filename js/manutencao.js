@@ -124,6 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
         await window.nexusSupabase.from('manutencoes')
           .update({ status: supabaseStatus })
           .ilike('descricao', `%${idOS}%`);
+
+        if (acao === 'CONCLUIR') {
+          await window.nexusSupabase.from('historico_manutencoes').insert({
+            data_manutencao: new Date().toISOString().split('T')[0],
+            descricao_servicos: `Conclusão da Ordem de Serviço ${idOS} para ${os.equipamento}: ${os.descricao}`
+          });
+        }
       } catch (err) {
         console.warn('[NexusPort] Erro ao atualizar status da OS no Supabase:', err);
       }

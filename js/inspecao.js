@@ -171,6 +171,20 @@ document.addEventListener('DOMContentLoaded', () => {
           await window.nexusSupabase.from('cargas')
             .update({ status_fluxo: 'ARMAZENAGEM', resultado_inspecao: 'APROVADA' })
             .eq('qr_code_url', cargaAtual.qrCode || `QR-${cargaAtual.id}`);
+
+          // Busca carga id no Supabase para salvar na tabela inspecoes
+          const { data: cargaDb } = await window.nexusSupabase.from('cargas')
+            .select('id')
+            .eq('qr_code_url', cargaAtual.qrCode || `QR-${cargaAtual.id}`)
+            .maybeSingle();
+
+          if (cargaDb) {
+            await window.nexusSupabase.from('inspecoes').insert({
+              carga_id: cargaDb.id,
+              resultado: 'APROVADA',
+              observacoes: '100% dos itens críticos do checklist verificados em CONFORME'
+            });
+          }
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar aprovação no Supabase:', err);
         }
@@ -209,6 +223,19 @@ document.addEventListener('DOMContentLoaded', () => {
           await window.nexusSupabase.from('cargas')
             .update({ status_fluxo: 'RECUSADA', resultado_inspecao: 'RECUSADA', motivo_recusa: motivo })
             .eq('qr_code_url', cargaAtual.qrCode || `QR-${cargaAtual.id}`);
+
+          const { data: cargaDb } = await window.nexusSupabase.from('cargas')
+            .select('id')
+            .eq('qr_code_url', cargaAtual.qrCode || `QR-${cargaAtual.id}`)
+            .maybeSingle();
+
+          if (cargaDb) {
+            await window.nexusSupabase.from('inspecoes').insert({
+              carga_id: cargaDb.id,
+              resultado: 'RECUSADA',
+              observacoes: motivo
+            });
+          }
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar recusa no Supabase:', err);
         }
