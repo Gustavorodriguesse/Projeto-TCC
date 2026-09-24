@@ -165,11 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Mescla sem omitir nenhum funcionário (base hardcoded + local + Supabase)
+    // Mescla sem omitir nenhum funcionário e limpando duplicidades de MAT-1914
     const allMap = new Map();
 
     employeeList.forEach(e => {
-      allMap.set(e.matricula, {
+      allMap.set(e.matricula.toUpperCase(), {
         matricula: e.matricula,
         nome: e.nome,
         cargo: e.cargo_nome || e.cargo,
@@ -179,7 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     localList.forEach(l => {
-      allMap.set(l.matricula, {
+      const matKey = l.matricula.toUpperCase();
+      // Se for MAT-1914, garante que apenas Maxwell Philip da Cruz seja mantido
+      if (matKey === 'MAT-1914' && l.nome !== 'Maxwell Philip da Cruz') {
+        return;
+      }
+      allMap.set(matKey, {
         matricula: l.matricula,
         nome: l.nome,
         cargo: l.cargo,
@@ -189,7 +194,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     supabaseFuncs.forEach(s => {
-      allMap.set(s.matricula, {
+      const matKey = s.matricula.toUpperCase();
+      if (matKey === 'MAT-1914' && s.nome !== 'Maxwell Philip da Cruz') {
+        return;
+      }
+      allMap.set(matKey, {
         matricula: s.matricula,
         nome: s.nome,
         cargo: s.cargo,
@@ -197,6 +206,20 @@ document.addEventListener('DOMContentLoaded', () => {
         doc: s.ativo ? 'Ativo no Supabase' : 'Inativo no Supabase'
       });
     });
+
+    // Garante presença exata de Maxwell Philip da Cruz em MAT-1914 se existir local/remoto
+    const maxwellLocal = localList.find(x => x.matricula.toUpperCase() === 'MAT-1914' && x.nome === 'Maxwell Philip da Cruz');
+    const maxwellSupa = supabaseFuncs.find(x => x.matricula.toUpperCase() === 'MAT-1914' && x.nome === 'Maxwell Philip da Cruz');
+    if (maxwellLocal || maxwellSupa) {
+      const m = maxwellLocal || maxwellSupa;
+      allMap.set('MAT-1914', {
+        matricula: 'MAT-1914',
+        nome: 'Maxwell Philip da Cruz',
+        cargo: m.cargo || 'Planejador de Pátio e Navios',
+        codigo: m.codigo || m.codigo_individual || 'NX-1914-PL',
+        doc: 'Ficha Cadastral Oficial MAT-1914'
+      });
+    }
 
     mergedFuncList = Array.from(allMap.values());
 
@@ -227,18 +250,45 @@ document.addEventListener('DOMContentLoaded', () => {
   if (funcForm) {
     funcForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const matricula = document.getElementById('funcMatricula').value.trim();
+      const matriculaRaw = document.getElementById('funcMatricula').value.trim();
       const nome = document.getElementById('funcNome').value.trim();
       const cargoSelect = document.getElementById('funcCargo');
       const cargoValue = cargoSelect ? cargoSelect.value : 'ESTIVADOR';
       const cargoText = cargoSelect && cargoSelect.options[cargoSelect.selectedIndex] ? cargoSelect.options[cargoSelect.selectedIndex].text : cargoValue;
       const doc = document.getElementById('funcDoc').value.trim();
 
+      const formattedMatricula = matriculaRaw.toUpperCase().startsWith('MAT-') ? matriculaRaw.toUpperCase() : `MAT-${matriculaRaw.toUpperCase()}`;
+
+      // Validação de Duplicidade Rígida: Bloqueia qualquer cadastro com a mesma matrícula
+      const funcionarioExistente = mergedFuncList.find(f => f.matricula.toUpperCase() === formattedMatricula);
+      if (funcionarioExistente) {
+        alert(`BLOQUEIO DE DUPLICIDADE: A matrícula "${formattedMatricula}" já está cadastrada no sistema para o funcionário "${funcionarioExistente.nome}". Não é permitido cadastrar mais de uma pessoa com a mesma matrícula!`);
+        return;
+      }
+
+      // Validação assíncrona adicional no Supabase
+      if (window.nexusSupabase) {
+        try {
+          const { data: dupData } = await window.nexusSupabase
+            .from('funcionarios')
+            .select('nome, matricula')
+            .eq('matricula', formattedMatricula)
+            .maybeSingle();
+
+          if (dupData) {
+            alert(`BLOQUEIO DE DUPLICIDADE (Supabase): A matrícula "${formattedMatricula}" já pertence ao funcionário "${dupData.nome}". Não é permitido cadastrar duplicidades!`);
+            return;
+          }
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao verificar duplicidade no Supabase:', err);
+        }
+      }
+
       const suffix = Math.floor(1000 + Math.random() * 9000);
-      const codigo = `NX-${matricula.replace('MAT-', '')}-${suffix}`;
+      const codigo = `NX-${formattedMatricula.replace('MAT-', '')}-${suffix}`;
 
       const novoFuncionario = {
-        matricula: matricula,
+        matricula: formattedMatricula,
         nome: nome,
         cargo: cargoText,
         cargo_enum: cargoValue,
