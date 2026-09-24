@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayPeso = match ? `${match.peso} / ${match.volume}` : '25.5 t / 40 m³';
     const displayNavio = match ? (match.navio || 'MV Santos Star') : 'MV Santos Star';
 
-    // Grava log de leitura QR Code no pátio (T5.8)
+    // Grava log de leitura QR Code no pátio (T5.8 & Supabase leituras_qr_code)
     const logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
     logs.unshift({
       data_hora: new Date().toISOString(),
@@ -91,6 +91,18 @@ document.addEventListener('DOMContentLoaded', () => {
       tipo_alteracao: 'Leitura QR Code no Pátio (Scan)'
     });
     localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
+
+    if (window.nexusSupabase) {
+      try {
+        window.nexusSupabase.from('leituras_qr_code').insert({
+          entidade_tipo: displayId.startsWith('CONT') ? 'CONTAINER' : 'CARGA',
+          entidade_id: displayId,
+          data_hora: new Date().toISOString()
+        }).then().catch(err => console.warn('[NexusPort] Erro ao registrar leitura QR Code no Supabase:', err));
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao registrar leitura QR Code no Supabase:', err);
+      }
+    }
 
     // Define direcionamento por cargo (T5.7)
     const cargo = session.cargo;

@@ -141,34 +141,84 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // CRUD Funcionários (T2.1)
+  // CRUD Funcionários (T2.1 & Conexão Supabase)
   const toggleFuncBtn = document.getElementById('toggleFuncFormBtn');
   const funcForm = document.getElementById('funcCrudForm');
   const funcTableBody = document.getElementById('funcCrudTableBody');
 
-  let funcList = JSON.parse(localStorage.getItem('nexus_func_list') || 'null');
-  if (!funcList) {
-    funcList = [
-      { matricula: 'MAT-1040', nome: 'João Pedro', cargo: 'Estivador', codigo: 'NX-1040-OP', doc: 'Ficha #101' },
-      { matricula: 'MAT-2050', nome: 'Mariana Souza', cargo: 'Conferente de Carga', codigo: 'NX-2050-CF', doc: 'Ficha #102' }
-    ];
-    localStorage.setItem('nexus_func_list', JSON.stringify(funcList));
+  let mergedFuncList = [];
+
+  async function carregarFuncionariosCompleto() {
+    let localList = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
+    let supabaseFuncs = [];
+
+    if (window.nexusSupabase) {
+      try {
+        const { data, error } = await window.nexusSupabase
+          .from('funcionarios')
+          .select('*');
+        if (!error && data) {
+          supabaseFuncs = data;
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Falha ao carregar funcionários do Supabase:', err);
+      }
+    }
+
+    // Mescla sem omitir nenhum funcionário (base hardcoded + local + Supabase)
+    const allMap = new Map();
+
+    employeeList.forEach(e => {
+      allMap.set(e.matricula, {
+        matricula: e.matricula,
+        nome: e.nome,
+        cargo: e.cargo_nome || e.cargo,
+        codigo: e.codigo,
+        doc: 'Ficha Cadastral Base'
+      });
+    });
+
+    localList.forEach(l => {
+      allMap.set(l.matricula, {
+        matricula: l.matricula,
+        nome: l.nome,
+        cargo: l.cargo,
+        codigo: l.codigo,
+        doc: l.doc || 'Ficha Local'
+      });
+    });
+
+    supabaseFuncs.forEach(s => {
+      allMap.set(s.matricula, {
+        matricula: s.matricula,
+        nome: s.nome,
+        cargo: s.cargo,
+        codigo: s.codigo_individual || `NX-${s.matricula.replace('MAT-', '')}-SP`,
+        doc: s.ativo ? 'Ativo no Supabase' : 'Inativo no Supabase'
+      });
+    });
+
+    mergedFuncList = Array.from(allMap.values());
+
+    // Atualiza local storage com a lista unificada
+    localStorage.setItem('nexus_func_list', JSON.stringify(mergedFuncList));
+    renderFuncTable();
   }
 
   function renderFuncTable() {
     if (!funcTableBody) return;
-    funcTableBody.innerHTML = funcList.map(f => `
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+    funcTableBody.innerHTML = mergedFuncList.map(f => `
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
         <td class="p-3 font-mono font-bold text-nexus-500">${f.matricula}</td>
         <td class="p-3 font-bold">${f.nome}</td>
-        <td class="p-3 text-slate-500">${f.cargo}</td>
+        <td class="p-3 text-slate-500 font-semibold">${f.cargo}</td>
         <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">${f.codigo}</td>
-        <td class="p-3 text-slate-400 font-mono text-xs">${f.doc || 'Privado'}</td>
+        <td class="p-3 text-slate-400 font-mono text-xs">${f.doc || 'Cadastrado'}</td>
       </tr>
     `).join('');
   }
 
-  renderFuncTable();
+  carregarFuncionariosCompleto();
 
   if (toggleFuncBtn && funcForm) {
     toggleFuncBtn.addEventListener('click', () => funcForm.classList.toggle('hidden'));
@@ -196,29 +246,25 @@ document.addEventListener('DOMContentLoaded', () => {
         doc: doc || 'Cadastrado no Sistema'
       };
 
-      funcList.unshift(novoFuncionario);
-      localStorage.setItem('nexus_func_list', JSON.stringify(funcList));
+      const localList = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
+      localList.unshift(novoFuncionario);
+      localStorage.setItem('nexus_func_list', JSON.stringify(localList));
 
       if (window.nexusSupabase) {
         try {
-          const { data, error } = await window.nexusSupabase.from('funcionarios').insert({
+          await window.nexusSupabase.from('funcionarios').insert({
             matricula: matricula,
             codigo_individual: codigo,
             nome: nome,
             cargo: cargoValue,
             ativo: true
-          }).select().maybeSingle();
-
-          if (!error && data) {
-            novoFuncionario.nome = data.nome || nome;
-            novoFuncionario.matricula = data.matricula || matricula;
-          }
+          });
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar funcionário com Supabase:', err);
         }
       }
 
-      renderFuncTable();
+      await carregarFuncionariosCompleto();
       funcForm.reset();
       funcForm.classList.add('hidden');
 
@@ -230,40 +276,176 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // CRUD Visitantes (T2.2 & Tarefa 8: Status de Visitante no Supabase)
+  // CRUD Visitantes (T2.2 & Separação em Ativos / Histórico)
   const toggleVisBtn = document.getElementById('toggleVisFormBtn');
   const visForm = document.getElementById('visCrudForm');
   const visTableBody = document.getElementById('visCrudTableBody');
+  const visHistoricoTableBody = document.getElementById('visHistoricoTableBody');
 
   let visList = JSON.parse(localStorage.getItem('nexus_vis_list') || 'null');
   if (!visList) {
     visList = [
-      { nome: 'João Souza', documento: 'CPF 123.456.789-00', motivo: 'Fiscalização Alfandegária', status: 'EM_VISITA', data: '20/09/2026 08:30', por: session.matricula }
+      { id: 'VIS-001', nome: 'João Souza', documento: 'CPF 123.456.789-00', motivo: 'Fiscalização Alfandegária', status: 'EM_VISITA', data: '20/09/2026 08:30', data_saida: null, vistoria: null, por: session.matricula },
+      { id: 'VIS-002', nome: 'Ana Beatriz', documento: 'CPF 987.654.321-11', motivo: 'Vistoria Ambiental de Pátio', status: 'CONCLUIDO', data: '15/09/2026 09:00', data_saida: '15/09/2026 11:30', vistoria: 'Vistoria em Ordem - Sem Alterações', por: session.matricula }
     ];
     localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
   }
 
-  function renderVisTable() {
-    if (!visTableBody) return;
-    visTableBody.innerHTML = visList.map(v => `
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-        <td class="p-3 font-bold">${v.nome}</td>
-        <td class="p-3 font-mono text-xs">${v.documento}</td>
-        <td class="p-3 text-slate-500">${v.motivo}</td>
-        <td class="p-3">
-          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-            v.status === 'EM_VISITA' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' :
-            v.status === 'CONCLUIDO' ? 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' :
-            'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
-          }">${v.status || 'EM_VISITA'}</span>
-        </td>
-        <td class="p-3 font-mono text-xs text-slate-400">${v.data}</td>
-        <td class="p-3 font-mono text-xs font-bold text-nexus-500">${v.por}</td>
-      </tr>
-    `).join('');
+  async function carregarVisitantesCompleto() {
+    let supabaseVisitors = [];
+
+    if (window.nexusSupabase) {
+      try {
+        const { data, error } = await window.nexusSupabase
+          .from('visitantes')
+          .select('*');
+        if (!error && data) {
+          supabaseVisitors = data;
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao carregar visitantes do Supabase:', err);
+      }
+    }
+
+    const localVisitors = JSON.parse(localStorage.getItem('nexus_vis_list') || '[]');
+    const mergedMap = new Map();
+
+    localVisitors.forEach(v => {
+      const key = v.id || `${v.nome}_${v.documento}`;
+      mergedMap.set(key, v);
+    });
+
+    supabaseVisitors.forEach(s => {
+      const key = s.id || `${s.nome}_${s.documento}`;
+      const isConcluido = s.data_hora_saida || s.status === 'CONCLUIDO';
+      mergedMap.set(key, {
+        id: s.id,
+        nome: s.nome,
+        documento: s.documento,
+        motivo: s.motivo,
+        status: isConcluido ? 'CONCLUIDO' : (s.status || 'EM_VISITA'),
+        data: s.data_hora_entrada ? new Date(s.data_hora_entrada).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR'),
+        data_saida: s.data_hora_saida ? new Date(s.data_hora_saida).toLocaleString('pt-BR') : null,
+        vistoria: isConcluido ? 'Vistoria em Ordem - Concluída' : null,
+        por: session.matricula
+      });
+    });
+
+    visList = Array.from(mergedMap.values());
+    localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
+    renderVisTables();
   }
 
-  renderVisTable();
+  function renderVisTables() {
+    const ativos = visList.filter(v => !v.data_saida && v.status !== 'CONCLUIDO');
+    const historico = visList.filter(v => v.data_saida || v.status === 'CONCLUIDO');
+
+    // 1. Renderiza Visitantes Ativos
+    if (visTableBody) {
+      if (ativos.length === 0) {
+        visTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-4 text-center text-slate-400 italic">Nenhum visitante ativo no porto no momento.</td>
+          </tr>
+        `;
+      } else {
+        visTableBody.innerHTML = ativos.map(v => {
+          const vKey = v.id || `${v.nome}_${v.documento}`;
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+              <td class="p-3 font-bold">${v.nome}</td>
+              <td class="p-3 font-mono text-xs">${v.documento}</td>
+              <td class="p-3 text-slate-500">${v.motivo}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  ${v.status || 'EM_VISITA'}
+                </span>
+              </td>
+              <td class="p-3 font-mono text-xs text-slate-400">${v.data}</td>
+              <td class="p-3 font-mono text-xs font-bold text-nexus-500">${v.por || session.matricula}</td>
+              <td class="p-3 text-right whitespace-nowrap">
+                <button type="button" onclick="window.registrarSaidaVisitante('${vKey}')" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1 ml-auto shadow-sm transition-colors">
+                  <span class="material-symbols-outlined text-[16px]">logout</span>
+                  <span>Registrar Saída & Vistoria</span>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // 2. Renderiza Histórico de Visitas Concluídas no Ano
+    if (visHistoricoTableBody) {
+      if (historico.length === 0) {
+        visHistoricoTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-4 text-center text-slate-400 italic">Nenhuma visita concluída registrada no histórico do ano.</td>
+          </tr>
+        `;
+      } else {
+        visHistoricoTableBody.innerHTML = historico.map(v => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <td class="p-3 font-bold text-slate-700 dark:text-slate-200">${v.nome}</td>
+            <td class="p-3 font-mono text-xs">${v.documento}</td>
+            <td class="p-3 text-slate-500">${v.motivo}</td>
+            <td class="p-3 font-mono text-xs text-slate-400">${v.data}</td>
+            <td class="p-3 font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">${v.data_saida || 'Concluída'}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                ${v.vistoria || 'Vistoria em Ordem - Sem Anormalidades'}
+              </span>
+            </td>
+            <td class="p-3 font-mono text-xs text-slate-400">${v.por || session.matricula}</td>
+          </tr>
+        `).join('');
+      }
+    }
+  }
+
+  // Registrar Saída do Visitante (Move do Ativo para o Histórico)
+  window.registrarSaidaVisitante = async function(visitorKey) {
+    const visitor = visList.find(v => (v.id && v.id === visitorKey) || (`${v.nome}_${v.documento}` === visitorKey));
+    if (!visitor) return;
+
+    const dataSaidaStr = prompt(`Informe a data/hora de saída do visitante ${visitor.nome}:`, new Date().toLocaleString('pt-BR'));
+    if (!dataSaidaStr) return;
+
+    const parecerVistoria = prompt(`Informe o parecer da vistoria para ${visitor.nome}:`, 'Vistoria em Ordem - Sem Anormalidades');
+
+    visitor.status = 'CONCLUIDO';
+    visitor.data_saida = dataSaidaStr;
+    visitor.vistoria = parecerVistoria || 'Vistoria em Ordem - Sem Anormalidades';
+
+    localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
+
+    if (window.nexusSupabase) {
+      try {
+        if (visitor.id) {
+          await window.nexusSupabase.from('visitantes')
+            .update({
+              data_hora_saida: new Date().toISOString(),
+              motivo: `${visitor.motivo} | ${visitor.vistoria}`
+            })
+            .eq('id', visitor.id);
+        } else {
+          await window.nexusSupabase.from('visitantes')
+            .update({
+              data_hora_saida: new Date().toISOString(),
+              motivo: `${visitor.motivo} | ${visitor.vistoria}`
+            })
+            .eq('documento', visitor.documento);
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao atualizar saída de visitante no Supabase:', err);
+      }
+    }
+
+    renderVisTables();
+    alert(`Saída do visitante ${visitor.nome} registrada com sucesso! A visita foi concluída e arquivada no histórico do ano.`);
+  };
+
+  carregarVisitantesCompleto();
 
   if (toggleVisBtn && visForm) {
     toggleVisBtn.addEventListener('click', () => visForm.classList.toggle('hidden'));
@@ -279,8 +461,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const status = statusElem ? statusElem.value : 'EM_VISITA';
 
       const novoVisitante = {
-        nome, documento, motivo, status,
+        id: `VIS-${Math.floor(1000 + Math.random() * 9000)}`,
+        nome,
+        documento,
+        motivo,
+        status,
         data: new Date().toLocaleString('pt-BR'),
+        data_saida: null,
+        vistoria: null,
         por: session.matricula
       };
 
@@ -293,14 +481,14 @@ document.addEventListener('DOMContentLoaded', () => {
             nome: nome,
             documento: documento,
             motivo: motivo,
-            status: status
+            data_hora_entrada: new Date().toISOString()
           });
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar visitante com Supabase:', err);
         }
       }
 
-      renderVisTable();
+      renderVisTables();
       visForm.reset();
       visForm.classList.add('hidden');
       if (window.mostrarFeedback) {

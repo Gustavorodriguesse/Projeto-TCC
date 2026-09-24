@@ -49,6 +49,44 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
   }
 
+  async function carregarCargasSupabase() {
+    if (window.nexusSupabase) {
+      try {
+        const { data, error } = await window.nexusSupabase
+          .from('cargas')
+          .select('*');
+
+        if (!error && data && data.length > 0) {
+          const loadedCargas = data.map((c, i) => ({
+            id: c.qr_code_url ? c.qr_code_url.replace('QR-', '') : `CRG-2026-00${i + 1}`,
+            tipo: c.natureza || 'Carga Geral',
+            peso: `${c.peso || 20} t`,
+            volume: `${c.volume || 30} m³`,
+            valor: `R$ ${(c.valor_declarado || 100000).toLocaleString('pt-BR')}`,
+            natureza: c.natureza || 'Geral',
+            portoDescarga: c.porto_descarga || 'Porto de Roterdã',
+            destino: c.destino || 'Destino Geral',
+            status: c.status_fluxo || 'AGENDAMENTO',
+            container: c.container_id || '',
+            navio: '',
+            qrCode: c.qr_code_url || `QR-CRG-2026-00${i + 1}`
+          }));
+
+          const idSet = new Set(loadedCargas.map(x => x.id));
+          cargasFluxoList.forEach(def => {
+            if (!idSet.has(def.id)) loadedCargas.push(def);
+          });
+
+          cargasFluxoList = loadedCargas;
+          localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao carregar cargas do Supabase:', err);
+      }
+    }
+    renderTable();
+  }
+
   function renderTable() {
     if (!cargasTableBody) return;
 
@@ -130,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  renderTable();
+  carregarCargasSupabase();
 
   if (toggleFormBtn && agendamentoForm) {
     toggleFormBtn.addEventListener('click', () => agendamentoForm.classList.toggle('hidden'));
@@ -182,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (window.nexusSupabase) {
         try {
-          await window.nexusSupabase.from('cargas').insert({
+          const { data: cargaIns, error: cargaErr } = await window.nexusSupabase.from('cargas').insert({
             natureza: natureza || 'Carga Geral',
             peso: pesoVal,
             volume: volumeVal,
@@ -191,9 +229,16 @@ document.addEventListener('DOMContentLoaded', () => {
             destino: destino,
             status_fluxo: 'AGENDAMENTO',
             qr_code_url: newQrCode
-          });
+          }).select().maybeSingle();
+
+          if (!cargaErr && cargaIns) {
+            await window.nexusSupabase.from('agendamentos').insert({
+              carga_id: cargaIns.id,
+              data_prevista_entrega: new Date().toISOString().split('T')[0]
+            });
+          }
         } catch (err) {
-          console.warn('[NexusPort] Erro ao sincronizar carga com Supabase:', err);
+          console.warn('[NexusPort] Erro ao sincronizar agendamento com Supabase:', err);
         }
       }
 
