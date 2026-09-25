@@ -510,6 +510,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const statusElem = document.getElementById('visStatus');
       const status = statusElem ? statusElem.value : 'EM_VISITA';
 
+      // C14: Impedir cadastro de visitantes com documento duplicado
+      const docNormalizado = documento.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const visitanteExistente = visList.find(v => v.documento.toUpperCase().replace(/[^A-Z0-9]/g, '') === docNormalizado);
+      if (visitanteExistente) {
+        alert(`BLOQUEIO DE SEGURANÇA (C14): O documento "${documento}" já está cadastrado para o visitante "${visitanteExistente.nome}". Cada visitante deve possuir documento único!`);
+        return;
+      }
+
+      if (window.nexusSupabase) {
+        try {
+          const { data: dupVis } = await window.nexusSupabase
+            .from('visitantes')
+            .select('nome, documento')
+            .eq('documento', documento)
+            .maybeSingle();
+
+          if (dupVis) {
+            alert(`BLOQUEIO DE SEGURANÇA (C14): Documento "${documento}" já registrado no banco de dados para "${dupVis.nome}". Duplicação bloqueada.`);
+            return;
+          }
+        } catch (err) {
+          console.warn('[NexusPort] Erro ao validar documento no Supabase:', err);
+        }
+      }
+
       const novoVisitante = {
         id: `VIS-${Math.floor(1000 + Math.random() * 9000)}`,
         nome,

@@ -159,57 +159,50 @@ document.addEventListener('DOMContentLoaded', () => {
     estrategicoPanel.classList.remove('hidden');
     renderIndicadoresExecutivosTable();
     renderEstrategicoCharts();
-    if (exportHistoricoBtn) {
-      exportHistoricoBtn.addEventListener('click', () => {
-        NexusVision.exportDadosHistoricos();
-      });
-    }
   }
 
-  // Renderiza Tabela de Indicadores Executivos Consolidados (Tarefa 3)
-  function renderIndicadoresExecutivosTable() {
+  // Renderiza Planilha Consolidada de Desempenho Operacional por Categoria (A3)
+  async function renderIndicadoresExecutivosTable() {
     const execTableBody = document.getElementById('indicadoresExecutivosTableBody');
     if (!execTableBody) return;
 
-    const indicadores = [
-      { categoria: 'Contêineres (TEUs)', volume: 3450, meta: 3200, atingimento: 107.8, tempo: 1.8, status: 'EXCELENTE' },
-      { categoria: 'Cargas Soltas e Fracionadas', volume: 1280, meta: 1400, atingimento: 91.4, tempo: 2.4, status: 'DENTRO_DA_META' },
-      { categoria: 'Granéis Sólidos e Líquidos (t)', volume: 8900, meta: 8000, atingimento: 111.2, tempo: 3.1, status: 'EXCELENTE' },
-      { categoria: 'Cargas Perigosas (IMO)', volume: 420, meta: 500, atingimento: 84.0, tempo: 4.2, status: 'ATENCAO' },
-      { categoria: 'Inspeções e Vistorias Técnicas', volume: 850, meta: 800, atingimento: 106.2, tempo: 0.9, status: 'EXCELENTE' }
-    ];
+    let cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+    let containers = JSON.parse(localStorage.getItem('nexus_containers_list') || '[]');
 
-    const totalVolume = indicadores.reduce((acc, i) => acc + i.volume, 0);
-    const mediaAtingimento = (indicadores.reduce((acc, i) => acc + i.atingimento, 0) / indicadores.length).toFixed(1);
+    if (window.nexusSupabase) {
+      try {
+        const { data: dbCargas } = await window.nexusSupabase.from('cargas').select('*');
+        if (dbCargas && dbCargas.length > 0) {
+          cargas = dbCargas.map(c => ({
+            id: c.id,
+            tipo: c.natureza || 'Carga Geral',
+            volume: `${c.volume || 0} m³`,
+            status: c.status_fluxo
+          }));
+        }
+      } catch (e) { console.warn('Erro ao carregar dados do Supabase para planilha:', e); }
+    }
+
+    const totalCargas = cargas.length;
+    const totalConts = containers.length;
+
+    const indicadores = [
+      { categoria: 'Contêineres Alocados', volume: totalConts, meta: 50, atingimento: Math.round((totalConts / 50) * 100), tempo: 1.5, status: 'OPERACIONAL' },
+      { categoria: 'Cargas Geral no Fluxo', volume: totalCargas, meta: 100, atingimento: Math.round((totalCargas / 100) * 100), tempo: 2.1, status: 'OPERACIONAL' }
+    ];
 
     execTableBody.innerHTML = indicadores.map((i, idx) => `
       <tr class="${idx % 2 === 0 ? 'bg-slate-50/60 dark:bg-slate-800/40' : 'bg-white dark:bg-slate-900'} hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
         <td class="p-3 text-left font-bold text-nexus-900 dark:text-white">${i.categoria}</td>
         <td class="p-3 text-right font-mono font-bold text-slate-700 dark:text-slate-200">${i.volume.toLocaleString('pt-BR')}</td>
         <td class="p-3 text-right font-mono text-slate-500">${i.meta.toLocaleString('pt-BR')}</td>
-        <td class="p-3 text-right font-mono font-bold ${i.atingimento >= 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">${i.atingimento}%</td>
+        <td class="p-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">${i.atingimento}%</td>
         <td class="p-3 text-right font-mono text-slate-600 dark:text-slate-300">${i.tempo} h</td>
         <td class="p-3 text-center">
-          <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-            i.status === 'EXCELENTE' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' :
-            i.status === 'DENTRO_DA_META' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300' :
-            'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
-          }">${i.status}</span>
+          <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">${i.status}</span>
         </td>
       </tr>
-    `).join('') + `
-      <!-- Linha de Totais Destacada -->
-      <tr class="bg-slate-200 dark:bg-slate-800 font-bold border-t-2 border-slate-300 dark:border-slate-700">
-        <td class="p-3 text-left font-display text-nexus-900 dark:text-white uppercase">TOTAL CONSOLIDADO</td>
-        <td class="p-3 text-right font-mono text-sm text-nexus-500 dark:text-indigo-400">${totalVolume.toLocaleString('pt-BR')}</td>
-        <td class="p-3 text-right font-mono text-slate-500">--</td>
-        <td class="p-3 text-right font-mono text-sm text-emerald-600 dark:text-emerald-400">${mediaAtingimento}%</td>
-        <td class="p-3 text-right font-mono text-slate-600 dark:text-slate-300">2.5 h (Média)</td>
-        <td class="p-3 text-center">
-          <span class="px-3 py-1 rounded bg-nexus-500 text-white font-mono text-[10px] font-bold uppercase">DESEMPENHO ALTO</span>
-        </td>
-      </tr>
-    `;
+    `).join('');
   }
 
   // 1. Renderiza os 7 Cards Indicadores Operacionais (RF 7)

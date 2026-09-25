@@ -91,12 +91,40 @@ document.addEventListener('DOMContentLoaded', () => {
         tempoForaText = `${dias}d ${horas}h fora do porto`;
       }
 
+      // Busca cargas do localstorage ou Supabase associadas a este navio
+      const cargasFluxo = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      const cargasDoNavio = cargasFluxo.filter(c => c.navio && c.navio.toLowerCase() === n.nome.toLowerCase());
+
+      let bercosInfoHtml = '<span class="text-slate-400 italic text-[11px]">Sem carga vinculada</span>';
+      if (cargasDoNavio.length > 0) {
+        bercosInfoHtml = cargasDoNavio.map(c => `
+          <div class="text-[11px]">
+            <strong class="text-nexus-500">${c.id}</strong>: <span class="font-bold text-slate-700 dark:text-slate-200">${c.portoDescarga || 'Berço não atrelado'}</span>
+          </div>
+        `).join('');
+      }
+
+      // C5, A4, A5: Ações exclusivas do Diretor de Operações e Logística
+      const isDiretorOperacoes = session.cargo === 'DIRETOR_OPERACOES_LOGISTICA';
+      let acoesHtml = '';
+
+      if (isDiretorOperacoes) {
+        if (n.localizacao === 'DENTRO_DO_PORTO') {
+          acoesHtml = `<button type="button" onclick="window.liberarNavioPeloDiretor('${n.imo}')" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px]">Liberar Saída</button>`;
+        } else if (n.localizacao === 'FORA_DO_PORTO' || n.localizacao === 'NO_PORTO_DE_DESTINO') {
+          acoesHtml = `<button type="button" onclick="window.autorizarRetornoNavio('${n.imo}')" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">Autorizar Retorno</button>`;
+        }
+      } else {
+        acoesHtml = `<span class="text-slate-400 font-mono italic text-[10px]">Exclusivo Diretor</span>`;
+      }
+
       return `
         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
           <td class="p-3 font-bold text-nexus-900 dark:text-white">
             ${n.nome}
             <span class="block font-mono text-[10px] text-nexus-500">${n.imo}</span>
           </td>
+          <td class="p-3 font-mono text-xs">${bercosInfoHtml}</td>
           <td class="p-3 font-mono text-xs text-slate-600 dark:text-slate-300">${n.gps}</td>
           <td class="p-3">
             <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
@@ -108,10 +136,85 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="p-3 text-xs">${n.origem} → <strong class="text-nexus-900 dark:text-white">${n.destino}</strong></td>
           <td class="p-3 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold">${etaText}</td>
           <td class="p-3 font-mono text-xs font-bold ${n.localizacao === 'NO_PORTO_DE_DESTINO' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}">${tempoForaText}</td>
+          <td class="p-3 text-right whitespace-nowrap">${acoesHtml}</td>
         </tr>
       `;
     }).join('');
   }
+
+  // C5 & A4: Função para Liberação de Saída de Navios Exclusiva do Diretor de Operações e Logística
+  window.liberarNavioPeloDiretor = async function(imo) {
+    if (session.cargo !== 'DIRETOR_OPERACOES_LOGISTICA') {
+      alert('Acesso Negado (C5): Apenas o Diretor de Operações e Logística pode autorizar a liberação de navios!');
+      return;
+    }
+
+    const navio = naviosList.find(n => n.imo === imo);
+    if (!navio) return;
+
+    if (confirm(`Confirmar liberação de saída do navio ${navio.nome} (${navio.imo})?`)) {
+      const horaSaida = new Date().toISOString();
+      navio.localizacao = 'FORA_DO_PORTO';
+      navio.dataSaida = horaSaida;
+
+      // Sincroniza Supabase
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('navios')
+            .update({ localizacao: 'FORA_DO_PORTO', data_saida: horaSaida })
+            .eq('numero_imo', imo);
+        } catch (err) { console.warn('Erro ao liberar navio no Supabase:', err); }
+      }
+
+      // Registra no Trail de Decisões Críticas
+      if (window.registrarTrailDecisao) {
+        window.registrarTrailDecisao(`Liberou Navio ${navio.nome}`, 'NAVIO', `Horário de saída registrado pelo Diretor: ${new Date(horaSaida).toLocaleString('pt-BR')}`);
+      }
+
+      renderGpsTable();
+      alert(`Navio ${navio.nome} liberado com sucesso pelo Diretor de Operações e Logística. Horário de saída: ${new Date(horaSaida).toLocaleString('pt-BR')}.`);
+    }
+  };
+
+  // A5: Configuração de retorno do navio ao porto de origem
+  window.autorizarRetornoNavio = async function(imo) {
+    if (session.cargo !== 'DIRETOR_OPERACOES_LOGISTICA') {
+      alert('Acesso Negado: Apenas o Diretor de Operações e Logística pode autorizar o retorno de navios!');
+      return;
+    }
+
+    const navio = naviosList.find(n => n.imo === imo);
+    if (!navio) return;
+
+    if (confirm(`Autorizar o retorno da embarcação ${navio.nome} ao Porto de Origem (${navio.origem})?`)) {
+      // Inverte Origem e Destino para a viagem de regresso
+      const antigoDestino = navio.destino;
+      navio.destino = navio.origem;
+      navio.origem = antigoDestino;
+      navio.localizacao = 'FORA_DO_PORTO';
+      navio.dataSaida = new Date().toISOString();
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('navios')
+            .update({
+              porto_origem: navio.origem,
+              porto_destino: navio.destino,
+              localizacao: 'FORA_DO_PORTO',
+              data_saida: navio.dataSaida
+            })
+            .eq('numero_imo', imo);
+        } catch (err) { console.warn('Erro ao atualizar retorno do navio no Supabase:', err); }
+      }
+
+      if (window.registrarTrailDecisao) {
+        window.registrarTrailDecisao(`Autorizou Retorno do Navio ${navio.nome}`, 'NAVIO', `Retorno autorizado para ${navio.destino}`);
+      }
+
+      renderGpsTable();
+      alert(`Retorno do navio ${navio.nome} ao porto ${navio.destino} autorizado com sucesso pelo Diretor!`);
+    }
+  };
 
   carregarNaviosSupabase();
 
@@ -221,16 +324,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderContainersTable() {
     if (!containersTableBody) return;
-    containersTableBody.innerHTML = containersList.map(c => `
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-        <td class="p-3 font-mono font-bold text-nexus-500">${c.identificacao}</td>
-        <td class="p-3 font-bold">${c.tipo}</td>
-        <td class="p-3 font-mono text-xs">Fab: ${c.dataFabr}<br>Manut: ${c.dataManut}</td>
-        <td class="p-3 font-mono text-xs"><span class="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-bold">${c.refTempo}</span></td>
-        <td class="p-3 font-bold text-xs">${c.navio || 'Não Vinculado'}</td>
-        <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">${c.estado}</span></td>
-      </tr>
-    `).join('');
+    containersTableBody.innerHTML = containersList.map(c => {
+      // C3: Busca cargas vinculadas a este contêiner
+      const cargasFluxo = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      const cargasDoCont = cargasFluxo.filter(crg => crg.container && (crg.container.toLowerCase() === c.identificacao.toLowerCase() || crg.container.toLowerCase() === c.id.toLowerCase()));
+
+      let cargasVinculadasHtml = '<span class="text-slate-400 italic text-[11px]">Nenhuma carga</span>';
+      if (cargasDoCont.length > 0) {
+        cargasVinculadasHtml = cargasDoCont.map(crg => `
+          <span class="inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[10px] text-nexus-500 font-bold">${crg.id} (${crg.volume})</span>
+        `).join(' ');
+      }
+
+      return `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="p-3 font-mono font-bold text-nexus-500">${c.identificacao}</td>
+          <td class="p-3 font-bold">${c.tipo}</td>
+          <td class="p-3 font-mono text-xs">${cargasVinculadasHtml}</td>
+          <td class="p-3 font-mono text-xs">Fab: ${c.dataFabr}<br>Manut: ${c.dataManut}</td>
+          <td class="p-3 font-mono text-xs"><span class="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-bold">${c.refTempo}</span></td>
+          <td class="p-3 font-bold text-xs">${c.navio || 'Não Vinculado'}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">${c.estado}</span></td>
+        </tr>
+      `;
+    }).join('');
   }
 
   carregarContainersSupabase();

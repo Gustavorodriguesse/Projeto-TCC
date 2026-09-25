@@ -137,8 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
       doc.text(`Status Atual no Fluxo: ${c.status}`, 16, y);
       doc.text(`Porto de Descarga Individual: ${c.portoDescarga}`, 110, y);
       y += 6;
-      doc.text(`Data/Hora de Entrada: ${new Date().toLocaleDateString('pt-BR')} 08:00`, 16, y);
-      doc.text(`Data/Hora Prevista Saída: ${new Date().toLocaleDateString('pt-BR')} 18:00`, 110, y);
+      // C15: Data e hora do relatório em tempo real
+      const dataAtualReal = new Date();
+      doc.text(`Data/Hora de Emissão: ${dataAtualReal.toLocaleString('pt-BR')}`, 16, y);
+      doc.text(`Validade da Auditoria: ${dataAtualReal.toLocaleDateString('pt-BR')} 23:59:59`, 110, y);
 
       doc.save(`Relatorio_A4_${c.id}.pdf`);
       alert(`Relatório PDF A4 em 4 seções gerado com sucesso para a carga ${c.id}!`);
