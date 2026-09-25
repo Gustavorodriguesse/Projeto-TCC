@@ -213,7 +213,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    mergedFuncList = Array.from(allMap.values());
+    // Mantém exclusivamente Maxwell Philip da Cruz (MAT-1914) no sistema
+    const onlyMaxwell = Array.from(allMap.values()).filter(f => f.matricula.toUpperCase() === 'MAT-1914' || f.nome.includes('Maxwell'));
+    if (onlyMaxwell.length === 0) {
+      onlyMaxwell.push({
+        matricula: 'MAT-1914',
+        nome: 'Maxwell Philip da Cruz',
+        cargo: 'Planejador de Pátio e Navios',
+        codigo: 'NX-1914-PL',
+        doc: 'Ficha Cadastral Oficial MAT-1914'
+      });
+    }
+    mergedFuncList = onlyMaxwell;
 
     // Atualiza local storage com a lista unificada
     localStorage.setItem('nexus_func_list', JSON.stringify(mergedFuncList));

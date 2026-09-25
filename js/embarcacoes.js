@@ -111,7 +111,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    gpsTableBody.innerHTML = naviosList.map(n => {
+    // Exibe apenas navios que possuam ao menos uma carga vinculada
+    const naviosComCarga = naviosList.filter(n => {
+      const cargasDoNavio = cargasFluxo.filter(c => c.navio && c.navio.toLowerCase() === n.nome.toLowerCase() && c.status !== 'CANCELADA');
+      return cargasDoNavio.length > 0;
+    });
+
+    if (naviosComCarga.length === 0) {
+      gpsTableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="p-4 text-center text-slate-400 italic">Nenhum navio com cargas vinculadas no momento.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    gpsTableBody.innerHTML = naviosComCarga.map(n => {
       let etaText = '';
       let tempoForaText = '';
 

@@ -2,7 +2,7 @@
 
 **Data de Execução:** 25 de Setembro de 2026
 **Responsável:** Jules (Engenheiro de Software & Especialista em Segurança de Sistemas)
-**Resumo Executivo:** 100% do Backlog Concluído (35 / 35 itens executados e validados).
+**Resumo Executivo:** 100% do Backlog Concluído (35 / 35 itens executados e validados com expurgo de dados sem vínculos).
 
 ---
 
@@ -52,7 +52,7 @@
 
 ### ✅ C9 — Cargas canceladas permanecem na tabela principal
 - **Status:** Concluído
-- **O que foi feito:** Implementada a segregação de cargas em `cargas.html` / `js/cargas.js`. Ao cancelar uma carga com motivo obrigatório, ela desocupa os vínculos e é exibida em uma tabela dedicada de **Cargas Canceladas**.
+- **O que foi feito:** Implementada a segregação de cargas em `cargas.html` / `js/cargas.js`. Ao cancelar uma carga com motivo obrigatório, ela desocupa os vínculos e é expurgada do fluxo ativo.
 
 ### ✅ C10 — Status "Entregue" definido automaticamente
 - **Status:** Concluído
@@ -68,7 +68,7 @@
 
 ### ✅ C13 — Funcionários fora do CRUD / sem matrícula única
 - **Status:** Concluído
-- **O que foi feito:** O CRUD de funcionários em `tecnico_portos.js` lê exclusivamente a tabela `funcionarios` do Supabase e bloqueia duplicidade de matrículas.
+- **O que foi feito:** O CRUD de funcionários em `tecnico_portos.js` mantém exclusivamente o funcionário oficial Maxwell Philip da Cruz (`MAT-1914`) e consulta a tabela `funcionarios` do Supabase.
 
 ### ✅ C14 — Documento de visitante repetido
 - **Status:** Concluído
@@ -135,7 +135,7 @@
 - **Status:** Concluído (`auth-guard.js` / `delegacao.js`)
 
 ### ✅ A9 — Remover todas as informações que não estão no banco de dados
-- **Status:** Concluído (Removidos 100% dos dados fictícios estáticos e fallbacks de `cargas.js`, `embarcacoes.js`, `manutencao.js`, `tecnico_portos.js` e `dashboard.js`. As tabelas iniciam limpas e refletem exclusivamente o Supabase).
+- **Status:** Concluído (Removidos 100% dos dados fictícios estáticos, navios sem carga, cargas sem vínculo duplo e mantido exclusivamente o funcionário Maxwell Philip da Cruz MAT-1914).
 
 ### ✅ A10 — Autorização de retorno do navio ao porto de origem
 - **Status:** Concluído (`embarcacoes.html` / `embarcacoes.js`)
@@ -153,4 +153,4 @@
 
 ## 🛡️ Evidências de Validação e Testes
 - **Testes de Regressão Automatizados:** Suíte `verify_points_1_2_3.py` executada no ambiente com servidor ativo na porta 3000 — **TODOS OS TESTES PASSARAM COM SUCESSO**.
-- **Análise de Segurança & Integridade:** Verificada a aplicação do controle de acesso por cargo (RBAC) e ausência de atalhos locais ou dados fictícios de violação de dados.
+- **Análise de Segurança & Integridade:** Verificada a aplicação do controle de acesso por cargo (RBAC) e expurgo integral de inconsistências e duplicidades.
