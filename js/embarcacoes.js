@@ -31,8 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${dias}d ${horas}h (Distância: ${distanciaKm} km @ 33 km/h)`;
   }
 
-  // Carrega navios do Supabase
+  // Carrega navios mantendo persistência rigorosa de dataSaida do Supabase / Local
   async function carregarNaviosSupabase() {
+    const savedNaviosRaw = localStorage.getItem('nexus_navios_list');
+    let savedNavios = savedNaviosRaw ? JSON.parse(savedNaviosRaw) : null;
+
     if (window.nexusSupabase) {
       try {
         const { data, error } = await window.nexusSupabase
@@ -40,18 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
           .select('*');
 
         if (!error && data && data.length > 0) {
-          const mapSupabase = data.map(n => ({
-            nome: n.nome,
-            imo: n.numero_imo,
-            gps: n.coordenadas_gps || '23.9608° S, 46.3022° W',
-            localizacao: n.localizacao || 'DENTRO_DO_PORTO',
-            origem: n.porto_origem || 'Porto de Santos',
-            destino: n.porto_destino || 'Porto de Roterdã',
-            distancia: 10200,
-            dataSaida: n.data_saida || (n.localizacao === 'FORA_DO_PORTO' ? new Date(Date.now() - 86400000 * 2).toISOString() : null)
-          }));
+          const mapSupabase = data.map(n => {
+            const matchLocal = savedNavios ? savedNavios.find(l => l.imo === n.numero_imo) : null;
+            return {
+              nome: n.nome,
+              imo: n.numero_imo,
+              gps: n.coordenadas_gps || '23.9608° S, 46.3022° W',
+              localizacao: n.localizacao || 'DENTRO_DO_PORTO',
+              origem: n.porto_origem || 'Porto de Santos',
+              destino: n.porto_destino || 'Porto de Roterdã',
+              distancia: 10200,
+              dataSaida: n.data_saida || (matchLocal ? matchLocal.dataSaida : (n.localizacao === 'FORA_DO_PORTO' ? new Date(Date.now() - 86400000 * 2).toISOString() : null))
+            };
+          });
 
-          // Mescla sem duplicar pelo IMO
           const imoSet = new Set(mapSupabase.map(x => x.imo));
           naviosList.forEach(defaultNavio => {
             if (!imoSet.has(defaultNavio.imo)) {
@@ -60,11 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           naviosList = mapSupabase;
+          localStorage.setItem('nexus_navios_list', JSON.stringify(naviosList));
         }
       } catch (err) {
         console.warn('[NexusPort] Erro ao carregar navios do Supabase:', err);
       }
+    } else if (savedNavios) {
+      naviosList = savedNavios;
     }
+
     renderGpsTable();
   }
 
@@ -198,6 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const horaSaida = new Date().toISOString();
       navio.localizacao = 'FORA_DO_PORTO';
       navio.dataSaida = horaSaida;
+
+      localStorage.setItem('nexus_navios_list', JSON.stringify(naviosList));
 
       // Sincroniza Supabase
       if (window.nexusSupabase) {
