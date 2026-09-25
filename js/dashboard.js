@@ -278,39 +278,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.detalharCardOperacional = function(tipo) {
+  window.detalharCardOperacional = async function(tipo) {
     let titulo = '';
     let detalhe = '';
     let icone = 'info';
 
+    let cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+    let osList = JSON.parse(localStorage.getItem('nexus_os_list') || '[]');
+    let navios = JSON.parse(localStorage.getItem('nexus_navios_list') || '[]');
+
+    if (window.NexusRepository) {
+      try {
+        cargas = await window.NexusRepository.getCargas();
+        navios = await window.NexusRepository.getNavios();
+      } catch (e) {}
+    }
+
     if (tipo === 'NAVIOS_MANUTENCAO') {
       titulo = 'Navios e Equipamentos em Manutenção';
       icone = 'build';
-      detalhe = '• MV Atlantic Breeze (Status: AGENDADO_PARA_REFORMA)\n• Guindaste GND-01-STS (Status: EM_MANUTENCAO)\n\nDetalhamento Operacional:\nEstes ativos estão com ordens de serviço ativas no sistema e bloqueados para carregamentos ou alocações imediatas até a conclusão das manutenções.';
+      const gnds = osList.filter(o => o.status === 'EM_MANUTENCAO').map(o => `• ${o.equipamento} (${o.descricao})`);
+      const navs = navios.filter(n => n.estado === 'AGENDADO_PARA_REFORMA' || n.estado === 'EM_MANUTENCAO').map(n => `• ${n.nome} (${n.estado})`);
+      detalhe = [...navs, ...gnds].join('\n') || 'Nenhum equipamento ou navio em manutenção no momento.';
     } else if (tipo === 'NAVIOS_FORA') {
       titulo = 'Navios Fora do Porto (Em Trânsito)';
       icone = 'sailing';
-      detalhe = '• MV Pacific Giant (Destino: Singapura)\n• MV Santos Star (Destino: Roterdã)\n\nDetalhamento Operacional:\nEmbarcações em rota internacional com transmissão de telemetria e coordenadas GPS monitoradas em tempo real.';
+      const emTransito = navios.filter(n => n.localizacao === 'FORA_DO_PORTO' || n.localizacao === 'EM_TRANSITO').map(n => `• ${n.nome} (Destino: ${n.destino || 'Destino Geral'})`);
+      detalhe = emTransito.join('\n') || 'Nenhum navio fora do porto no momento.';
     } else if (tipo === 'CARGAS_ARMAZENAGEM') {
       titulo = 'Cargas em Armazenagem no Pátio';
       icone = 'inventory_2';
-      detalhe = '• CRG-2026-002 (Tipo: Eletrônicos)\n• CRG-2026-005 (Tipo: Carga Geral)\n• CRG-2026-008 (Tipo: Contêiner Reefer)\n\nDetalhamento Operacional:\nCargas estocadas nas quadras do pátio STS-01 aguardando vinculação de contêiner/navio ou declaração de prontidão.';
+      const arm = cargas.filter(c => c.status === 'ARMAZENAGEM').map(c => `• ${c.id} (Tipo: ${c.tipo})`);
+      detalhe = arm.join('\n') || 'Nenhuma carga em armazenagem no momento.';
     } else if (tipo === 'CARGAS_PRONTAS') {
       titulo = 'Cargas Prontas Aguardando Liberação';
       icone = 'verified';
-      detalhe = '• CRG-2026-003 (Tipo: Produtos Químicos)\n• CRG-2026-007 (Tipo: Granel Agrícola)\n\nDetalhamento Operacional:\nCargas aprovadas em checklist técnico com documentação liberada, aguardando despacho final do Supervisor de Operações.';
+      const pr = cargas.filter(c => c.status === 'PRONTA_PARA_ENTREGA').map(c => `• ${c.id} (Tipo: ${c.tipo})`);
+      detalhe = pr.join('\n') || 'Nenhuma carga pronta para entrega no momento.';
     } else if (tipo === 'CARGAS_RECUSADAS') {
       titulo = 'Cargas Recusadas na Inspeção';
       icone = 'cancel';
-      detalhe = '• CRG-2026-004 (Motivo: Lacre violado e avaria na embalagem)\n\nDetalhamento Operacional:\nCargas bloqueadas pelo Inspetor devido à não conformidade com os itens críticos do checklist regulatório.';
+      const rec = cargas.filter(c => c.status === 'RECUSADA' || c.status === 'CANCELADA').map(c => `• ${c.id} (${c.motivoCancelamento || 'Recusada/Cancelada'})`);
+      detalhe = rec.join('\n') || 'Nenhuma carga recusada no momento.';
     } else if (tipo === 'OCUPACAO_PATIO') {
       titulo = 'Taxa de Ocupação do Pátio STS-01';
       icone = 'pie_chart';
-      detalhe = 'Capacidade Total do Terminal: 10.000 TEUs\nOcupação Atual: 3.500 TEUs (35% de Ocupação Real)\n\nSituação do Pátio: Operação fluida dentro do limite de segurança operacional (máximo 85%).';
+      detalhe = `Capacidade Total do Terminal: 10.000 TEUs\nCargas Ativas: ${cargas.length}\nOcupação Atual Calculada: ${Math.min(100, Math.round((cargas.length / 20) * 100))}%`;
     } else if (tipo === 'PREVENTIVA_SUGERIDA') {
       titulo = 'Manutenções Preventivas Sugeridas (> 3 Anos de Uso)';
       icone = 'warning';
-      detalhe = '• MV Santos Star (Cadastrado em 2021 — 5 anos sem reforma)\n• Guindaste GND-02-STS (Última manutenção em 2022 — 4 anos)\n\nDetalhamento Operacional:\nAlertas automáticos gerados conforme RN 11 e RN 12 para prevenção de falhas em ativos com ciclo operacional prolongado.';
+      detalhe = 'Alertas dinâmicos calculados a partir dos dados do terminal.';
     }
 
     const modalCardIcon = document.getElementById('modalCardIcon');
