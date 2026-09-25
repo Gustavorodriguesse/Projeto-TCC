@@ -15,11 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const containerForm = document.getElementById('containerForm');
   const containersTableBody = document.getElementById('containersTableBody');
 
-  let naviosList = [
-    { nome: 'MV Santos Star', imo: 'IMO-9821034', gps: '23.9608° S, 46.3022° W', localizacao: 'DENTRO_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 10200, dataSaida: null },
-    { nome: 'MV Pacific Giant', imo: 'IMO-9742110', gps: '12.0463° S, 77.0428° W', localizacao: 'FORA_DO_PORTO', origem: 'Porto de Santos', destino: 'Porto de Singapura', distancia: 18500, dataSaida: new Date(Date.now() - 86400000 * 3).toISOString() },
-    { nome: 'MV Atlantic Breeze', imo: 'IMO-9651002', gps: '01.2902° N, 103.8519° E', localizacao: 'NO_PORTO_DE_DESTINO', origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia: 0, dataSaida: new Date(Date.now() - 86400000 * 12).toISOString() }
-  ];
+  let naviosList = [];
 
   // Cálculo de ETA a 33 km/h
   function calcularETA(distanciaKm) {
@@ -80,6 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Renderiza Tabela de GPS com atualização viva em tempo real e entrega automática
   function renderGpsTable() {
     if (!gpsTableBody) return;
+
+    if (naviosList.length === 0) {
+      gpsTableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="p-4 text-center text-slate-400 italic">Nenhuma embarcação cadastrada no banco de dados.</td>
+        </tr>
+      `;
+      return;
+    }
 
     // C10 & RN 12: Atualização automática do status das cargas quando o navio chega ao porto de destino
     const cargasFluxo = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
@@ -333,14 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // CRUD de Contêineres (T2.6 / RN 7)
-  let containersList = JSON.parse(localStorage.getItem('nexus_containers_list') || 'null');
-  if (!containersList) {
-    containersList = [
-      { id: 'CONT-991', identificacao: 'NYKU-881290-0', tipo: 'Grãos Soltos', dataFabr: '2020-05-10', dataManut: '2025-01-15', refTempo: 'DATA_FABRICACAO', navio: 'MV Santos Star', estado: 'OPERANTE' },
-      { id: 'CONT-992', identificacao: 'MSCU-102938-4', tipo: 'Eletrônicos', dataFabr: '2021-08-20', dataManut: '2024-11-02', refTempo: 'DATA_ULTIMA_MANUTENCAO', navio: 'MV Santos Star', estado: 'OPERANTE' }
-    ];
-    localStorage.setItem('nexus_containers_list', JSON.stringify(containersList));
-  }
+  let containersList = JSON.parse(localStorage.getItem('nexus_containers_list') || '[]');
 
   async function carregarContainersSupabase() {
     if (window.nexusSupabase) {
@@ -380,6 +378,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderContainersTable() {
     if (!containersTableBody) return;
+
+    if (containersList.length === 0) {
+      containersTableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="p-4 text-center text-slate-400 italic">Nenhum contêiner cadastrado no banco de dados.</td>
+        </tr>
+      `;
+      return;
+    }
+
     containersTableBody.innerHTML = containersList.map(c => {
       // C3: Busca cargas vinculadas a este contêiner
       const cargasFluxo = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');

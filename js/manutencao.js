@@ -27,15 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Lista e CRUD de Guindastes (Point 2 / Spec.md RF 2, T2.7)
-  let guindastesList = JSON.parse(localStorage.getItem('nexus_guindastes_list') || 'null');
-  if (!guindastesList) {
-    guindastesList = [
-      { id: 'GND-01-STS', identificacao: 'GND-01-STS', estado: 'OPERANTE', dataManut: '2025-02-10' },
-      { id: 'GND-02-STS', identificacao: 'GND-02-STS', estado: 'EM_MANUTENCAO', dataManut: '2022-05-15' },
-      { id: 'GND-03-STS', identificacao: 'GND-03-STS', estado: 'OPERANTE', dataManut: '2024-11-20' }
-    ];
-    localStorage.setItem('nexus_guindastes_list', JSON.stringify(guindastesList));
-  }
+  let guindastesList = JSON.parse(localStorage.getItem('nexus_guindastes_list') || '[]');
 
   async function carregarGuindastesSupabase() {
     if (window.nexusSupabase) {
@@ -66,6 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderGuindastesTable() {
     if (!guindastesTableBody) return;
+
+    if (guindastesList.length === 0) {
+      guindastesTableBody.innerHTML = `
+        <tr>
+          <td colspan="4" class="p-4 text-center text-slate-400 italic">Nenhum guindaste cadastrado no banco de dados.</td>
+        </tr>
+      `;
+      return;
+    }
 
     guindastesTableBody.innerHTML = guindastesList.map(g => `
       <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
@@ -209,17 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
     alert(`Manutenção do Guindaste ${identificacao} CONCLUÍDA! Equipamento reativado e no estado OPERANTE.`);
   };
 
-  let osList = JSON.parse(localStorage.getItem('nexus_os_list') || 'null');
-  if (!osList) {
-    osList = [
-      { id: 'OS-2026-001', equipamento: 'GND-01-STS', prioridade: 'ALTA', descricao: 'Desgaste nas roldanas de içamento', status: 'PENDENTE_APROVACAO', data: new Date().toISOString().split('T')[0] },
-      { id: 'OS-2026-002', equipamento: 'MSCU-102938-4', prioridade: 'MEDIA', descricao: 'Vazamento na vedação de borracha', status: 'EM_MANUTENCAO', data: new Date().toISOString().split('T')[0] }
-    ];
-    localStorage.setItem('nexus_os_list', JSON.stringify(osList));
-  }
+  let osList = JSON.parse(localStorage.getItem('nexus_os_list') || '[]');
 
   function renderOsTable() {
     if (!osTableBody) return;
+
+    if (osList.length === 0) {
+      osTableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="p-4 text-center text-slate-400 italic">Nenhuma ordem de serviço cadastrada no banco de dados.</td>
+        </tr>
+      `;
+      return;
+    }
+
     osTableBody.innerHTML = osList.map(os => `
       <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
         <td class="p-3 font-mono font-bold text-nexus-500">${os.id}</td>

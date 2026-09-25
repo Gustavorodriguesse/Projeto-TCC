@@ -111,15 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentEntityData = null;
 
   // Carrega lista de cargas
-  let cargasFluxoList = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || 'null');
-  if (!cargasFluxoList) {
-    cargasFluxoList = [
-      { id: 'CRG-2026-001', tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola', portoDescarga: 'Berço 04 - STS', destino: 'Amsterdã', status: 'RECEBIMENTO_INSPECAO', container: 'CONT-991', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-001' },
-      { id: 'CRG-2026-002', tipo: 'Eletrônicos', peso: '12.0 t', volume: '20 m³', valor: 'R$ 450.000', natureza: 'Industrial', portoDescarga: 'Berço 01 - STS', destino: 'São Paulo', status: 'ARMAZENAGEM', container: 'CONT-992', navio: 'MV Santos Star', qrCode: 'QR-CRG-2026-002' },
-      { id: 'CRG-2026-003', tipo: 'Produtos Químicos', peso: '18.2 t', volume: '30 m³', valor: 'R$ 210.000', natureza: 'Química', portoDescarga: 'Berço 02 - STS', destino: 'Singapura', status: 'PRONTA_PARA_ENTREGA', container: 'CONT-993', navio: 'MV Pacific Giant', qrCode: 'QR-CRG-2026-003' }
-    ];
-    localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
-  }
+  let cargasFluxoList = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
 
   async function carregarCargasSupabase() {
     if (window.nexusSupabase) {
