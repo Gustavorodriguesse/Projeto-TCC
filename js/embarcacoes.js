@@ -68,9 +68,34 @@ document.addEventListener('DOMContentLoaded', () => {
     renderGpsTable();
   }
 
-  // Renderiza Tabela de GPS com Fix para NO_PORTO_DE_DESTINO (RF 5 / RN 8)
+  // Renderiza Tabela de GPS com atualização viva em tempo real e entrega automática
   function renderGpsTable() {
     if (!gpsTableBody) return;
+
+    // C10 & RN 12: Atualização automática do status das cargas quando o navio chega ao porto de destino
+    const cargasFluxo = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+    let cargasAtualizadas = false;
+
+    naviosList.forEach(n => {
+      if (n.localizacao === 'NO_PORTO_DE_DESTINO') {
+        cargasFluxo.forEach(c => {
+          if (c.navio && c.navio.toLowerCase() === n.nome.toLowerCase() && c.status !== 'ENTREGUE' && c.status !== 'CANCELADA') {
+            c.status = 'ENTREGUE';
+            cargasAtualizadas = true;
+          }
+        });
+      }
+    });
+
+    if (cargasAtualizadas) {
+      localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxo));
+      if (window.nexusSupabase) {
+        window.nexusSupabase.from('cargas')
+          .update({ status_fluxo: 'ENTREGUE' })
+          .eq('status_fluxo', 'EM_TRANSITO')
+          .then().catch(e => console.warn('[NexusPort] Erro ao atualizar entregue no Supabase:', e));
+      }
+    }
 
     gpsTableBody.innerHTML = naviosList.map(n => {
       let etaText = '';
@@ -78,28 +103,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (n.localizacao === 'DENTRO_DO_PORTO') {
         etaText = 'Em Atracação no Porto Origem';
-        tempoForaText = 'No Porto (0h)';
+        tempoForaText = 'No Porto (0s)';
       } else if (n.localizacao === 'NO_PORTO_DE_DESTINO') {
         // CORREÇÃO CRÍTICA (RF 5 / RN 8): Pausa/finaliza contagem de tempo fora do porto
         etaText = 'Atracado no Destino (Concluído)';
-        tempoForaText = '0d 0h (Atracado no Destino)';
+        tempoForaText = '0d 0h 0s (Atracado no Destino)';
       } else {
-        etaText = calcularETA(n.distancia);
-        const diffMs = Date.now() - new Date(n.dataSaida).getTime();
-        const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        tempoForaText = `${dias}d ${horas}h fora do porto`;
+        // C6 & A4: Cálculo de ETA e tempo decorrido dinâmico baseado em tempo real
+        const horaSaidaTime = n.dataSaida ? new Date(n.dataSaida).getTime() : Date.now();
+        const diffMs = Math.max(0, Date.now() - horaSaidaTime);
+
+        const diasDecorridos = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const horasDecorridas = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutosDecorridos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        const segundosDecorridos = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+        tempoForaText = `${diasDecorridos}d ${horasDecorridas}h ${minutosDecorridos}m ${segundosDecorridos}s fora`;
+
+        // Cálculo dinâmico do tempo total previsto
+        const horasTotaisPrevistas = (n.distancia || 10200) / 33; // 33 km/h
+        const msTotaisPrevistos = horasTotaisPrevistas * 3600 * 1000;
+        const msRestantes = Math.max(0, msTotaisPrevistos - diffMs);
+
+        const diasRestantes = Math.floor(msRestantes / (1000 * 60 * 60 * 24));
+        const horasRestantes = Math.floor((msRestantes % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minRestantes = Math.floor((msRestantes % (1000 * 60 * 60)) / (1000 * 60));
+        const segRestantes = Math.floor((msRestantes % (1000 * 60)) / 1000);
+
+        etaText = `ETA: ${diasRestantes}d ${horasRestantes}h ${minRestantes}m ${segRestantes}s (@33km/h)`;
       }
 
-      // Busca cargas do localstorage ou Supabase associadas a este navio
-      const cargasFluxo = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      // Busca cargas do localstorage ou Supabase associadas a este navio (C2, C3)
       const cargasDoNavio = cargasFluxo.filter(c => c.navio && c.navio.toLowerCase() === n.nome.toLowerCase());
 
       let bercosInfoHtml = '<span class="text-slate-400 italic text-[11px]">Sem carga vinculada</span>';
       if (cargasDoNavio.length > 0) {
         bercosInfoHtml = cargasDoNavio.map(c => `
-          <div class="text-[11px]">
+          <div class="text-[11px] leading-tight">
             <strong class="text-nexus-500">${c.id}</strong>: <span class="font-bold text-slate-700 dark:text-slate-200">${c.portoDescarga || 'Berço não atrelado'}</span>
+            <span class="block text-[10px] text-slate-400">Contêiner: ${c.container || 'Não vinculado'}</span>
           </div>
         `).join('');
       }
@@ -217,6 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   carregarNaviosSupabase();
+
+  // C6: Relógio em tempo real que atualiza continuamente a contagem de ETA e tempo fora do porto
+  setInterval(renderGpsTable, 1000);
 
   const isInspetorRole = ['INSPETOR', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
 

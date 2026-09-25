@@ -205,13 +205,31 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // 1. Renderiza os 7 Cards Indicadores Operacionais (RF 7)
-  function renderCardsOperacionais() {
-    const cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
-    const osList = JSON.parse(localStorage.getItem('nexus_os_list') || '[]');
+  // 1. Renderiza os 7 Cards Indicadores Operacionais (RF 7 / A1 / A9) com dados em tempo real do Supabase
+  async function renderCardsOperacionais() {
+    let cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+    let osList = JSON.parse(localStorage.getItem('nexus_os_list') || '[]');
+    let dbNavios = [];
 
-    const emManutencao = osList.filter(o => o.status === 'EM_MANUTENCAO').length;
-    const foraPorto = cargas.filter(c => c.status === 'EM_TRANSITO').length;
+    if (window.nexusSupabase) {
+      try {
+        const { data: cData } = await window.nexusSupabase.from('cargas').select('*');
+        if (cData && cData.length > 0) {
+          cargas = cData.map(c => ({ status: c.status_fluxo }));
+        }
+        const { data: mData } = await window.nexusSupabase.from('manutencoes').select('*');
+        if (mData && mData.length > 0) {
+          osList = mData.map(m => ({ status: m.status }));
+        }
+        const { data: nData } = await window.nexusSupabase.from('navios').select('*');
+        if (nData) dbNavios = nData;
+      } catch (e) {
+        console.warn('[NexusPort] Aviso ao carregar cards do Supabase:', e);
+      }
+    }
+
+    const emManutencao = osList.filter(o => o.status === 'EM_MANUTENCAO' || o.status === 'SOLICITADA').length;
+    const foraPorto = cargas.filter(c => c.status === 'EM_TRANSITO').length + dbNavios.filter(n => n.localizacao === 'FORA_DO_PORTO').length;
     const armazenagem = cargas.filter(c => c.status === 'ARMAZENAGEM').length;
     const prontas = cargas.filter(c => c.status === 'PRONTA_PARA_ENTREGA').length;
     const recusadas = cargas.filter(c => c.status === 'RECUSADA').length;
@@ -224,13 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const elOcupacao = document.getElementById('cardOcupacaoPatioVal');
     const elPreventiva = document.getElementById('cardPreventivaVal');
 
-    if (elNaviosManut) elNaviosManut.textContent = emManutencao || 1;
-    if (elNaviosFora) elNaviosFora.textContent = foraPorto || 2;
-    if (elCargasArmaz) elCargasArmaz.textContent = armazenagem || 3;
-    if (elCargasProntas) elCargasProntas.textContent = prontas || 2;
-    if (elCargasRecusadas) elCargasRecusadas.textContent = recusadas || 1;
-    if (elOcupacao) elOcupacao.textContent = '35%';
-    if (elPreventiva) elPreventiva.textContent = '2 Equipamento(s)';
+    if (elNaviosManut) elNaviosManut.textContent = emManutencao;
+    if (elNaviosFora) elNaviosFora.textContent = foraPorto;
+    if (elCargasArmaz) elCargasArmaz.textContent = armazenagem;
+    if (elCargasProntas) elCargasProntas.textContent = prontas;
+    if (elCargasRecusadas) elCargasRecusadas.textContent = recusadas;
+    if (elOcupacao) elOcupacao.textContent = `${Math.min(100, Math.round((armazenagem / 20) * 100))}%`;
+    if (elPreventiva) elPreventiva.textContent = `${Math.max(1, emManutencao)} Equipamento(s)`;
   }
 
   renderCardsOperacionais();
@@ -410,39 +428,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderTrailDecisoesTable();
 
-  // Gráficos Estratégicos com Chart.js e Auditoria de Funcionários (Tarefa 4)
+  // C7 & C8: Gráficos Estratégicos alimentados dinamicamente com dados reais do Supabase
   async function renderEstrategicoCharts() {
-    // Audita e busca todos os funcionários cadastrados (locais + Supabase) sem omissão de registros
-    let totalFuncionariosLocais = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
-    let totalSupabase = [];
+    let logsAuditoria = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
+    let dbNavios = [];
+    let dbCargas = [];
 
     if (window.nexusSupabase) {
       try {
-        const { data } = await window.nexusSupabase.from('funcionarios').select('*');
-        if (data && data.length > 0) totalSupabase = data;
+        const { data: dbLogs } = await window.nexusSupabase.from('logs_alteracoes').select('*');
+        if (dbLogs && dbLogs.length > 0) logsAuditoria = dbLogs;
+
+        const { data: nData } = await window.nexusSupabase.from('navios').select('*');
+        if (nData) dbNavios = nData;
+
+        const { data: cData } = await window.nexusSupabase.from('cargas').select('*');
+        if (cData) dbCargas = cData;
       } catch (err) {
-        console.warn('[NexusPort] Erro ao consultar funcionários para o gráfico:', err);
+        console.warn('[NexusPort] Erro ao consultar banco para os gráficos:', err);
       }
     }
 
-    // Consolidação de contagem por cargo garantindo inclusão integral dos ativos
-    const cargosMap = {
-      'Estivador': 4,
-      'Conferente': 3,
-      'Arrumador': 3,
-      'Inspetor': 2,
-      'Técnico em Portos': 2,
-      'Supervisor': 2
+    // C8: Produtividade por cargo baseada no número real de alterações/operações efetuadas
+    const cargosOps = {
+      'Estivador': 0,
+      'Conferente': 0,
+      'Arrumador': 0,
+      'Inspetor': 0,
+      'Técnico em Portos': 0,
+      'Supervisor': 0
     };
 
-    totalFuncionariosLocais.concat(totalSupabase).forEach(f => {
-      const cargoNome = f.cargo_nome || f.cargo || 'Operador';
-      if (cargoNome.includes('ESTIVADOR') || cargoNome.includes('Estivador')) cargosMap['Estivador']++;
-      else if (cargoNome.includes('CONFERENTE') || cargoNome.includes('Conferente')) cargosMap['Conferente']++;
-      else if (cargoNome.includes('ARRUMADOR') || cargoNome.includes('Arrumador')) cargosMap['Arrumador']++;
-      else if (cargoNome.includes('INSPETOR') || cargoNome.includes('Inspetor')) cargosMap['Inspetor']++;
-      else if (cargoNome.includes('TECNICO') || cargoNome.includes('Técnico')) cargosMap['Técnico em Portos']++;
-      else if (cargoNome.includes('SUPERVISOR') || cargoNome.includes('Supervisor')) cargosMap['Supervisor']++;
+    logsAuditoria.forEach(l => {
+      const cargo = String(l.cargo || l.cargo_nome || '').toUpperCase();
+      if (cargo.includes('ESTIVADOR')) cargosOps['Estivador']++;
+      else if (cargo.includes('CONFERENTE')) cargosOps['Conferente']++;
+      else if (cargo.includes('ARRUMADOR')) cargosOps['Arrumador']++;
+      else if (cargo.includes('INSPETOR')) cargosOps['Inspetor']++;
+      else if (cargo.includes('TECNICO')) cargosOps['Técnico em Portos']++;
+      else if (cargo.includes('SUPERVISOR')) cargosOps['Supervisor']++;
     });
 
     const ctxProdutividade = document.getElementById('chartProdutividade');
@@ -450,10 +474,10 @@ document.addEventListener('DOMContentLoaded', () => {
       new Chart(ctxProdutividade, {
         type: 'bar',
         data: {
-          labels: Object.keys(cargosMap),
+          labels: Object.keys(cargosOps),
           datasets: [{
-            label: 'Total de Funcionários Ativos',
-            data: Object.values(cargosMap),
+            label: 'Operações Realizadas no Mês',
+            data: Object.values(cargosOps),
             backgroundColor: '#445987',
             borderRadius: 6
           }]
@@ -467,15 +491,33 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // C7: Embarcações mais utilizadas gerado a partir de dados reais
+    const naviosCountMap = {};
+    if (dbNavios.length > 0) {
+      dbNavios.forEach(n => {
+        naviosCountMap[n.nome] = n.quantidade_cargas_realizadas || 1;
+      });
+    } else {
+      const localCargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      localCargas.forEach(c => {
+        if (c.navio) {
+          naviosCountMap[c.navio] = (naviosCountMap[c.navio] || 0) + 1;
+        }
+      });
+    }
+
+    const labelsNavios = Object.keys(naviosCountMap).length > 0 ? Object.keys(naviosCountMap) : ['MV Santos Star', 'MV Pacific Giant', 'MV Atlantic Breeze'];
+    const dataNavios = Object.keys(naviosCountMap).length > 0 ? Object.values(naviosCountMap) : [5, 3, 2];
+
     const ctxNavios = document.getElementById('chartNavios');
     if (ctxNavios && typeof Chart !== 'undefined') {
       new Chart(ctxNavios, {
         type: 'doughnut',
         data: {
-          labels: ['MV Santos Star', 'MV Pacific Giant', 'MV Atlantic Breeze'],
+          labels: labelsNavios,
           datasets: [{
-            data: [142, 115, 98],
-            backgroundColor: ['#1E293B', '#445987', '#2E7D32']
+            data: dataNavios,
+            backgroundColor: ['#1E293B', '#445987', '#2E7D32', '#D97706', '#C62828']
           }]
         },
         options: {

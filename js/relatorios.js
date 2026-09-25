@@ -52,11 +52,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function gerarRelatorioPdfA4(idCarga) {
-    const c = cargas.find(item => item.id === idCarga) || {
-      id: idCarga, tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola',
-      portoDescarga: 'Porto de Roterdã', destino: 'Amsterdã', status: 'ARMAZENAGEM', container: 'CONT-991', navio: 'MV Santos Star'
-    };
+  async function gerarRelatorioPdfA4(idCarga) {
+    let c = cargas.find(item => item.id === idCarga);
+
+    if (window.nexusSupabase) {
+      try {
+        const { data: dbCarga } = await window.nexusSupabase
+          .from('cargas')
+          .select('*')
+          .or(`qr_code_url.eq.QR-${idCarga},qr_code_url.eq.${idCarga}`)
+          .maybeSingle();
+
+        if (dbCarga) {
+          c = {
+            id: idCarga,
+            tipo: dbCarga.natureza || 'Carga Geral',
+            peso: `${dbCarga.peso || 25} t`,
+            volume: `${dbCarga.volume || 40} m³`,
+            valor: `R$ ${(dbCarga.valor_declarado || 100000).toLocaleString('pt-BR')}`,
+            natureza: dbCarga.natureza || 'Geral',
+            portoDescarga: dbCarga.porto_descarga || 'Porto de Santos',
+            destino: dbCarga.destino || 'Destino Internacional',
+            status: dbCarga.status_fluxo || 'ARMAZENAGEM',
+            container: dbCarga.container_id || 'CONT-991',
+            navio: 'MV Santos Star'
+          };
+        }
+      } catch (err) { console.warn('Erro ao carregar carga no Supabase para PDF:', err); }
+    }
+
+    if (!c) {
+      c = {
+        id: idCarga, tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola',
+        portoDescarga: 'Porto de Roterdã', destino: 'Amsterdã', status: 'ARMAZENAGEM', container: 'CONT-991', navio: 'MV Santos Star'
+      };
+    }
 
     if (window.jspdf && window.jspdf.jsPDF) {
       const { jsPDF } = window.jspdf;
