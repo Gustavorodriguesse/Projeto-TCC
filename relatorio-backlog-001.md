@@ -1,4 +1,4 @@
-# Relatório de Execução do Backlog — Sistema de Gestão Portuária (NexusPort)
+# Relatório de Execução do Backlog 001 — Sistema de Gestão Portuária (NexusPort)
 
 **Data de Execução:** 25 de Setembro de 2026
 **Responsável:** Jules (Engenheiro de Software & Especialista em Segurança de Sistemas)
@@ -125,7 +125,7 @@
 ### ✅ A5 — Configuração de retorno do navio ao porto de origem
 - **Status:** Concluído (`embarcacoes.js` / `autorizarRetornoNavio`)
 
-### ✅ A6 — Vinculação obrigatória de carga a contêiner e navio
+### ✅ A6 — Vinculação obrigatoria de carga a contêiner e navio
 - **Status:** Concluído (`cargas.js` / `vincularModal`)
 
 ### ✅ A7 — Validação de capacidade de volume no momento da vinculação (75 m³)

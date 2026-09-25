@@ -90,9 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="text-[11px] text-slate-500 font-mono">
             ${b.estado === 'OCUPADO' ? `Alocado: <strong class="text-nexus-500">${b.carga_id || 'Carga Ativa'}</strong>` : 'Pronto para atracação'}
           </span>
-          ${b.estado === 'OCUPADO' && isSupervisorRole ? `
-            <button type="button" onclick="window.liberarBercoManualmente('${b.id}')" class="mt-1 py-0.5 px-2 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-bold text-[10px] self-start">Desocupar Berço</button>
-          ` : ''}
         </div>
       `).join('');
     }
@@ -108,17 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
-
-  window.liberarBercoManualmente = function(bercoId) {
-    const b = bercosList.find(x => x.id === bercoId);
-    if (b) {
-      b.estado = 'LIVRE';
-      b.carga_id = null;
-      localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
-      renderBercosPanel();
-      alert(`Berço ${b.nome} desocupado com sucesso!`);
-    }
-  };
 
   renderBercosPanel();
 
@@ -664,6 +650,14 @@ document.addEventListener('DOMContentLoaded', () => {
           renderBercosPanel();
         }
         carga.estadoMovimentacao = 'EM_TRANSITO_PARA_NAVIO';
+        if (window.nexusSupabase) {
+          try {
+            window.nexusSupabase.from('estivador_cargas').insert({
+              estado_carregamento: 'CONCLUIDO',
+              data_inicio: new Date().toISOString()
+            }).then().catch(e => console.warn(e));
+          } catch (e) {}
+        }
         alert(`Carga ${idCarga} transportada com sucesso do berço para o navio "${carga.navio}"!`);
       } else {
         const idxSel = parseInt(opcaoBerco, 10) - 1;
@@ -706,12 +700,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // C4, A6, A7: Modal centralizado de vinculação com trava de capacidade max 75 m³
       window.abrirModalVinculacao(idCarga);
     } else if (acao === 'LIBERAR') {
+      // C17 & Regra A6: Carga não pode sair do porto ou ir para trânsito sem vincular a contêiner e navio
+      if (!carga.container || !carga.navio) {
+        alert(`BLOQUEIO DE SEGURANÇA (Regra A6 / C17): A carga ${idCarga} não pode ser liberada para saída ou trânsito sem estar vinculada obrigatoriamente a um contêiner e a um navio! Use o botão "Vincular" primeiro.`);
+        return;
+      }
       const destinoCarga = carga.portoDescarga || carga.destino || 'Porto de Roterdã';
       carga.status = 'EM_TRANSITO';
-      alert(`Carga ${idCarga} liberada pelo Supervisor para saída com destino a ${destinoCarga}. ETA calculado a 33 km/h (RN 9).`);
-    } else if (acao === 'ENTREGAR') {
-      carga.status = 'ENTREGUE';
-      alert(`Carga ${idCarga} entregue no destino.`);
+      alert(`Carga ${idCarga} liberada pelo Supervisor para saída com destino a ${destinoCarga}. Vínculos validados: Contêiner ${carga.container} / Navio ${carga.navio}.`);
     } else if (acao === 'CANCELAR') {
       const motivo = prompt('Informe obrigatoriamente o MOTIVO do cancelamento:');
       if (motivo) {

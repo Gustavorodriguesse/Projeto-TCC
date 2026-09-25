@@ -212,11 +212,21 @@ document.addEventListener('DOMContentLoaded', () => {
             .maybeSingle();
 
           if (cargaDb) {
-            await window.nexusSupabase.from('inspecoes').insert({
+            const { data: inspDb } = await window.nexusSupabase.from('inspecoes').insert({
               carga_id: cargaDb.id,
               resultado: 'APROVADA',
               observacoes: '100% dos itens críticos do checklist verificados em CONFORME'
-            });
+            }).select().maybeSingle();
+
+            if (inspDb) {
+              const itemRows = Object.keys(itemsEstado).map(itemId => ({
+                inspecao_id: inspDb.id,
+                checklist_item_id: itemId,
+                conforme: itemsEstado[itemId].conforme,
+                observacao: itemsEstado[itemId].conforme ? 'Conforme' : 'Não Conforme'
+              }));
+              await window.nexusSupabase.from('inspecao_itens').insert(itemRows).catch(e => console.warn('Aviso inspecao_itens:', e));
+            }
           }
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar aprovação no Supabase:', err);
@@ -263,11 +273,21 @@ document.addEventListener('DOMContentLoaded', () => {
             .maybeSingle();
 
           if (cargaDb) {
-            await window.nexusSupabase.from('inspecoes').insert({
+            const { data: inspDb } = await window.nexusSupabase.from('inspecoes').insert({
               carga_id: cargaDb.id,
               resultado: 'RECUSADA',
               observacoes: motivo
-            });
+            }).select().maybeSingle();
+
+            if (inspDb) {
+              const itemRows = Object.keys(itemsEstado).map(itemId => ({
+                inspecao_id: inspDb.id,
+                checklist_item_id: itemId,
+                conforme: itemsEstado[itemId].conforme,
+                observacao: itemsEstado[itemId].conforme ? 'Conforme' : 'Não Conforme'
+              }));
+              await window.nexusSupabase.from('inspecao_itens').insert(itemRows).catch(e => console.warn('Aviso inspecao_itens:', e));
+            }
           }
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar recusa no Supabase:', err);

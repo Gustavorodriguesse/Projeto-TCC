@@ -1,6 +1,6 @@
 # Backlog 001 de Correções e Ajustes — Sistema de Gestão Portuária
 
-> Documento de requisitos para implementação via Jules. Todas as alterações devem ser feitas com dados reais do banco de dados (Supabase), sem dados fictícios e sem armazenamento local.
+> Documento de requisitos para implementação via Jules. Todas as alterações devem ser feitas com dados reais do banco de dados (Supabase), sem dados fictícios e sem armazenamento local. Toda e qualquer alteração no sistema deve ser devidamente registrada em um relatório de execução do backlog (ex.: `relatorio-backlog-001.md` / `relatorio-backlog.md`).
 
 ---
 
@@ -66,6 +66,34 @@
 - **Problema:** O período de referência dos relatórios não segue a data real.
 - **Correção:** O período de referência dos relatórios e PDFs deve seguir a **data da vida real**.
 
+### C16 — Remover botão de "Desocupar Berço" sem movimentação física
+- **Problema:** No painel de berços em cargas (`cargas.html` / `cargas.js`), existe o botão "Desocupar Berço" (`liberarBercoManualmente`), que libera o berço instantaneamente sem movimentar a carga ou navio.
+- **Correção:** Remover o botão de liberação manual instantânea. O berço só é desocupado quando a carga/embarcação for **movimentada fisicamente** (transportada para navio/contêiner ou removida por movimentação de pátio).
+
+### C17 — Impedir carga em trânsito ou saída sem vincular a contêiner e navio
+- **Problema:** O sistema permite avançar cargas para o status "SAIDA" ou "EM_TRANSITO" sem que estejam vinculadas simultaneamente a um contêiner e a um navio.
+- **Correção:** Bloquear qualquer avanço para saída ou trânsito caso a carga não possua vinculação obrigatória com contêiner e navio (Regra A6 e SPEC 6.4).
+
+### C18 — ETA e tempo fora do Porto estáticos (falta de atualização em tempo real)
+- **Problema:** Em Embarcações e GPS, quando o navio está fora do porto, o ETA e o tempo fora do porto são exibidos com valores estáticos ou calculados uma única vez.
+- **Correção:** Conectar o cálculo de ETA e o tempo fora do porto a um **relógio em tempo real** (`setInterval`), atualizando continuamente a contagem regressiva e decorrida com base na data/hora real de saída (`data_saida`), distância da rota (`rotas_maritimas`) e velocidade de 33 km/h (RN 9).
+
+### C19 — Conectar todas as 22 tabelas do `schema.sql` ao Supabase (Tabelas Sem Uso)
+- **Problema:** Tabelas criadas no `schema.sql` estão sem uso ou foram substituídas por constantes estáticas e `localStorage` (`cargo_niveis`, `tipos_carga`, `checklist_modelos`, `checklist_itens`, `rotas_maritimas`, `estivador_cargas`, `inspecao_itens`).
+- **Correção:** Conectar todas as 22 tabelas do esquema PostgreSQL no Supabase, garantindo que checklists, modelos, itens de inspeção, níveis de acesso, rotas marítimas, atribuições do estivador e auditorias venham e sejam salvas exclusivamente no Supabase.
+
+### C20 — Registros de inspeção técnica detalhados por item (`inspecao_itens`)
+- **Problema:** A inspeção técnica de carga salva apenas o resultado final na tabela `inspecoes` e ignora o salvamento dos itens individuais do checklist.
+- **Correção:** Gravar a resposta de conformidade e observações de cada item na tabela `inspecao_itens` do Supabase para cada checklist preenchido.
+
+### C21 — Registrar leituras de QR Code no Supabase (`leituras_qr_code`)
+- **Problema:** A leitura de QR Code registra logs no `localStorage` (`nexus_audit_logs`).
+- **Correção:** Persistir cada evento de leitura de QR Code diretamente nas tabelas `leituras_qr_code` e `logs_alteracoes` do Supabase com o ID do funcionário autenticado e data/hora.
+
+### C22 — Relatórios e PDF com layout de 4 seções e data real atual
+- **Problema:** Os relatórios em PDF leem dados do `localStorage` e possuem datas de referência fixas.
+- **Correção:** Carregar os dados do Supabase, definir o período de referência com a data/hora real da geração e formatar o documento PDF nas 4 seções sequenciais exigidas pela SPEC 11 (Dados da Carga, Dados do Navio, Dados do Contêiner e Resumo do Fluxo).
+
 ---
 
 ## ⚙️ Seção de Ajustes
@@ -108,13 +136,25 @@
 - **Problema:** Há informações sendo exibidas no sistema que não estão cadastradas no banco de dados (dados hardcoded, estáticos ou inseridos diretamente no código/front-end).
 - **Ajuste:** Remover **todas** as informações que não estejam registradas no banco de dados do **Supabase**. O sistema deve exibir **apenas** informações e dados que estejam devidamente cadastrados e armazenados no Supabase, garantindo que todas as telas reflitam exclusivamente os dados reais do banco.
 
+### A10 — Autorização de retorno do navio ao porto de origem
+- **Ajuste:** Disponibilizar opção no painel de Embarcações para verificar disponibilidade e autorizar o retorno ao porto de origem para navios em status `FORA_DO_PORTO` ou `NO_PORTO_DE_DESTINO`.
+
+### A11 — Delegação de supervisor com elevação temporária de cargo no Supabase
+- **Ajuste:** A delegação de supervisor deve ser gravada e consultada exclusivamente na tabela `delegacoes_supervisor` do Supabase e elevar temporariamente o cargo e permissões ativas do funcionário substituto na sessão durante a vigência da substituição.
+
+### A12 — Validação de unicidade no cadastro de visitantes
+- **Ajuste:** Impedir cadastros de visitantes com documentos duplicados através de consulta e restrição direta na tabela `visitantes` do Supabase.
+
+### A13 — Obrigatoriedade de Relatório do Backlog para Toda e Qualquer Mudança no Sistema
+- **Ajuste:** Para toda e qualquer alteração realizada no repositório/sistema (seja correção, ajuste ou nova funcionalidade), deve ser **obrigatoriamente registrado um relatório de execução do backlog** (ex.: `relatorio-backlog-001.md` ou `relatorio-backlog.md`), relatando de forma transparente e detalhada tudo o que foi feito.
+
 ---
 
 ## 📋 Regra de Relatório de Execução do Backlog
 
-Ao final de cada sessão de implementação (ou ao concluir um conjunto de itens), o Jules deve gerar um **relatório de execução** contendo obrigatoriamente:
+Toda alteração feita no sistema deve ser documentada em um relatório do backlog (ex.: `relatorio-backlog-001.md`, `relatorio-backlog.md`, etc.). Ao final de cada sessão de implementação (ou ao concluir um conjunto de itens), deve-se gerar/atualizar o **relatório de execução** contendo obrigatoriamente:
 
-1. **Identificação dos itens:** Código do item (ex.: C1, A3), título e seção (Correção ou Ajuste).
+1. **Identificação dos itens:** Código do item (ex.: C1, C16, A13), título e seção (Correção ou Ajuste).
 2. **Status de cada item:**
    - ✅ **Concluído** — implementado e validado;
    - 🟡 **Parcialmente concluído** — implementado, mas pendente de validação/ajuste;
@@ -125,4 +165,4 @@ Ao final de cada sessão de implementação (ou ao concluir um conjunto de itens
 6. **Pendências e próximos passos:** lista do que resta fazer, com prioridade sugerida.
 7. **Data e responsável:** data de execução e identificação de quem executou (sessão do Jules).
 
-**Formato de saída:** o relatório deve ser salvo como `relatorio-backlog.md` (ou `relatorio-backlog-AAAA-MM-DD.md` para histórico) e incluir um resumo executivo no topo com o percentual de conclusão do backlog (itens concluídos / total de itens).
+**Formato de saída:** o relatório deve ser salvo como `relatorio-backlog.md` (ou `relatorio-backlog-001.md`, `relatorio-backlog-AAAA-MM-DD.md` para histórico) e incluir um resumo executivo no topo com o percentual de conclusão do backlog (itens concluídos / total de itens).

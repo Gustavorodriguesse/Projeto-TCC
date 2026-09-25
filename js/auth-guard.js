@@ -80,7 +80,25 @@
         const raw = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
         if (!raw) return null;
         const session = JSON.parse(raw);
-        return session && session.codigo_individual ? session : null;
+        if (!session || !session.codigo_individual) return null;
+
+        // A8 & SPEC 14: Elevação temporária do cargo para Supervisor em caso de delegação ativa
+        const activeDelegRaw = localStorage.getItem('nexus_active_delegation');
+        if (activeDelegRaw) {
+          try {
+            const activeDeleg = JSON.parse(activeDelegRaw);
+            if (activeDeleg && activeDeleg.substitutoMatricula) {
+              const subMat = String(activeDeleg.substitutoMatricula).toUpperCase();
+              const userMat = String(session.matricula || '').toUpperCase();
+              if (subMat === userMat || subMat === `MAT-${userMat}`) {
+                session.cargo = 'SUPERVISOR_GERENTE_OPERACOES';
+                session.cargo_nome = 'Supervisor Substituto (Delegação Ativa)';
+              }
+            }
+          } catch (e) {}
+        }
+
+        return session;
       } catch (err) {
         console.error('[NexusAuth] Erro ao ler sessão:', err);
         return null;

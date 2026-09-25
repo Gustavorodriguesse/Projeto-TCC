@@ -200,10 +200,101 @@
 
   window.NEXUS_TIPOS_CARGA = TIPOS_CARGA;
 
+  window.carregarTiposCargaSupabase = async function() {
+    if (!window.nexusSupabase) return window.NEXUS_TIPOS_CARGA;
+
+    try {
+      // 1. Busca tipos de carga
+      const { data: dbTipos, error: errTipos } = await window.nexusSupabase
+        .from('tipos_carga')
+        .select('*');
+
+      if (errTipos) {
+        console.warn("[NexusPort] Erro ao carregar tipos_carga do Supabase:", errTipos);
+        return window.NEXUS_TIPOS_CARGA;
+      }
+
+      // Se a tabela tipos_carga estiver vazia, popula os tipos padrão e checklists no Supabase
+      if (!dbTipos || dbTipos.length === 0) {
+        console.log("[NexusPort] Sincronizando tipos de carga iniciais para o Supabase...");
+        for (const tc of TIPOS_CARGA) {
+          const { data: insertedTipo } = await window.nexusSupabase
+            .from('tipos_carga')
+            .insert({
+              nome: tc.nome,
+              requisitos_especiais: tc.descricao
+            })
+            .select()
+            .single();
+
+          if (insertedTipo) {
+            const { data: insertedModelo } = await window.nexusSupabase
+              .from('checklist_modelos')
+              .insert({
+                tipo_carga_id: insertedTipo.id,
+                nome: `Checklist ${tc.nome}`,
+                descricao: tc.descricao
+              })
+              .select()
+              .single();
+
+            if (insertedModelo && tc.checklist) {
+              const itensToInsert = tc.checklist.map((item, index) => ({
+                checklist_modelo_id: insertedModelo.id,
+                descricao: item.desc,
+                critico: item.critico,
+                ordem: index + 1
+              }));
+              await window.nexusSupabase.from('checklist_itens').insert(itensToInsert);
+            }
+          }
+        }
+        return window.NEXUS_TIPOS_CARGA;
+      }
+
+      // 2. Carrega checklists e modelos do Supabase
+      const { data: dbModelos } = await window.nexusSupabase.from('checklist_modelos').select('*');
+      const { data: dbItens } = await window.nexusSupabase.from('checklist_itens').select('*');
+
+      const loadedTipos = dbTipos.map(t => {
+        const modelo = (dbModelos || []).find(m => m.tipo_carga_id === t.id);
+        const itens = modelo ? (dbItens || []).filter(i => i.checklist_modelo_id === modelo.id) : [];
+
+        return {
+          id: t.id,
+          nome: t.nome,
+          descricao: t.requisitos_especiais || t.nome,
+          checklist: itens.map(i => ({
+            id: i.id,
+            desc: i.descricao,
+            critico: i.critico,
+            categoria: i.critico ? 'Crítico' : 'Geral'
+          }))
+        };
+      });
+
+      if (loadedTipos.length > 0) {
+        window.NEXUS_TIPOS_CARGA = loadedTipos;
+      }
+    } catch (e) {
+      console.warn("[NexusPort] Exceção ao carregar tipos de carga do Supabase:", e);
+    }
+
+    return window.NEXUS_TIPOS_CARGA;
+  };
+
   window.getNexusTipoCarga = function(nomeOuId) {
     if (!nomeOuId) return null;
     const busca = String(nomeOuId).toLowerCase().trim();
-    return TIPOS_CARGA.find(t => t.id.toLowerCase() === busca || t.nome.toLowerCase() === busca) || null;
+    return (window.NEXUS_TIPOS_CARGA || TIPOS_CARGA).find(t =>
+      (t.id && String(t.id).toLowerCase() === busca) ||
+      (t.nome && String(t.nome).toLowerCase() === busca)
+    ) || null;
   };
+
+  // Dispara carregamento inicial
+  document.addEventListener('DOMContentLoaded', () => {
+    window.carregarTiposCargaSupabase();
+  });
 
 })(window);

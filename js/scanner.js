@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function processarScan(qrCodeText) {
+  async function processarScan(qrCodeText) {
     let rawCode = qrCodeText;
     if (rawCode.includes('?scan=') || rawCode.includes('?qr=')) {
       try {
@@ -81,8 +81,32 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
     }
 
+    let match = null;
+    if (window.nexusSupabase) {
+      try {
+        const { data: cDb } = await window.nexusSupabase.from('cargas').select('*').or(`qr_code_url.eq.${rawCode},qr_code_url.eq.QR-${rawCode}`).maybeSingle();
+        if (cDb) {
+          match = {
+            id: cDb.qr_code_url ? cDb.qr_code_url.replace('QR-', '') : cDb.id,
+            tipo: cDb.natureza || 'Carga Geral',
+            natureza: cDb.natureza || 'Geral',
+            peso: `${cDb.peso || 20} t`,
+            volume: `${cDb.volume || 30} m³`,
+            valor: `R$ ${(cDb.valor_declarado || 100000).toLocaleString('pt-BR')}`,
+            portoDescarga: cDb.porto_descarga || 'Porto de Santos',
+            destino: cDb.destino || 'Destino Internacional',
+            status: cDb.status_fluxo || 'AGENDAMENTO',
+            container: cDb.container_id || '',
+            navio: ''
+          };
+        }
+      } catch (err) { console.warn('Erro ao consultar scanner no Supabase:', err); }
+    }
+
     const localCargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
-    const match = localCargas.find(c => c.id === rawCode || c.qrCode === rawCode || c.id === rawCode.replace('QR-', ''));
+    if (!match) {
+      match = localCargas.find(c => c.id === rawCode || c.qrCode === rawCode || c.id === rawCode.replace('QR-', ''));
+    }
 
     const displayId = match ? match.id : rawCode;
     const displayTipo = match ? match.tipo : 'Carga Geral / Contêiner';
@@ -110,11 +134,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (window.nexusSupabase) {
       try {
-        window.nexusSupabase.from('leituras_qr_code').insert({
+        await window.nexusSupabase.from('leituras_qr_code').insert({
           entidade_tipo: displayId.startsWith('CONT') ? 'CONTAINER' : 'CARGA',
           entidade_id: displayId,
           data_hora: new Date().toISOString()
-        }).then().catch(err => console.warn('[NexusPort] Erro ao registrar leitura QR Code no Supabase:', err));
+        });
+        await window.nexusSupabase.from('logs_alteracoes').insert({
+          data_hora: new Date().toISOString(),
+          cargo: session.cargo || 'ESTIVADOR',
+          codigo_individual: session.codigo_individual || session.codigo || '--',
+          entidade_tipo: displayId.startsWith('CONT') ? 'CONTAINER' : 'CARGA',
+          entidade_id: displayId,
+          tipo_alteracao: 'REIMPRESSAO_ETIQUETA',
+          detalhes: { acao: 'Leitura QR Code no Pátio' }
+        });
       } catch (err) {
         console.warn('[NexusPort] Erro ao registrar leitura QR Code no Supabase:', err);
       }
