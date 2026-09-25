@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const foraPorto = cargas.filter(c => c.status === 'EM_TRANSITO').length + dbNavios.filter(n => n.localizacao === 'FORA_DO_PORTO').length;
     const armazenagem = cargas.filter(c => c.status === 'ARMAZENAGEM').length;
     const prontas = cargas.filter(c => c.status === 'PRONTA_PARA_ENTREGA').length;
-    const recusadas = cargas.filter(c => c.status === 'RECUSADA' || c.status === 'CANCELADA').length;
+    const recusadas = cargas.filter(c => c.status === 'RECUSADA').length;
 
     const elNaviosManut = document.getElementById('cardNaviosManutencaoVal');
     const elNaviosFora = document.getElementById('cardNaviosForaVal');

@@ -151,29 +151,15 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable();
   }
 
-  // C9: Renderiza tabela de cargas canceladas
-  function renderCargasCanceladasTable(canceladas) {
+  // Expurgo de cargas canceladas do sistema
+  function renderCargasCanceladasTable() {
     const canceladasTableBody = document.getElementById('cargasCanceladasTableBody');
     if (!canceladasTableBody) return;
-
-    if (!canceladas || canceladas.length === 0) {
-      canceladasTableBody.innerHTML = `
-        <tr>
-          <td colspan="5" class="p-4 text-center text-slate-400 italic">Nenhuma carga cancelada registrada.</td>
-        </tr>
-      `;
-      return;
-    }
-
-    canceladasTableBody.innerHTML = canceladas.map(c => `
-      <tr class="hover:bg-red-50/50 dark:hover:bg-red-950/20">
-        <td class="p-3 font-mono font-bold text-red-600 dark:text-red-400">${c.id}</td>
-        <td class="p-3 font-bold">${c.tipo}</td>
-        <td class="p-3 font-bold text-slate-700 dark:text-slate-200">${c.portoDescarga || 'Berço STS'}</td>
-        <td class="p-3 text-slate-600 dark:text-slate-300 italic">${c.motivoCancelamento || c.motivo_recusa || 'Sem motivo registrado'}</td>
-        <td class="p-3"><span class="px-2 py-0.5 rounded bg-red-100 text-red-800 dark:bg-red-950/80 dark:text-red-300 font-mono text-[10px] font-bold">CANCELADA</span></td>
+    canceladasTableBody.innerHTML = `
+      <tr>
+        <td colspan="5" class="p-4 text-center text-slate-400 italic">Nenhuma carga cancelada no sistema.</td>
       </tr>
-    `).join('');
+    `;
   }
 
   function renderTable() {
@@ -202,8 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // C9: Cargas canceladas saem da tabela principal
-    const cargasAtivas = cargasFluxoList.filter(c => c.status !== 'CANCELADA');
+    // Exibe apenas cargas ativas com contêiner e navio vinculados (A6)
+    const cargasAtivas = cargasFluxoList.filter(c => c.status !== 'CANCELADA' && Boolean(c.container) && Boolean(c.navio));
     const cargasCanceladas = cargasFluxoList.filter(c => c.status === 'CANCELADA');
 
     const userItems = cargasAtivas.filter(c => {
