@@ -23,20 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeRecoveryModal = document.getElementById('closeRecoveryModal');
   const dismissRecoveryModal = document.getElementById('dismissRecoveryModal');
 
-  // Base de dados mock de fallback (utilizada quando o Supabase não estiver configurado)
-  const mockEmployees = [
-    { codigo: 'NX-8821-SP', matricula: 'MAT-8821', nome: 'Carlos Silva', cargo: 'SUPERVISOR_GERENTE_OPERACOES', ativo: true },
-    { codigo: 'NX-1040-OP', matricula: 'MAT-1040', nome: 'João Pedro', cargo: 'ESTIVADOR', ativo: true },
-    { codigo: 'NX-2050-CF', matricula: 'MAT-2050', nome: 'Mariana Souza', cargo: 'CONFERENTE_CARGA', ativo: true },
-    { codigo: 'NX-3060-AR', matricula: 'MAT-3060', nome: 'Roberto Alves', cargo: 'ARRUMADOR_CONSERTADOR', ativo: true },
-    { codigo: 'NX-4070-PL', matricula: 'MAT-4070', nome: 'Fernanda Lima', cargo: 'PLANEJADOR_PATIO_NAVIOS', ativo: true },
-    { codigo: 'NX-5080-TC', matricula: 'MAT-5080', nome: 'Lucas Mendes', cargo: 'TECNICO_PORTOS', ativo: true },
-    { codigo: 'NX-6090-IN', matricula: 'MAT-6090', nome: 'Patricia Rocha', cargo: 'INSPETOR', ativo: true },
-    { codigo: 'NX-7010-DIR', matricula: 'MAT-7010', nome: 'Dr. Eduardo Costa', cargo: 'DIRETOR_OPERACOES_LOGISTICA', ativo: true },
-    { codigo: 'TEC-1001', matricula: 'MAT-1001', nome: 'Lucas Mendes', cargo: 'TECNICO_PORTOS', ativo: true },
-    { codigo: 'SUP-2001', matricula: 'MAT-2001', nome: 'Carlos Silva', cargo: 'SUPERVISOR_GERENTE_OPERACOES', ativo: true },
-    { codigo: 'INS-6090', matricula: 'MAT-6090', nome: 'Patricia Rocha', cargo: 'INSPETOR', ativo: true }
-  ];
+  // Removida base de dados mock fictícia (Etapa 3 - Plano de Correção)
+  const mockEmployees = [];
 
   // 1. Gestão de Tema Claro / Escuro (Dark Mode)
   function initTheme() {
@@ -189,17 +177,17 @@ document.addEventListener('DOMContentLoaded', () => {
       // Verifica se o código digitado é um novo código REEMITIDO pelo Técnico
       const reissuedEntry = Object.entries(storedOverrides).find(([mat, ov]) => ov.codigo === codeValue);
 
-      // Se não encontrou via Supabase ou se não há Supabase conectado, busca nos mocks e cadastros locais (nexus_func_list)
+      // Se não encontrou via Supabase ou se não há Supabase conectado, busca exclusivamente nos cadastros dinâmicos locais (nexus_func_list)
       if (!employeeFound) {
         const customFuncList = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
-        const allLocalEmployees = [...mockEmployees, ...customFuncList.map(f => ({
+        const allLocalEmployees = customFuncList.map(f => ({
           codigo: f.codigo,
-          codigo_individual: f.codigo,
+          codigo_individual: f.codigo || f.codigo_individual,
           matricula: f.matricula,
           nome: f.nome,
           cargo: f.cargo,
-          ativo: true
-        }))];
+          ativo: f.ativo !== false
+        }));
 
         if (reissuedEntry) {
           const targetMatricula = reissuedEntry[0];

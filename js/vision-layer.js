@@ -18,29 +18,14 @@
 (function (window) {
   'use strict';
 
-  // Base de dados mock simulando dados do pátio e estatísticas consolidadas
+  // Desativação total de dados mock e dados fictícios (Etapa 3 - Plano de Correção)
+  const ENABLE_MOCKS = false;
   const mockDatabase = {
-    cargas: [
-      { id: 'CARGA-001', codigo_carga: 'CRG-2026-001', tipo: 'Grãos Soltos', peso: '25.5 t', status: 'EM_CARREGAMENTO', estivador_id: 'MAT-1040', conferente_id: 'MAT-2050', arrumador_id: 'MAT-3060', container_id: 'CONT-991', data: '20/09/2026 08:30' },
-      { id: 'CARGA-002', codigo_carga: 'CRG-2026-002', tipo: 'Eletrônicos', peso: '12.0 t', status: 'ARMAZENAGEM', estivador_id: 'MAT-9999', conferente_id: 'MAT-2050', arrumador_id: 'MAT-3060', container_id: 'CONT-992', data: '20/09/2026 09:15' },
-      { id: 'CARGA-003', codigo_carga: 'CRG-2026-003', tipo: 'Produtos Químicos', peso: '18.2 t', status: 'PRONTA_PARA_ENTREGA', estivador_id: 'MAT-1040', conferente_id: 'MAT-8888', arrumador_id: 'MAT-3060', container_id: 'CONT-993', data: '20/09/2026 10:00' },
-      { id: 'CARGA-004', codigo_carga: 'CRG-2026-004', tipo: 'Maquinário Pesado', peso: '45.0 t', status: 'RECEBIMENTO_INSPECAO', estivador_id: 'MAT-7777', conferente_id: 'MAT-2050', arrumador_id: 'MAT-7777', container_id: 'CONT-994', data: '20/09/2026 10:45' }
-    ],
-    navios: [
-      { id: 'NAV-001', nome: 'MV Santos Star', imo: 'IMO 9823412', estado: 'OPERANTE', localizacao: 'DENTRO_DO_PORTO', origem: 'Porto de Roterdã', destino: 'Porto de Santos', operacoes: 142 },
-      { id: 'NAV-002', nome: 'MV Atlantic Breeze', imo: 'IMO 9123841', estado: 'AGENDADO_PARA_REFORMA', localizacao: 'FORA_DO_PORTO', origem: 'Porto de Xangai', destino: 'Porto de Santos', operacoes: 98 },
-      { id: 'NAV-003', nome: 'MV Pacific Giant', imo: 'IMO 9732109', estado: 'OPERANTE', localizacao: 'NO_PORTO_DE_DESTINO', origem: 'Porto de Santos', destino: 'Porto de Singapura', operacoes: 115 }
-    ],
-    containers: [
-      { id: 'CONT-991', numero: 'NYKU-881290-0', tipo: 'Grãos Soltos', estado: 'OPERANTE', navio: 'MV Santos Star' },
-      { id: 'CONT-992', numero: 'MSCU-102938-4', tipo: 'Eletrônicos', estado: 'OPERANTE', navio: 'MV Santos Star' }
-    ],
-    visitantes: [
-      { id: 'VIS-001', nome: 'Auditor Fiscal João Souza', documento: 'CPF 123.456.789-00', motivo: 'Fiscalização Alfandegária', registrado_por: 'MAT-5080', data: '20/09/2026' }
-    ],
-    documentacao_funcionarios: [
-      { id: 'DOC-001', matricula: 'MAT-1040', tipo: 'Ficha de Registro de Empregado', arquivo: 'ficha_mat_1040.pdf', privado: true }
-    ]
+    cargas: [],
+    navios: [],
+    containers: [],
+    visitantes: [],
+    documentacao_funcionarios: []
   };
 
   const NexusVision = {

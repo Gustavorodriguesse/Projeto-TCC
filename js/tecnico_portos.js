@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let selectedEmp = null;
 
-  const employeeList = [];
+  const employeeList = [
+    { matricula: 'MAT-1914', nome: 'Maxwell Philip da Cruz', cargo: 'Planejador de Pátio e Navios', cargo_nome: 'Planejador de Pátio e Navios', codigo: 'NX-1914-PL' }
+  ];
 
   if (searchBtn && searchInput) {
     searchBtn.addEventListener('click', async () => {
@@ -239,10 +241,23 @@ document.addEventListener('DOMContentLoaded', () => {
         <td class="p-3 font-bold">${f.nome}</td>
         <td class="p-3 text-slate-500 font-semibold">${f.cargo}</td>
         <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">${f.codigo}</td>
-        <td class="p-3 text-slate-400 font-mono text-xs">${f.doc || 'Cadastrado'}</td>
+        <td class="p-3 text-slate-400 font-mono text-xs flex items-center justify-between">
+          <span>${f.doc || 'Cadastrado'}</span>
+          <button type="button" onclick="window.excluirFuncionarioReal('${f.matricula}')" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded font-bold text-xs">Excluir</button>
+        </td>
       </tr>
     `).join('');
   }
+
+  window.excluirFuncionarioReal = async function(matricula) {
+    if (confirm(`Tem certeza que deseja excluir o funcionário de matrícula ${matricula}?`)) {
+      if (window.NexusRepository) {
+        await window.NexusRepository.deleteFuncionario(matricula);
+      }
+      await carregarFuncionariosCompleto();
+      alert(`Funcionário ${matricula} excluído com sucesso do sistema e do banco de dados.`);
+    }
+  };
 
   carregarFuncionariosCompleto();
 

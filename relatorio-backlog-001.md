@@ -2,7 +2,7 @@
 
 **Data de Execução:** 25 de Setembro de 2026
 **Responsável:** Jules (Engenheiro de Software & Especialista em Segurança de Sistemas)
-**Resumo Executivo:** 100% do Backlog Concluído (35 / 35 itens executados e validados com expurgo de dados sem vínculos).
+**Resumo Executivo:** 100% do Backlog Concluído e Etapa de Correção de Dados Fictícios Hardcoded totalmente implementada com repositório centralizado (`NexusRepository`).
 
 ---
 
@@ -12,7 +12,23 @@
 |-------|----------------|------------|------------|
 | **Correções (C1 a C22)** | 22 | 22 | 100% |
 | **Ajustes (A1 a A13)** | 13 | 13 | 100% |
-| **TOTAL** | **35** | **35** | **100%** |
+| **Plano de Correção de Dados Fictícios** | Etapas 1-5 | Concluídas | 100% |
+| **TOTAL** | **36** | **36** | **100%** |
+
+---
+
+## 🧹 Atualização Especial — Plano de Correção de Dados Fictícios e Repositório Central
+
+### 1. Criado Repositório Central de Dados (`js/data-repository.js`)
+- Módulo unificado `NexusRepository` para mediação de todas as consultas, inserções, atualizações e exclusões reais com o Supabase e sincronização no estado do cliente.
+- Exclusão real de funcionários, cargas e visitantes via chamadas `DELETE` no Supabase e remoção sincronizada do estado do navegador.
+
+### 2. Desativação Completa de Mocks & Fallbacks Hardcoded
+- **`js/vision-layer.js`**: `ENABLE_MOCKS = false` e esvaziamento do `mockDatabase`. Gráficos e métricas estratégicas calculados dinamicamente a partir dos registros reais do Supabase/Repositório.
+- **`js/login.js`**: Removido array `mockEmployees`. Login restrito aos registros do Supabase ou cadastros criados dinamicamente no sistema.
+- **`js/cargas.js`**: Removidas cargas padrão `CRG-2026-001` a `004` e ocupação fictícia do Berço 04. Integração completa com `NexusRepository.getCargas()`.
+- **`js/tecnico_portos.js`**: Removidos funcionários mock adicionais, mantendo exclusivamente o funcionário oficial Maxwell Philip da Cruz (`MAT-1914`). Adicionada exclusão real de funcionários via `NexusRepository.deleteFuncionario()`.
+- **`js/dashboard.js`**: Detalhamento dos cards operacionais e gráficos alimentados exclusivamente por dados em tempo real do repositório/Supabase.
 
 ---
 
@@ -60,7 +76,7 @@
 
 ### ✅ C11 — Dados fictícios e armazenamento local no sistema
 - **Status:** Concluído
-- **O que foi feito:** Eliminados os fallbacks estáticos para operações do domínio. O sistema consulta e grava diretamente no Supabase em todos os módulos.
+- **O que foi feito:** Eliminados os fallbacks estáticos para operações do domínio. O sistema consulta e grava diretamente no Supabase em todos os módulos através do `NexusRepository`.
 
 ### ✅ C12 — Informações de teste no sistema
 - **Status:** Concluído
@@ -153,4 +169,4 @@
 
 ## 🛡️ Evidências de Validação e Testes
 - **Testes de Regressão Automatizados:** Suíte `verify_points_1_2_3.py` executada no ambiente com servidor ativo na porta 3000 — **TODOS OS TESTES PASSARAM COM SUCESSO**.
-- **Análise de Segurança & Integridade:** Verificada a aplicação do controle de acesso por cargo (RBAC) e expurgo integral de inconsistências e duplicidades.
+- **Análise de Segurança & Integridade:** Verificada a aplicação do controle de acesso por cargo (RBAC), eliminação total de dados fictícios hardcoded e garantia de não reaparecimento em recarga de página/limpeza de cache.

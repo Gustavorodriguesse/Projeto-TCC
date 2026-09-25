@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'BERCO-01', nome: 'Berço 01 - STS', estado: 'LIVRE', carga_id: null },
       { id: 'BERCO-02', nome: 'Berço 02 - STS', estado: 'LIVRE', carga_id: null },
       { id: 'BERCO-03', nome: 'Berço 03 - STS', estado: 'LIVRE', carga_id: null },
-      { id: 'BERCO-04', nome: 'Berço 04 - STS', estado: 'OCUPADO', carga_id: 'CRG-2026-001' },
+      { id: 'BERCO-04', nome: 'Berço 04 - STS', estado: 'LIVRE', carga_id: null },
       { id: 'BERCO-05', nome: 'Berço 05 - STS', estado: 'LIVRE', carga_id: null }
     ];
     localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
@@ -114,38 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let cargasFluxoList = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
 
   async function carregarCargasSupabase() {
-    if (window.nexusSupabase) {
+    if (window.NexusRepository) {
       try {
-        const { data, error } = await window.nexusSupabase
-          .from('cargas')
-          .select('*');
-
-        if (!error && data && data.length > 0) {
-          const loadedCargas = data.map((c, i) => ({
-            id: c.qr_code_url ? c.qr_code_url.replace('QR-', '') : `CRG-2026-00${i + 1}`,
-            tipo: c.natureza || 'Carga Geral',
-            peso: `${c.peso || 20} t`,
-            volume: `${c.volume || 30} m³`,
-            valor: `R$ ${(c.valor_declarado || 100000).toLocaleString('pt-BR')}`,
-            natureza: c.natureza || 'Geral',
-            portoDescarga: c.porto_descarga || 'Porto de Roterdã',
-            destino: c.destino || 'Destino Geral',
-            status: c.status_fluxo || 'AGENDAMENTO',
-            container: c.container_id || '',
-            navio: '',
-            qrCode: c.qr_code_url || `QR-CRG-2026-00${i + 1}`
-          }));
-
-          const idSet = new Set(loadedCargas.map(x => x.id));
-          cargasFluxoList.forEach(def => {
-            if (!idSet.has(def.id)) loadedCargas.push(def);
-          });
-
+        const loadedCargas = await window.NexusRepository.getCargas();
+        if (loadedCargas) {
           cargasFluxoList = loadedCargas;
           localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
         }
       } catch (err) {
-        console.warn('[NexusPort] Erro ao carregar cargas do Supabase:', err);
+        console.warn('[NexusPort] Erro ao carregar cargas via repositório:', err);
       }
     }
     renderTable();
