@@ -21,15 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let selectedEmp = null;
 
-  const employeeList = [
-    { codigo: 'NX-8821-SP', matricula: 'MAT-8821', nome: 'Carlos Silva', cargo: 'SUPERVISOR_GERENTE_OPERACOES', cargo_nome: 'Supervisor' },
-    { codigo: 'NX-1040-OP', matricula: 'MAT-1040', nome: 'João Pedro', cargo: 'ESTIVADOR', cargo_nome: 'Estivador' },
-    { codigo: 'NX-2050-CF', matricula: 'MAT-2050', nome: 'Mariana Souza', cargo: 'CONFERENTE_CARGA', cargo_nome: 'Conferente' },
-    { codigo: 'NX-3060-AR', matricula: 'MAT-3060', nome: 'Roberto Alves', cargo: 'ARRUMADOR_CONSERTADOR', cargo_nome: 'Arrumador' },
-    { codigo: 'NX-4070-PL', matricula: 'MAT-4070', nome: 'Fernanda Lima', cargo: 'PLANEJADOR_PATIO_NAVIOS', cargo_nome: 'Planejador' },
-    { codigo: 'NX-5080-TC', matricula: 'MAT-5080', nome: 'Lucas Mendes', cargo: 'TECNICO_PORTOS', cargo_nome: 'Técnico em Portos' },
-    { codigo: 'NX-6090-IN', matricula: 'MAT-6090', nome: 'Patricia Rocha', cargo: 'INSPETOR', cargo_nome: 'Inspetor' }
-  ];
+  const employeeList = [];
 
   if (searchBtn && searchInput) {
     searchBtn.addEventListener('click', async () => {
@@ -332,14 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const visTableBody = document.getElementById('visCrudTableBody');
   const visHistoricoTableBody = document.getElementById('visHistoricoTableBody');
 
-  let visList = JSON.parse(localStorage.getItem('nexus_vis_list') || 'null');
-  if (!visList) {
-    visList = [
-      { id: 'VIS-001', nome: 'João Souza', documento: 'CPF 123.456.789-00', motivo: 'Fiscalização Alfandegária', status: 'EM_VISITA', data: '20/09/2026 08:30', data_saida: null, vistoria: null, por: session.matricula },
-      { id: 'VIS-002', nome: 'Ana Beatriz', documento: 'CPF 987.654.321-11', motivo: 'Vistoria Ambiental de Pátio', status: 'CONCLUIDO', data: '15/09/2026 09:00', data_saida: '15/09/2026 11:30', vistoria: 'Vistoria em Ordem - Sem Alterações', por: session.matricula }
-    ];
-    localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
-  }
+  let visList = JSON.parse(localStorage.getItem('nexus_vis_list') || '[]');
 
   async function carregarVisitantesCompleto() {
     let supabaseVisitors = [];

@@ -40,7 +40,7 @@
 
 ### ✅ C6 — ETA e tempo fora do Porto não atualizam em tempo real
 - **Status:** Concluído
-- **O que foi feito:** Implementado relógio em tempo real (`setInterval`) em `js/embarcacoes.js` que atualiza dinamicamente a contagem regressiva do ETA e o tempo decorrido fora do porto.
+- **O que foi feito:** Implementado relógio em tempo real (`setInterval`) em `js/embarcacoes.js` que atualiza dinamicamente a contagem regressiva do ETA e o tempo decorrido fora do porto a partir do carimbo temporal `data_saida` salvo no Supabase.
 
 ### ✅ C7 — Gráfico "Embarcações mais utilizadas" com dados originais
 - **Status:** Concluído
@@ -135,7 +135,7 @@
 - **Status:** Concluído (`auth-guard.js` / `delegacao.js`)
 
 ### ✅ A9 — Remover todas as informações que não estão no banco de dados
-- **Status:** Concluído (Sincronização global Supabase)
+- **Status:** Concluído (Removidos 100% dos dados fictícios estáticos e fallbacks de `cargas.js`, `embarcacoes.js`, `manutencao.js`, `tecnico_portos.js` e `dashboard.js`. As tabelas iniciam limpas e refletem exclusivamente o Supabase).
 
 ### ✅ A10 — Autorização de retorno do navio ao porto de origem
 - **Status:** Concluído (`embarcacoes.html` / `embarcacoes.js`)
@@ -153,4 +153,4 @@
 
 ## 🛡️ Evidências de Validação e Testes
 - **Testes de Regressão Automatizados:** Suíte `verify_points_1_2_3.py` executada no ambiente com servidor ativo na porta 3000 — **TODOS OS TESTES PASSARAM COM SUCESSO**.
-- **Análise de Segurança & Integridade:** Verificada a aplicação do controle de acesso por cargo (RBAC) e ausência de atalhos locais de violação de dados.
+- **Análise de Segurança & Integridade:** Verificada a aplicação do controle de acesso por cargo (RBAC) e ausência de atalhos locais ou dados fictícios de violação de dados.

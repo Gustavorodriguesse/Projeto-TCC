@@ -323,14 +323,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Renderiza Log Geral de Alterações com Nome do Funcionário (Item 2 Correções)
   function renderAuditLogTable() {
     if (!auditTableBody) return;
-    let logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || 'null');
-    if (!logs || logs.length === 0) {
-      logs = [
-        { data_hora: new Date().toISOString(), nome_funcionario: 'Carlos Silva', cargo: 'Supervisor de Operações', codigo_usuario: 'SUP-2001', entidade: 'CRG-2026-001', tipo_alteracao: 'Criação / Agendamento' },
-        { data_hora: new Date(Date.now() - 3600000).toISOString(), nome_funcionario: 'Patricia Rocha', cargo: 'Inspetor Técnico', codigo_usuario: 'INS-6090', entidade: 'CRG-2026-002', tipo_alteracao: 'Aprovação de Inspeção' },
-        { data_hora: new Date(Date.now() - 7200000).toISOString(), nome_funcionario: 'Lucas Mendes', cargo: 'Técnico em Portos', codigo_usuario: 'TEC-5080', entidade: 'MAT-1040', tipo_alteracao: 'Reemissão de Código' }
-      ];
-      localStorage.setItem('nexus_audit_logs', JSON.stringify(logs));
+    let logs = JSON.parse(localStorage.getItem('nexus_audit_logs') || '[]');
+
+    if (logs.length === 0) {
+      auditTableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="p-4 text-center text-slate-400 italic">Nenhum log de alteração registrado no momento.</td>
+        </tr>
+      `;
+      return;
     }
 
     auditTableBody.innerHTML = logs.map(l => `
@@ -354,13 +355,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const trailContainer = document.getElementById('trailDecisoesContainer');
     if (!trailContainer) return;
 
-    let trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || 'null');
-    if (!trail || trail.length === 0) {
-      trail = [
-        { id: 'TRL-2026-9012', data_hora: new Date().toISOString(), responsavel: 'Carlos Supervisor (Supervisor) - SUP-2001', decisao: 'Liberou Navio MV Santos Star', entidade: 'MV Santos Star', motivo: 'Documentação e inspeção em conformidade', retificacao: null },
-        { id: 'TRL-2026-8811', data_hora: new Date(Date.now() - 3600000).toISOString(), responsavel: 'Patricia Rocha (Inspetor) - INS-6090', decisao: 'Recusou Carga CRG-2026-003', entidade: 'CRG-2026-003', motivo: 'Avarias e lacre rompido na embalagem', retificacao: '[Retificação em 20/09 14:00]: Reinspecionado item e mantida recusa.' }
-      ];
-      localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
+    let trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || '[]');
+
+    if (trail.length === 0) {
+      trailContainer.innerHTML = `
+        <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-center text-slate-400 italic text-xs">
+          Nenhum registro no trail de decisões críticas até o momento.
+        </div>
+      `;
+      return;
     }
 
     trailContainer.innerHTML = trail.map(t => `
