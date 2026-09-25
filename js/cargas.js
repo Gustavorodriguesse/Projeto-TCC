@@ -173,6 +173,31 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable();
   }
 
+  // C9: Renderiza tabela de cargas canceladas
+  function renderCargasCanceladasTable(canceladas) {
+    const canceladasTableBody = document.getElementById('cargasCanceladasTableBody');
+    if (!canceladasTableBody) return;
+
+    if (!canceladas || canceladas.length === 0) {
+      canceladasTableBody.innerHTML = `
+        <tr>
+          <td colspan="5" class="p-4 text-center text-slate-400 italic">Nenhuma carga cancelada registrada.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    canceladasTableBody.innerHTML = canceladas.map(c => `
+      <tr class="hover:bg-red-50/50 dark:hover:bg-red-950/20">
+        <td class="p-3 font-mono font-bold text-red-600 dark:text-red-400">${c.id}</td>
+        <td class="p-3 font-bold">${c.tipo}</td>
+        <td class="p-3 font-bold text-slate-700 dark:text-slate-200">${c.portoDescarga || 'Berço STS'}</td>
+        <td class="p-3 text-slate-600 dark:text-slate-300 italic">${c.motivoCancelamento || c.motivo_recusa || 'Sem motivo registrado'}</td>
+        <td class="p-3"><span class="px-2 py-0.5 rounded bg-red-100 text-red-800 dark:bg-red-950/80 dark:text-red-300 font-mono text-[10px] font-bold">CANCELADA</span></td>
+      </tr>
+    `).join('');
+  }
+
   function renderTable() {
     if (!cargasTableBody) return;
 
@@ -183,13 +208,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterTipoVal = (document.getElementById('filterTipo')?.value || '').trim().toLowerCase();
     const filterStatusVal = (document.getElementById('filterStatus')?.value || '').trim();
 
-    const userItems = cargasFluxoList.filter(c => {
+    // C10: Atualiza status "ENTREGUE" AUTOMATICAMENTE se o navio chegou ao porto de destino
+    const naviosLocais = [
+      { nome: 'MV Santos Star', localizacao: 'DENTRO_DO_PORTO' },
+      { nome: 'MV Pacific Giant', localizacao: 'FORA_DO_PORTO' },
+      { nome: 'MV Atlantic Breeze', localizacao: 'NO_PORTO_DE_DESTINO' }
+    ];
+
+    cargasFluxoList.forEach(c => {
+      if (c.navio && c.status !== 'CANCELADA') {
+        const navObj = naviosLocais.find(n => n.nome.toLowerCase() === c.navio.toLowerCase());
+        if (navObj && navObj.localizacao === 'NO_PORTO_DE_DESTINO') {
+          c.status = 'ENTREGUE';
+        }
+      }
+    });
+
+    // C9: Cargas canceladas saem da tabela principal
+    const cargasAtivas = cargasFluxoList.filter(c => c.status !== 'CANCELADA');
+    const cargasCanceladas = cargasFluxoList.filter(c => c.status === 'CANCELADA');
+
+    const userItems = cargasAtivas.filter(c => {
       if (filterNavioVal && !(c.navio || '').toLowerCase().includes(filterNavioVal)) return false;
       if (filterContVal && !(c.container || '').toLowerCase().includes(filterContVal)) return false;
       if (filterTipoVal && !(c.tipo || '').toLowerCase().includes(filterTipoVal) && !(c.natureza || '').toLowerCase().includes(filterTipoVal)) return false;
       if (filterStatusVal && c.status !== filterStatusVal) return false;
       return true;
     });
+
+    renderCargasCanceladasTable(cargasCanceladas);
 
     if (userItems.length === 0) {
       cargasTableBody.innerHTML = `
@@ -235,9 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'LIBERAR')" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">local_shipping</span><span>Liberar</span></button>`;
       }
 
-      if (c.status === 'EM_TRANSITO' && isSupervisor) {
-        actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'ENTREGAR')" class="px-2.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">task_alt</span><span>Entregar</span></button>`;
-      }
+      // C10: Botão manual de "Entregar" REMOVIDO — a entrega ocorre automaticamente quando o navio chega ao destino
 
       if (['AGENDAMENTO', 'ARMAZENAGEM', 'PRONTA_PARA_ENTREGA'].includes(c.status) && isSupervisor) {
         actionButtonsHtml += `<button type="button" onclick="window.executarAcaoCarga('${c.id}', 'CANCELAR')" class="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold shadow-sm transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">block</span><span>Cancelar</span></button>`;
@@ -429,6 +474,142 @@ document.addEventListener('DOMContentLoaded', () => {
     closeQrModalBtn.addEventListener('click', () => qrModal.classList.add('hidden'));
   }
 
+  // Lógica do Modal Centralizado de Vinculação (C4, A6, A7)
+  const vincularModal = document.getElementById('vincularModal');
+  const closeVincularModalBtn = document.getElementById('closeVincularModalBtn');
+  const cancelVincularModalBtn = document.getElementById('cancelVincularModalBtn');
+  const confirmVincularModalBtn = document.getElementById('confirmVincularModalBtn');
+  const vincularContainerSelect = document.getElementById('vincularContainerSelect');
+  const vincularNavioSelect = document.getElementById('vincularNavioSelect');
+  const vincularCargaIdLabel = document.getElementById('vincularCargaIdLabel');
+  const vincularCargaVolumeLabel = document.getElementById('vincularCargaVolumeLabel');
+
+  let targetCargaParaVinculacao = null;
+
+  window.abrirModalVinculacao = async function(idCarga) {
+    targetCargaParaVinculacao = cargasFluxoList.find(c => c.id === idCarga);
+    if (!targetCargaParaVinculacao || !vincularModal) return;
+
+    if (vincularCargaIdLabel) vincularCargaIdLabel.textContent = targetCargaParaVinculacao.id;
+    if (vincularCargaVolumeLabel) vincularCargaVolumeLabel.textContent = targetCargaParaVinculacao.volume;
+
+    // Buscar Contêineres do Supabase / Local
+    let containers = JSON.parse(localStorage.getItem('nexus_containers_list') || '[]');
+    if (window.nexusSupabase) {
+      try {
+        const { data } = await window.nexusSupabase.from('containers').select('*');
+        if (data && data.length > 0) {
+          const mapConts = data.map(c => ({
+            id: c.id || `CONT-${c.numero_identificacao}`,
+            identificacao: c.numero_identificacao,
+            tipo: c.material_carregado || 'Carga Geral',
+            estado: c.estado || 'OPERANTE'
+          }));
+          const idSet = new Set(mapConts.map(x => x.identificacao));
+          containers.forEach(item => { if (!idSet.has(item.identificacao)) mapConts.push(item); });
+          containers = mapConts;
+        }
+      } catch (e) { console.warn('Erro ao carregar contêineres para modal:', e); }
+    }
+
+    // Calcular volume atual ocupado em cada contêiner
+    vincularContainerSelect.innerHTML = '<option value="">Selecione o Contêiner...</option>';
+    containers.forEach(cont => {
+      const volCargasNoCont = cargasFluxoList
+        .filter(c => c.container === cont.identificacao || c.container === cont.id)
+        .reduce((sum, c) => sum + (parseFloat(c.volume) || 0), 0);
+      const dispVol = 75 - volCargasNoCont;
+      const statusText = cont.estado !== 'OPERANTE' ? ` [INDISPONÍVEL: ${cont.estado}]` : '';
+      vincularContainerSelect.innerHTML += `
+        <option value="${cont.identificacao}" data-disp="${dispVol}" data-estado="${cont.estado}" ${dispVol <= 0 ? 'disabled' : ''}>
+          ${cont.identificacao} (${cont.tipo}) - Disp: ${dispVol.toFixed(1)} m³ / 75 m³${statusText}
+        </option>
+      `;
+    });
+
+    // Buscar Navios do Supabase / Local
+    let navios = [
+      { nome: 'MV Santos Star', imo: 'IMO-9821034', localizacao: 'DENTRO_DO_PORTO' },
+      { nome: 'MV Pacific Giant', imo: 'IMO-9742110', localizacao: 'FORA_DO_PORTO' },
+      { nome: 'MV Atlantic Breeze', imo: 'IMO-9651002', localizacao: 'NO_PORTO_DE_DESTINO' }
+    ];
+    if (window.nexusSupabase) {
+      try {
+        const { data } = await window.nexusSupabase.from('navios').select('*');
+        if (data && data.length > 0) {
+          const mapNavs = data.map(n => ({ nome: n.nome, imo: n.numero_imo, localizacao: n.localizacao || 'DENTRO_DO_PORTO' }));
+          const imoSet = new Set(mapNavs.map(x => x.imo));
+          navios.forEach(item => { if (!imoSet.has(item.imo)) mapNavs.push(item); });
+          navios = mapNavs;
+        }
+      } catch (e) { console.warn('Erro ao carregar navios para modal:', e); }
+    }
+
+    vincularNavioSelect.innerHTML = '<option value="">Selecione o Navio...</option>';
+    navios.forEach(nav => {
+      vincularNavioSelect.innerHTML += `
+        <option value="${nav.nome}">
+          ${nav.nome} (${nav.imo}) - Status: ${nav.localizacao}
+        </option>
+      `;
+    });
+
+    vincularModal.classList.remove('hidden');
+  };
+
+  function fecharVincularModal() {
+    if (vincularModal) vincularModal.classList.add('hidden');
+  }
+
+  if (closeVincularModalBtn) closeVincularModalBtn.addEventListener('click', fecharVincularModal);
+  if (cancelVincularModalBtn) cancelVincularModalBtn.addEventListener('click', fecharVincularModal);
+
+  if (confirmVincularModalBtn) {
+    confirmVincularModalBtn.addEventListener('click', async () => {
+      if (!targetCargaParaVinculacao) return;
+
+      const selectedContOpt = vincularContainerSelect.options[vincularContainerSelect.selectedIndex];
+      const contVal = vincularContainerSelect.value;
+      const navVal = vincularNavioSelect.value;
+
+      if (!contVal || !navVal) {
+        alert('A6 REGRA OBRIGATÓRIA: Todas as cargas devem obrigatoriamente estar vinculadas a um contêiner e a um navio!');
+        return;
+      }
+
+      const cargaVol = parseFloat(targetCargaParaVinculacao.volume) || 0;
+      const dispVol = parseFloat(selectedContOpt.getAttribute('data-disp')) || 0;
+      const estadoCont = selectedContOpt.getAttribute('data-estado');
+
+      if (estadoCont && estadoCont !== 'OPERANTE') {
+        alert(`BLOQUEIO DE SEGURANÇA: Contêiner selecionado está no estado ${estadoCont} e não pode ser vinculado!`);
+        return;
+      }
+
+      if (cargaVol > dispVol) {
+        alert(`A7 REGRA DE CAPACIDADE: Volume da carga (${cargaVol} m³) excede a capacidade disponível do contêiner (${dispVol.toFixed(1)} m³ de no máximo 75 m³)!`);
+        return;
+      }
+
+      targetCargaParaVinculacao.container = contVal;
+      targetCargaParaVinculacao.navio = navVal;
+
+      localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('cargas')
+            .update({ container_id: contVal })
+            .eq('qr_code_url', targetCargaParaVinculacao.qrCode || `QR-${targetCargaParaVinculacao.id}`);
+        } catch (e) { console.warn('Erro ao atualizar vinculação no Supabase:', e); }
+      }
+
+      renderTable();
+      fecharVincularModal();
+      alert(`Carga ${targetCargaParaVinculacao.id} vinculada ao Contêiner ${contVal} e Navio ${navVal} com sucesso!`);
+    });
+  }
+
   if (printEtiquetaBtn) {
     printEtiquetaBtn.addEventListener('click', () => {
       if (!currentEntityData) return;
@@ -462,19 +643,52 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Acesso Restrito: Apenas Estivadores podem registrar movimentação e estado de carregamento de cargas!');
         return;
       }
-      const estadoMov = prompt(`Selecione o estado do carregamento para ${idCarga}:\n1 - EM_CARREGAMENTO\n2 - PARADO\n3 - CONCLUIDO`, '1');
-      if (estadoMov === '1') {
-        carga.estadoMovimentacao = 'EM_CARREGAMENTO';
-        carga.estivadorMatricula = session.matricula;
-        alert(`Status de carregamento da carga ${idCarga} atualizado para EM_CARREGAMENTO por Estivador (${session.nome}).`);
-      } else if (estadoMov === '2') {
-        carga.estadoMovimentacao = 'PARADO';
-        carga.estivadorMatricula = session.matricula;
-        alert(`Status de carregamento da carga ${idCarga} atualizado para PARADO.`);
-      } else if (estadoMov === '3') {
-        carga.estadoMovimentacao = 'CONCLUIDO';
-        carga.estivadorMatricula = session.matricula;
-        alert(`Movimentação da carga ${idCarga} CONCLUÍDA com sucesso!`);
+      // C1 & C2: Exibe opções de berços disponíveis e opções para onde a carga deve ser levada
+      bercosList = JSON.parse(localStorage.getItem('nexus_bercos_list') || '[]');
+      const bercosText = bercosList.map((b, idx) => `${idx + 1} - ${b.nome} (${b.estado})`).join('\n');
+      const opcaoBerco = prompt(`Selecione o Berço para onde a carga ${idCarga} deve ser movimentada:\n${bercosText}\nou digite NAVIO para levar a carga do berço para o navio:`);
+
+      if (!opcaoBerco) return;
+
+      if (opcaoBerco.toUpperCase() === 'NAVIO') {
+        if (!carga.navio) {
+          alert(`Carga ${idCarga} ainda não tem um navio vinculado. Vincule a carga a um navio antes de transportá-la.`);
+          return;
+        }
+        // Desocupa o berço atual da carga
+        const bercoAtual = bercosList.find(b => b.nome === carga.portoDescarga || b.carga_id === idCarga);
+        if (bercoAtual) {
+          bercoAtual.estado = 'LIVRE';
+          bercoAtual.carga_id = null;
+          localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
+          renderBercosPanel();
+        }
+        carga.estadoMovimentacao = 'EM_TRANSITO_PARA_NAVIO';
+        alert(`Carga ${idCarga} transportada com sucesso do berço para o navio "${carga.navio}"!`);
+      } else {
+        const idxSel = parseInt(opcaoBerco, 10) - 1;
+        if (!isNaN(idxSel) && bercosList[idxSel]) {
+          const bercoAlvo = bercosList[idxSel];
+          if (bercoAlvo.estado === 'OCUPADO' && bercoAlvo.carga_id !== idCarga) {
+            alert(`O ${bercoAlvo.nome} já está ocupado por outra carga (${bercoAlvo.carga_id}). Escolha um berço livre.`);
+            return;
+          }
+          // Desocupa berço anterior
+          const bercoAnterior = bercosList.find(b => b.carga_id === idCarga || b.nome === carga.portoDescarga);
+          if (bercoAnterior && bercoAnterior.id !== bercoAlvo.id) {
+            bercoAnterior.estado = 'LIVRE';
+            bercoAnterior.carga_id = null;
+          }
+          bercoAlvo.estado = 'OCUPADO';
+          bercoAlvo.carga_id = idCarga;
+          carga.portoDescarga = bercoAlvo.nome;
+          localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
+          renderBercosPanel();
+          alert(`Carga ${idCarga} movimentada com sucesso para o ${bercoAlvo.nome}!`);
+        } else {
+          alert('Opção de berço inválida.');
+          return;
+        }
       }
     } else if (acao === 'RECEBER') {
       if (!isConferenteRole) {
@@ -489,28 +703,8 @@ document.addEventListener('DOMContentLoaded', () => {
       carga.status = 'PRONTA_PARA_ENTREGA';
       alert(`Carga ${idCarga} marcada como Pronta para Entrega.`);
     } else if (acao === 'VINCULAR') {
-      const cont = prompt('Informe a identificação do Contêiner:', 'CONT-991');
-      const nav = prompt('Informe o Navio:', 'MV Santos Star');
-      if (cont && nav) {
-        // Validação RN 1 & RN 2: Navios/contêineres em reforma ou agendados para reforma não podem receber cargas!
-        const containersLocais = JSON.parse(localStorage.getItem('nexus_containers_list') || '[]');
-        const contObj = containersLocais.find(c => c.identificacao.toUpperCase() === cont.toUpperCase() || c.id.toUpperCase() === cont.toUpperCase());
-        if (contObj && ['EM_REFORMA', 'AGENDADO_PARA_REFORMA'].includes(contObj.estado)) {
-          alert(`BLOQUEIO DE SEGURANÇA (RN 1, RN 2): O contêiner "${cont}" está no estado "${contObj.estado}" e NÃO pode receber cargas!`);
-          return;
-        }
-
-        const osList = JSON.parse(localStorage.getItem('nexus_os_list') || '[]');
-        const osNavioOuCont = osList.find(o => (o.equipamento.includes(nav) || o.equipamento.includes(cont)) && o.status === 'EM_MANUTENCAO');
-        if (osNavioOuCont) {
-          alert(`BLOQUEIO DE SEGURANÇA (RN 1, RN 2): O navio "${nav}" ou contêiner "${cont}" possui Ordem de Serviço em MANUTENÇÃO (${osNavioOuCont.id}) e está bloqueado para recebimento de cargas!`);
-          return;
-        }
-
-        carga.container = cont;
-        carga.navio = nav;
-        alert(`Carga ${idCarga} vinculada ao Contêiner ${cont} e Navio ${nav}.`);
-      }
+      // C4, A6, A7: Modal centralizado de vinculação com trava de capacidade max 75 m³
+      window.abrirModalVinculacao(idCarga);
     } else if (acao === 'LIBERAR') {
       const destinoCarga = carga.portoDescarga || carga.destino || 'Porto de Roterdã';
       carga.status = 'EM_TRANSITO';
@@ -521,9 +715,24 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (acao === 'CANCELAR') {
       const motivo = prompt('Informe obrigatoriamente o MOTIVO do cancelamento:');
       if (motivo) {
+        // C9: Carga cancelada sai da tabela principal, desocupa contêiner e navio e retorna ao berço
         carga.status = 'CANCELADA';
         carga.motivoCancelamento = motivo;
-        alert(`Entrega da carga ${idCarga} CANCELADA pelo Supervisor. Motivo registrado: "${motivo}".`);
+        carga.container = '';
+        carga.navio = '';
+
+        // Ocupa novamente o berço para a carga cancelada
+        bercosList = JSON.parse(localStorage.getItem('nexus_bercos_list') || '[]');
+        const bercoLivre = bercosList.find(b => b.estado === 'LIVRE');
+        if (bercoLivre) {
+          bercoLivre.estado = 'OCUPADO';
+          bercoLivre.carga_id = `${idCarga} (CANCELADA)`;
+          carga.portoDescarga = bercoLivre.nome;
+          localStorage.setItem('nexus_bercos_list', JSON.stringify(bercosList));
+          renderBercosPanel();
+        }
+
+        alert(`Entrega da carga ${idCarga} CANCELADA pelo Supervisor. A carga retornou ao ${carga.portoDescarga} e foi movida para a tabela de canceladas. Motivo: "${motivo}".`);
       }
     }
 
