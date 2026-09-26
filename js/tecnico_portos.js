@@ -305,15 +305,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (window.nexusSupabase) {
         try {
-          await window.nexusSupabase.from('funcionarios').insert({
-            matricula: matricula,
+          const { error: insErr } = await window.nexusSupabase.from('funcionarios').insert({
+            matricula: formattedMatricula,
             codigo_individual: codigo,
             nome: nome,
             cargo: cargoValue,
             ativo: true
           });
+          if (insErr) {
+            console.error('[NexusPort] Erro ao cadastrar funcionário no Supabase:', insErr);
+            alert(`Aviso: O funcionário foi salvo localmente, mas a gravação remota no Supabase falhou: ${insErr.message || JSON.stringify(insErr)}`);
+          }
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar funcionário com Supabase:', err);
+          alert(`Aviso: O funcionário foi salvo localmente, mas ocorreu um erro de conexão com o Supabase.`);
         }
       }
 
