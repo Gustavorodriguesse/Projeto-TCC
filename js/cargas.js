@@ -384,7 +384,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (window.nexusSupabase) {
         try {
-          window.nexusSupabase.from('cargas').insert({
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          let tipoCargaUuid = (tipoCompartilhado && isUuid.test(tipoCompartilhado.id)) ? tipoCompartilhado.id : null;
+
+          if (!tipoCargaUuid) {
+            const { data: dbTipo } = await window.nexusSupabase.from('tipos_carga').select('id').eq('nome', tipo).maybeSingle();
+            if (dbTipo && dbTipo.id) tipoCargaUuid = dbTipo.id;
+          }
+
+          const { data: resCarga, error: cargaErr } = await window.nexusSupabase.from('cargas').insert({
             natureza: natureza || 'Carga Geral',
             peso: pesoVal,
             volume: volumeVal,
@@ -392,15 +400,16 @@ document.addEventListener('DOMContentLoaded', () => {
             porto_descarga: portoDescarga,
             destino: destino,
             status_fluxo: 'AGENDAMENTO',
+            tipo_carga_id: tipoCargaUuid,
             qr_code_url: newQrCode
-          }).select().maybeSingle().then(res => {
-            if (res && res.data) {
-              window.nexusSupabase.from('agendamentos').insert({
-                carga_id: res.data.id,
-                data_prevista_entrega: new Date().toISOString().split('T')[0]
-              }).then().catch(() => {});
-            }
-          }).catch(err => console.warn('[NexusPort] Erro ao sincronizar carga com Supabase:', err));
+          }).select().maybeSingle();
+
+          if (!cargaErr && resCarga) {
+            await window.nexusSupabase.from('agendamentos').insert({
+              carga_id: resCarga.id,
+              data_prevista_entrega: new Date().toISOString().split('T')[0]
+            }).catch(() => {});
+          }
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar agendamento com Supabase:', err);
         }
