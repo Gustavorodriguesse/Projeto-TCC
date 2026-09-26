@@ -687,6 +687,12 @@ document.addEventListener('DOMContentLoaded', () => {
       carga.status = 'EM_TRANSITO';
       alert(`Carga ${idCarga} liberada pelo Supervisor para saída com destino a ${destinoCarga}. Vínculos validados: Contêiner ${carga.container} / Navio ${carga.navio}.`);
     } else if (acao === 'CANCELAR') {
+      const statusPermitidos = ['AGENDAMENTO', 'RECEBIMENTO_INSPECAO', 'ARMAZENAGEM', 'PRONTA_PARA_ENTREGA'];
+      if (!statusPermitidos.includes(carga.status)) {
+        alert(`REGRA DE NEGÓCIO (RN 16): O cancelamento só é permitido para cargas em Agendamento, Armazenagem ou Pronta para Entrega! O status atual "${carga.status}" não permite cancelamento.`);
+        return;
+      }
+
       const motivo = await window.nexusPrompt('Cancelar Carga', 'Informe obrigatoriamente o MOTIVO do cancelamento:');
       if (motivo) {
         // C9: Carga cancelada sai da tabela principal, desocupa contêiner e navio e retorna ao berço
