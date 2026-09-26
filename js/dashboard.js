@@ -540,11 +540,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // C7: Embarcações mais utilizadas gerado a partir de dados reais
+    // C7: Embarcações mais utilizadas gerado a partir de agregação real de cargas e navios
     const naviosCountMap = {};
     if (dbNavios.length > 0) {
       dbNavios.forEach(n => {
-        naviosCountMap[n.nome] = n.quantidade_cargas_realizadas || 1;
+        naviosCountMap[n.nome] = 0;
+      });
+
+      dbCargas.forEach(c => {
+        const navName = c.navio || (c.navios ? c.navios.nome : null);
+        if (navName) {
+          const matching = dbNavios.find(n => n.nome.toLowerCase() === String(navName).toLowerCase());
+          const key = matching ? matching.nome : navName;
+          naviosCountMap[key] = (naviosCountMap[key] || 0) + 1;
+        }
       });
     } else {
       const localCargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
@@ -555,8 +564,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    const labelsNavios = Object.keys(naviosCountMap).length > 0 ? Object.keys(naviosCountMap) : ['MV Santos Star', 'MV Pacific Giant', 'MV Atlantic Breeze'];
-    const dataNavios = Object.keys(naviosCountMap).length > 0 ? Object.values(naviosCountMap) : [5, 3, 2];
+    const labelsNavios = Object.keys(naviosCountMap).length > 0 ? Object.keys(naviosCountMap) : ['Nenhum Navio com Carga'];
+    const dataNavios = Object.keys(naviosCountMap).length > 0 ? Object.values(naviosCountMap) : [0];
 
     const ctxNavios = document.getElementById('chartNavios');
     if (ctxNavios && typeof Chart !== 'undefined') {
