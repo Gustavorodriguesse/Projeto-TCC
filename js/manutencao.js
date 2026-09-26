@@ -356,6 +356,105 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderOsTable();
 
+  async function carregarEquipamentosEAlertas() {
+    const osSelect = document.getElementById('osEquipamento');
+    const alertaList = document.getElementById('alertaPreventivaList');
+
+    let gnds = guindastesList || [];
+    let conts = [];
+    let navs = naviosListLocal || [];
+
+    if (window.nexusSupabase) {
+      try {
+        const { data: dbGnd } = await window.nexusSupabase.from('guindastes').select('*');
+        if (dbGnd && dbGnd.length > 0) gnds = dbGnd.map(g => ({ identificacao: g.numero_identificacao, dataManut: g.data_ultima_manutencao }));
+
+        const { data: dbCont } = await window.nexusSupabase.from('containers').select('*');
+        if (dbCont && dbCont.length > 0) conts = dbCont.map(c => ({ identificacao: c.numero_identificacao, dataManut: c.data_ultima_manutencao || c.data_fabricacao }));
+
+        const { data: dbNav } = await window.nexusSupabase.from('navios').select('*');
+        if (dbNav && dbNav.length > 0) navs = dbNav.map(n => ({ nome: n.nome, imo: n.numero_imo, dataManut: n.data_ultima_manutencao_geral || n.data_construcao || n.created_at }));
+      } catch (e) {
+        console.warn('Erro ao buscar equipamentos para OS no Supabase:', e);
+      }
+    }
+
+    if (conts.length === 0) {
+      conts = JSON.parse(localStorage.getItem('nexus_containers_list') || '[]').map(c => ({ identificacao: c.identificacao || c.id, dataManut: c.data_ultima_manutencao || '2024-01-01' }));
+    }
+
+    if (osSelect) {
+      osSelect.innerHTML = '<option value="">Selecione o Equipamento / Ativo...</option>';
+
+      if (gnds.length > 0) {
+        osSelect.innerHTML += '<optgroup label="Guindastes & Pórticos">';
+        gnds.forEach(g => {
+          osSelect.innerHTML += `<option value="Guindaste ${g.identificacao || g.id}">Guindaste ${g.identificacao || g.id}</option>`;
+        });
+        osSelect.innerHTML += '</optgroup>';
+      }
+
+      if (conts.length > 0) {
+        osSelect.innerHTML += '<optgroup label="Contêineres">';
+        conts.forEach(c => {
+          osSelect.innerHTML += `<option value="Contêiner ${c.identificacao}">Contêiner ${c.identificacao}</option>`;
+        });
+        osSelect.innerHTML += '</optgroup>';
+      }
+
+      if (navs.length > 0) {
+        osSelect.innerHTML += '<optgroup label="Embarcações (Navios)">';
+        navs.forEach(n => {
+          osSelect.innerHTML += `<option value="Navio ${n.nome}">Navio ${n.nome}</option>`;
+        });
+        osSelect.innerHTML += '</optgroup>';
+      }
+    }
+
+    if (alertaList) {
+      const tresAnosMs = 3 * 365 * 24 * 60 * 60 * 1000;
+      const agora = Date.now();
+      const alertas = [];
+
+      navs.forEach(n => {
+        if (n.dataManut) {
+          const diff = agora - new Date(n.dataManut).getTime();
+          if (diff >= tresAnosMs) {
+            alertas.push(`<strong>Navio ${n.nome} (${n.imo || 'Sem IMO'}):</strong> Registrado/Manutenção em ${new Date(n.dataManut).toLocaleDateString('pt-BR')} — Ciclo preventivo recomendado (>3 anos) vencido.`);
+          }
+        }
+      });
+
+      gnds.forEach(g => {
+        const d = g.dataManut || g.data_ultima_manutencao;
+        if (d) {
+          const diff = agora - new Date(d).getTime();
+          if (diff >= tresAnosMs) {
+            alertas.push(`<strong>Guindaste ${g.identificacao || g.id}:</strong> Última manutenção registrada em ${new Date(d).toLocaleDateString('pt-BR')} — Ciclo de 3 anos excedido.`);
+          }
+        }
+      });
+
+      conts.forEach(c => {
+        const d = c.dataManut;
+        if (d) {
+          const diff = agora - new Date(d).getTime();
+          if (diff >= tresAnosMs) {
+            alertas.push(`<strong>Contêiner ${c.identificacao}:</strong> Última manutenção em ${new Date(d).toLocaleDateString('pt-BR')} — Ciclo preventivo recomendado (>3 anos) vencido.`);
+          }
+        }
+      });
+
+      if (alertas.length > 0) {
+        alertaList.innerHTML = alertas.map((a, idx) => `${idx + 1}. ${a}`).join('<br>');
+      } else {
+        alertaList.innerHTML = 'Nenhum equipamento com ciclo de preventiva vencido (> 3 anos) no momento. Todos os ativos operam dentro do ciclo recomendado.';
+      }
+    }
+  }
+
+  carregarEquipamentosEAlertas();
+
   if (toggleOsBtn && osForm) {
     toggleOsBtn.addEventListener('click', () => osForm.classList.toggle('hidden'));
   }
