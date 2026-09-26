@@ -244,10 +244,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const emManutencaoOS = osList.filter(o => o.status === 'EM_MANUTENCAO').length;
     const totalEmManutencao = emManutencaoNavios + emManutencaoOS;
 
+    const CAPACIDADE_MAXIMA_PATIO = 100; // Capacidade regulamentar total de posições do pátio STS-01
+
     const foraPortoNavios = dbNavios.filter(n => n.localizacao === 'FORA_DO_PORTO').length;
     const armazenagem = cargas.filter(c => c.status === 'ARMAZENAGEM' || c.status_fluxo === 'ARMAZENAGEM').length;
     const prontas = cargas.filter(c => c.status === 'PRONTA_PARA_ENTREGA' || c.status_fluxo === 'PRONTA_PARA_ENTREGA').length;
-    const recusadas = cargas.filter(c => c.status === 'RECUSADA' || c.status_fluxo === 'RECUSADA' || c.status === 'CANCELADA' || c.status_fluxo === 'CANCELADA').length;
+    const recusadas = cargas.filter(c => c.status === 'RECUSADA' || c.status_fluxo === 'RECUSADA').length;
+    const canceladas = cargas.filter(c => c.status === 'CANCELADA' || c.status_fluxo === 'CANCELADA').length;
 
     // Cálculo exato da preventiva sugerida (equipamentos/navios com mais de 3 anos / 1095 dias)
     const agora = Date.now();
@@ -275,8 +278,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elNaviosFora) elNaviosFora.textContent = foraPortoNavios;
     if (elCargasArmaz) elCargasArmaz.textContent = armazenagem;
     if (elCargasProntas) elCargasProntas.textContent = prontas;
-    if (elCargasRecusadas) elCargasRecusadas.textContent = recusadas;
-    if (elOcupacao) elOcupacao.textContent = `${Math.min(100, Math.round((armazenagem / 20) * 100))}%`;
+    if (elCargasRecusadas) elCargasRecusadas.textContent = `${recusadas} (${canceladas} Canc.)`;
+    if (elOcupacao) elOcupacao.textContent = `${Math.min(100, Math.round((armazenagem / CAPACIDADE_MAXIMA_PATIO) * 100))}% (${armazenagem}/${CAPACIDADE_MAXIMA_PATIO})`;
+    if (elPreventiva) elPreventiva.textContent = `${countPreventiva} Equipamento(s)`;
     if (elPreventiva) elPreventiva.textContent = `${countPreventiva} Equipamento(s)`;
   }
 
