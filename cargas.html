@@ -166,22 +166,30 @@
             </span>
           </div>
 
-          <!-- Painel de Pesquisa e Filtros (RF 10) -->
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+          <!-- Painel de Pesquisa e Filtros em 5 Campos (RF 10.1) -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Nome do Navio</label>
+              <label class="block font-bold text-slate-500 mb-1">1. Nome do Navio</label>
               <input type="text" id="filterNavio" placeholder="Ex: Santos Star" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
             </div>
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Número do Contêiner</label>
+              <label class="block font-bold text-slate-500 mb-1">2. Contêiner</label>
               <input type="text" id="filterContainer" placeholder="Ex: CONT-991" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono" />
             </div>
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Tipo de Carga</label>
+              <label class="block font-bold text-slate-500 mb-1">3. Tipo de Carga</label>
               <input type="text" id="filterTipo" placeholder="Ex: Grãos, Eletrônicos" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900" />
             </div>
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Status do Fluxo</label>
+              <label class="block font-bold text-slate-500 mb-1">4. Período (De / Até)</label>
+              <div class="flex items-center gap-1">
+                <input type="date" id="filterDataInicio" title="Data Inicial" class="w-1/2 px-1.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono text-[11px]" />
+                <span class="text-slate-400 font-bold">-</span>
+                <input type="date" id="filterDataFim" title="Data Final" class="w-1/2 px-1.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-mono text-[11px]" />
+              </div>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">5. Status do Fluxo</label>
               <select id="filterStatus" class="w-full px-2.5 py-1.5 rounded-lg border border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 font-bold">
                 <option value="">Todos os Status</option>
                 <option value="AGENDAMENTO">AGENDAMENTO</option>

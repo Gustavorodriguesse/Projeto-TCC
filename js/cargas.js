@@ -148,6 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterContVal = (document.getElementById('filterContainer')?.value || '').trim().toLowerCase();
     const filterTipoVal = (document.getElementById('filterTipo')?.value || '').trim().toLowerCase();
     const filterStatusVal = (document.getElementById('filterStatus')?.value || '').trim();
+    const filterDataInicioVal = (document.getElementById('filterDataInicio')?.value || '').trim();
+    const filterDataFimVal = (document.getElementById('filterDataFim')?.value || '').trim();
 
     // C10: Atualiza status "ENTREGUE" AUTOMATICAMENTE se o navio chegou ao porto de destino
     const naviosLocais = [
@@ -177,6 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (filterContVal && !(c.container || '').toLowerCase().includes(filterContVal)) return false;
       if (filterTipoVal && !(c.tipo || '').toLowerCase().includes(filterTipoVal) && !(c.natureza || '').toLowerCase().includes(filterTipoVal)) return false;
       if (filterStatusVal && c.status !== filterStatusVal) return false;
+
+      if (filterDataInicioVal || filterDataFimVal) {
+        const cDateRaw = c.data_entrada || c.created_at || c.dataAgendamento || c.dataChegada;
+        if (cDateRaw) {
+          const cDateStr = new Date(cDateRaw).toISOString().split('T')[0];
+          if (filterDataInicioVal && cDateStr < filterDataInicioVal) return false;
+          if (filterDataFimVal && cDateStr > filterDataFimVal) return false;
+        }
+      }
+
       return true;
     });
 
@@ -274,9 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const filterContainer = document.getElementById('filterContainer');
   const filterTipo = document.getElementById('filterTipo');
   const filterStatus = document.getElementById('filterStatus');
+  const filterDataInicio = document.getElementById('filterDataInicio');
+  const filterDataFim = document.getElementById('filterDataFim');
   const limparFiltrosBtn = document.getElementById('limparFiltrosBtn');
 
-  [filterNavio, filterContainer, filterTipo, filterStatus].forEach(el => {
+  [filterNavio, filterContainer, filterTipo, filterStatus, filterDataInicio, filterDataFim].forEach(el => {
     if (el) {
       el.addEventListener('input', renderTable);
       el.addEventListener('change', renderTable);
@@ -289,6 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (filterContainer) filterContainer.value = '';
       if (filterTipo) filterTipo.value = '';
       if (filterStatus) filterStatus.value = '';
+      if (filterDataInicio) filterDataInicio.value = '';
+      if (filterDataFim) filterDataFim.value = '';
       renderTable();
     });
   }
