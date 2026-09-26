@@ -311,6 +311,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const portoDescarga = document.getElementById('agPortoDescarga').value;
       const destino = document.getElementById('agDestino').value.trim();
 
+      // Item 16: Validação de valores estritamente positivos em peso, volume e valor declarado
+      if (pesoVal <= 0 || volumeVal <= 0 || valorVal <= 0) {
+        alert('VALORES INVÁLIDOS (Item 16): Os campos de Peso, Volume e Valor Declarado não aceitam valores negativos ou iguais a zero. Informe apenas valores estritamente maiores que zero!');
+        return;
+      }
+
       if (!portoDescarga) {
         alert('BLOQUEIO (Point 3): É obrigatório selecionar um Berço Livre como Ponto de Descarga na chegada da carga!');
         return;
@@ -587,7 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // C1 & C2: Exibe opções de berços disponíveis e opções para onde a carga deve ser levada
       bercosList = JSON.parse(localStorage.getItem('nexus_bercos_list') || '[]');
       const bercosText = bercosList.map((b, idx) => `${idx + 1} - ${b.nome} (${b.estado})`).join('\n');
-      const opcaoBerco = prompt(`Selecione o Berço para onde a carga ${idCarga} deve ser movimentada:\n${bercosText}\nou digite NAVIO para levar a carga do berço para o navio:`);
+      const opcaoBerco = await window.nexusPrompt('Movimentação de Cargas', `Selecione o Berço para onde a carga ${idCarga} deve ser movimentada:\n${bercosText}\nou digite NAVIO para levar a carga do berço para o navio:`);
 
       if (!opcaoBerco) return;
 
@@ -664,7 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
       carga.status = 'EM_TRANSITO';
       alert(`Carga ${idCarga} liberada pelo Supervisor para saída com destino a ${destinoCarga}. Vínculos validados: Contêiner ${carga.container} / Navio ${carga.navio}.`);
     } else if (acao === 'CANCELAR') {
-      const motivo = prompt('Informe obrigatoriamente o MOTIVO do cancelamento:');
+      const motivo = await window.nexusPrompt('Cancelar Carga', 'Informe obrigatoriamente o MOTIVO do cancelamento:');
       if (motivo) {
         // C9: Carga cancelada sai da tabela principal, desocupa contêiner e navio e retorna ao berço
         carga.status = 'CANCELADA';
@@ -704,4 +710,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderTable();
   };
+
+  // Sincronização viva em tempo real (Item 2)
+  window.addEventListener('nexus_data_changed', () => {
+    carregarCargasSupabase();
+    renderBercosPanel();
+  });
 });

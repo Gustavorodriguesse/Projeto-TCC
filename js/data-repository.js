@@ -271,5 +271,37 @@
     }
   };
 
+    /**
+     * NOTIFICAÇÃO DE ALTERAÇÃO EM TEMPO REAL (Item 2)
+     */
+    notifyChange: function (entity) {
+      if (typeof BroadcastChannel !== 'undefined') {
+        try {
+          const bc = new BroadcastChannel('nexusport_sync');
+          bc.postMessage({ type: 'NEXUS_DATA_CHANGED', entity: entity, timestamp: Date.now() });
+          bc.close();
+        } catch (e) {}
+      }
+      window.dispatchEvent(new CustomEvent('nexus_data_changed', { detail: { entity: entity } }));
+    }
+  };
+
+  if (typeof BroadcastChannel !== 'undefined') {
+    try {
+      const bcSync = new BroadcastChannel('nexusport_sync');
+      bcSync.onmessage = (event) => {
+        if (event.data && event.data.type === 'NEXUS_DATA_CHANGED') {
+          window.dispatchEvent(new CustomEvent('nexus_data_changed', { detail: event.data }));
+        }
+      };
+    } catch (e) {}
+  }
+
+  window.addEventListener('storage', (e) => {
+    if (e.key && e.key.startsWith('nexus_')) {
+      window.dispatchEvent(new CustomEvent('nexus_data_changed', { detail: { entity: e.key } }));
+    }
+  });
+
   window.NexusRepository = NexusRepository;
 })(window);

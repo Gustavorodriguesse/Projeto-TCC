@@ -166,3 +166,149 @@ Toda alteração feita no sistema deve ser documentada em um relatório do backl
 7. **Data e responsável:** data de execução e identificação de quem executou (sessão do Jules).
 
 **Formato de saída:** o relatório deve ser salvo como `relatorio-backlog.md` (ou `relatorio-backlog-001.md`, `relatorio-backlog-AAAA-MM-DD.md` para histórico) e incluir um resumo executivo no topo com o percentual de conclusão do backlog (itens concluídos / total de itens).
+
+---
+
+# Backlog 002 — Continuação do Backlog (Correções e Ajustes Adicionais)
+
+## 1. Painel Geral — Indicadores com números incorretos
+
+**Página:** Painel Geral
+**Problema:** Os cards de indicadores operacionais (navios fora do porto, preventiva sugerida, navios em manutenção, cargas recusadas, ocupação do pátio etc.) mostram números que não batem com a contagem real no banco — ex.: aparece "3" no Dashboard de navios fora do porto sem nenhum navio cadastrado, e "1" na preventiva sugerida sem nenhuma pendência real.
+**Solução esperada:** Cada card deve consultar diretamente sua contagem real no banco (via `count exact` com o filtro específico daquele indicador), sem reaproveitar contagem de outro card e sem valores mockados/hardcoded.
+
+---
+
+## 2. Atualização em tempo real entre páginas (sincronização geral)
+
+**Páginas:** Todas (Gestão de Pessoas, Cargas e Pátio, Embarcações e GPS, Manutenção e OS, Painel Geral)
+**Problema:** Diversos cadastros e alterações não refletem imediatamente na tela nem em outras páginas relacionadas, mesmo após recarregar:
+- Novo funcionário cadastrado não aparece no CRUD de Funcionários.
+- Nova carga agendada não aparece na Tabela de Cargas no Fluxo Operacional.
+- Carga cancelada não aparece na Tabela de Cargas Canceladas.
+- Novo navio cadastrado não aparece na parte de Localização GPS Marítima e Cadastro de Navio.
+- Novo guindaste cadastrado não aparece na tela de Guindastes e Pórticos de Pátio.
+- Alterações de status (ex.: navio em manutenção) não refletem automaticamente no Dashboard correspondente.
+**Solução esperada:** Após qualquer `INSERT`/`UPDATE` bem-sucedido no Supabase, fazer o refetch automático da lista/tabela afetada (ou, idealmente, usar `supabase.channel().on('postgres_changes', ...)` para atualização em tempo real). O sistema deve funcionar como páginas "conectadas": uma alteração feita em uma área deve refletir automaticamente em todas as outras que exibem aquele dado.
+
+---
+
+## 3. Reemissão e Invalidação de Códigos — matrícula não localizada
+
+**Página:** Gestão de Pessoas → Reemissão e Invalidação de Códigos Individuais
+**Problema:** Ao pesquisar a matrícula de um funcionário já cadastrado, o sistema retorna "não encontrado".
+**Solução esperada:** Corrigir a busca para localizar corretamente o funcionário pela matrícula, com atualização imediata caso haja mudança de status/código.
+
+---
+
+## 4. CRUD de Funcionários — matrícula duplicada permitida
+
+**Página:** Gestão de Pessoas → CRUD de Funcionários, campo Matrícula
+**Problema:** É possível cadastrar dois funcionários com a mesma matrícula.
+**Solução esperada:** Adicionar constraint de unicidade na matrícula no banco (`UNIQUE`) e validar no front antes do `INSERT`, exibindo mensagem clara de erro em caso de conflito.
+
+---
+
+## 5. Visitantes — sem opção de mudar status "aguardando autorização" para "em visita"
+
+**Página:** Gestão de Pessoas → Visitantes ativos/no porto
+**Problema:** Ao registrar um visitante com status inicial "aguardando autorização", não há como alterar depois para "em visita" sem registrar tudo novamente.
+**Solução esperada:** Permitir a alteração do status de "aguardando autorização" para "em visita" diretamente no cadastro existente, sem necessidade de novo registro.
+
+---
+
+## 6. Prompt dialogs nativos do navegador
+
+**Páginas:** Todas
+**Problema:** Alguns botões abrem a caixa de diálogo nativa do navegador (`prompt`/`confirm`), o que não é desejado visualmente.
+**Solução esperada:** Substituir todos os `prompt`/`confirm` nativos por um modal customizado, centralizado na tela, com o mesmo padrão visual do restante do sistema.
+
+---
+
+## 7. Navbar cobre o conteúdo ao rolar a página
+
+**Páginas:** Todas (componente de menu global)
+**Problema:** Ao rolar a página, o conteúdo passa por cima da navbar ou vice-versa.
+**Solução esperada:** Fixar a navbar (`position: fixed; top: 0; z-index` alto) e aplicar `padding-top` no conteúdo principal equivalente à altura da navbar, para que nunca se sobreponham.
+
+---
+
+## 8. Matrículas e códigos devem ser salvos em maiúsculas
+
+**Páginas:** Todas as que envolvem matrícula ou código
+**Problema:** Não há padronização de caixa alta nos campos de matrícula e código.
+**Solução esperada:** Toda matrícula e código deve ser salvo em CAIXA ALTA (aplicar `.toUpperCase()` antes de salvar, tanto no front quanto, se possível, validado no back-end).
+
+---
+
+## 9. Inspeção e Checklist — exibe cargas não cadastradas
+
+**Página:** Inspeção e Checklist
+**Problema:** Ao selecionar uma carga para o checklist, aparecem cargas que não constam na Tabela de Cargas no Fluxo Operacional (página Cargas e Pátio).
+**Solução esperada:** A lista de seleção deve exibir apenas as cargas realmente cadastradas e ativas naquela tabela.
+
+---
+
+## 10. Inspeção e Checklist — falta campo para motivo de recusa
+
+**Página:** Inspeção e Checklist
+**Problema:** Mesmo confirmando todos os itens do checklist, ao clicar em "recusar carga" o sistema pede o motivo do cancelamento, mas não existe campo para digitá-lo.
+**Solução esperada:** Adicionar um campo de texto para descrição do motivo da recusa, exibido sempre que a opção "recusar carga" for selecionada.
+
+---
+
+## 11. Embarcações e GPS — Número IMO sem padrão e sem unicidade
+
+**Página:** Embarcações e GPS → Cadastro de Novo Navio
+**Problema:** O campo do número IMO não exige uma estrutura fixa e permite duplicidade entre navios diferentes.
+**Solução esperada:** Validar que o IMO siga sempre o formato "3 letras + 7 números" e bloquear o cadastro caso já exista outro navio com o mesmo IMO.
+
+---
+
+## 12. Embarcações e GPS — Coordenadas GPS inválidas ou duplicadas
+
+**Página:** Embarcações e GPS → Cadastro de Novo Navio, campo Coordenada GPS
+**Problema:** O campo aceita qualquer valor digitado (não apenas coordenadas reais) e também permite que dois navios sejam salvos com exatamente a mesma coordenada, o que é fisicamente impossível.
+**Solução esperada:**
+- Validar que o valor inserido é uma coordenada geográfica real (formato/faixa válida de latitude e longitude).
+- Bloquear o salvamento se a coordenada já estiver em uso por outro navio, exibindo mensagem "já existe navio nesta localização".
+
+---
+
+## 13. Gestão de Contêineres — duplicidade de código e vínculo simultâneo
+
+**Página:** Embarcações e GPS → Gestão de Contêineres e Tempo de Uso
+**Problema:** O mesmo código de contêiner pode ser cadastrado mais de uma vez, e um contêiner pode ficar vinculado a mais de uma carga/navio ao mesmo tempo.
+**Solução esperada:** Adicionar constraint de unicidade na identificação do contêiner e um campo de `status` (disponível/em uso), bloqueando novo vínculo enquanto o contêiner estiver em uso.
+
+---
+
+## 14. Datas de fabricação/manutenção sem nexo (contêineres e guindastes)
+
+**Páginas:** Embarcações e GPS (Novo Contêiner) e Manutenção e OS (Guindastes)
+**Problema:** O sistema aceita data de manutenção anterior à data de fabricação, ou datas futuras inconsistentes.
+**Solução esperada:** Validar que a data de manutenção nunca seja anterior à data de fabricação, aplicando a mesma checagem tanto para contêineres quanto para guindastes.
+
+---
+
+## 15. Cadastro de Visitante — documento sem validação
+
+**Página:** Gestão de Pessoas → Registrar Novo Visitante, campo Documento (CPF/RG)
+**Problema:** O campo aceita qualquer sequência de dígitos, sem validar se é um CPF/RG válido.
+**Solução esperada:** Aplicar máscara de CPF (`999.999.999-99`), validar os dígitos verificadores e bloquear o envio caso o documento seja inválido.
+
+---
+
+## 16. Cargas — valores negativos em peso, volume e valor declarado
+
+**Página:** Cargas e Pátio → Agendamento de Nova Carga
+**Problema:** Os campos de peso, volume e valor declarado aceitam valores negativos.
+**Solução esperada:** Restringir os campos a valores maiores que zero (`min="0"` no front) e reforçar a validação no back-end antes do `INSERT`, rejeitando valores menores ou iguais a zero.
+
+---
+
+## 17. Manutenção e OS — solicitação de manutenção de navios
+
+**Página:** Manutenção e OS
+**Problema:** Não existe opção para solicitar manutenção de um navio. É necessário oferecer diferentes tipos de manutenção, sendo que a opção "manutenção geral" só pode ser selecionada se a última manutenção geral (ou o tempo de uso do navio) tiver 3 anos ou mais.
+**Solução esperada:** Criar a funcionalidade de solicitação de manutenção com múltiplos tipos disponíveis; a opção "manutenção geral" deve ficar habilitada apenas quando o navio estiver em uso há 3 anos ou mais, ou quando a última manutenção geral tiver ocorrido há 3 anos ou mais.

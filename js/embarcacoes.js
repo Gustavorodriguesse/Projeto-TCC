@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navio = naviosList.find(n => n.imo === imo);
     if (!navio) return;
 
-    if (confirm(`Confirmar liberação de saída do navio ${navio.nome} (${navio.imo})?`)) {
+    if (await window.nexusConfirm('Liberar Saída de Navio', `Confirmar liberação de saída do navio ${navio.nome} (${navio.imo})?`)) {
       const horaSaida = new Date().toISOString();
       navio.localizacao = 'FORA_DO_PORTO';
       navio.dataSaida = horaSaida;
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navio = naviosList.find(n => n.imo === imo);
     if (!navio) return;
 
-    if (confirm(`Autorizar o retorno da embarcação ${navio.nome} ao Porto de Origem (${navio.origem})?`)) {
+    if (await window.nexusConfirm('Autorizar Retorno de Embarcação', `Autorizar o retorno da embarcação ${navio.nome} ao Porto de Origem (${navio.origem})?`)) {
       // Inverte Origem e Destino para a viagem de regresso
       const antigoDestino = navio.destino;
       navio.destino = navio.origem;
@@ -307,6 +307,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Validador de Coordenadas GPS Reais (Item 12)
+  function validarCoordenadaGPS(gpsStr) {
+    if (!gpsStr) return false;
+    const clean = gpsStr.trim();
+    const regexCoords = /^[-+]?\d+(\.\d+)?\s*°?\s*([NSns])?\s*,\s*[-+]?\d+(\.\d+)?\s*°?\s*([EWEOewoe])?$/;
+    if (!regexCoords.test(clean)) return false;
+
+    const numbers = clean.match(/[-+]?\d+(\.\d+)?/g);
+    if (!numbers || numbers.length < 2) return false;
+    const lat = Math.abs(parseFloat(numbers[0]));
+    const lon = Math.abs(parseFloat(numbers[1]));
+    return lat <= 90 && lon <= 180;
+  }
+
   if (navioForm) {
     navioForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -315,12 +329,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       const nome = document.getElementById('navioNome').value.trim();
-      const imo = document.getElementById('navioImo').value.trim();
+      const imo = document.getElementById('navioImo').value.trim().toUpperCase().replace(/\s+/g, '');
       const origem = document.getElementById('navioOrigem').value.trim();
       const destino = document.getElementById('navioDestino').value.trim();
       const localizacao = document.getElementById('navioLocalizacao').value;
-      const gps = document.getElementById('navioGps').value.trim() || '23.9608° S, 46.3022° W';
+      const gps = document.getElementById('navioGps').value.trim();
       const distancia = parseFloat(document.getElementById('navioDistancia').value) || 10200;
+
+      // Item 11: Validação do padrão do Número IMO (3 letras + 7 números)
+      const imoRegex = /^[A-Z]{3}\d{7}$/;
+      if (!imoRegex.test(imo)) {
+        alert('FORMATO DE IMO INVÁLIDO (Item 11): O número IMO deve seguir obrigatoriamente a estrutura fixa de 3 letras + 7 números (ex.: IMO1234567 ou ABC1234567).');
+        return;
+      }
+
+      // Item 11: Validação de unicidade do IMO
+      const imoExistente = naviosList.find(n => (n.imo || '').toUpperCase().replace(/\s+/g, '') === imo);
+      if (imoExistente) {
+        alert(`BLOQUEIO DE DUPLICIDADE (Item 11): Já existe um navio cadastrado com o número IMO "${imo}" (${imoExistente.nome}). Cada embarcação deve possuir IMO único!`);
+        return;
+      }
+
+      // Item 12: Validação de Coordenada GPS Real
+      if (!validarCoordenadaGPS(gps)) {
+        alert('COORDENADA GPS INVÁLIDA (Item 12): Informe uma coordenada geográfica real dentro dos limites válidos (ex.: "-23.9608, -46.3022" ou "23.9608° S, 46.3022° W").');
+        return;
+      }
+
+      // Item 12: Bloqueio de coordenadas GPS duplicadas
+      const gpsExistente = naviosList.find(n => n.gps && n.gps.trim() === gps);
+      if (gpsExistente) {
+        alert(`BLOQUEIO DE LOCALIZAÇÃO (Item 12): já existe navio nesta localização (${gpsExistente.nome}). Dois navios não podem ocupar exatamente a mesma coordenada GPS simultaneamente!`);
+        return;
+      }
 
       const novoNavio = {
         nome, imo, gps, localizacao, origem, destino, distancia, dataSaida: localizacao === 'FORA_DO_PORTO' ? new Date().toISOString() : null
@@ -449,15 +490,28 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Acesso Restrito: Cadastro de contêineres é de responsabilidade do Inspetor!');
         return;
       }
-      const identificacao = document.getElementById('contIdentificacao').value.trim();
+      const identificacao = document.getElementById('contIdentificacao').value.trim().toUpperCase();
       const tipo = document.getElementById('contTipo').value.trim();
       const dataFabr = document.getElementById('contFabricacao').value;
       const dataManut = document.getElementById('contManutencao').value;
       const refTempo = document.getElementById('contRefTempo').value;
 
+      // Item 13: Validação de unicidade do código de contêiner
+      const contExistente = containersList.find(c => (c.identificacao || '').toUpperCase() === identificacao);
+      if (contExistente) {
+        alert(`BLOQUEIO DE DUPLICIDADE (Item 13): O código de contêiner "${identificacao}" já está cadastrado no sistema. Não é permitido duplicar contêineres!`);
+        return;
+      }
+
+      // Item 14: Validação de coerência entre data de fabricação e manutenção
+      if (dataFabr && dataManut && new Date(dataManut) < new Date(dataFabr)) {
+        alert('DATA INCONSISTENTE (Item 14): A data da última manutenção não pode ser anterior à data de fabricação do contêiner!');
+        return;
+      }
+
       const newCont = {
         id: `CONT-${Math.floor(100 + Math.random() * 900)}`,
-        identificacao, tipo, dataFabr, dataManut, refTempo, navio: '', estado: 'OPERANTE'
+        identificacao, tipo, dataFabr, dataManut, refTempo, navio: '', estado: 'DISPONIVEL'
       };
 
       containersList.push(newCont);
@@ -484,4 +538,10 @@ document.addEventListener('DOMContentLoaded', () => {
       alert(`Contêiner ${identificacao} cadastrado com sucesso com referência de tempo em "${refTempo}" (RN 7)!`);
     });
   }
+
+  // Sincronização viva em tempo real (Item 2)
+  window.addEventListener('nexus_data_changed', () => {
+    carregarNaviosSupabase();
+    carregarContainersSupabase();
+  });
 });

@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     regenBtn.addEventListener('click', async () => {
       if (!selectedEmp) return;
 
-      if (confirm(`Confirma a INVALIDAÇÃO do código atual (${resCodigo.textContent}) para ${selectedEmp.nome}?`)) {
+      if (await window.nexusConfirm('Invalidar Código', `Confirma a INVALIDAÇÃO do código atual (${resCodigo.textContent}) para ${selectedEmp.nome}?`)) {
         const suffix = Math.floor(1000 + Math.random() * 9000);
         const newCode = `NX-${selectedEmp.matricula.replace('MAT-', '')}-${suffix}`;
 
@@ -201,24 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Garante presença exata de Maxwell Philip da Cruz em MAT-1914 se existir local/remoto
-    const maxwellLocal = localList.find(x => x.matricula.toUpperCase() === 'MAT-1914' && x.nome === 'Maxwell Philip da Cruz');
-    const maxwellSupa = supabaseFuncs.find(x => x.matricula.toUpperCase() === 'MAT-1914' && x.nome === 'Maxwell Philip da Cruz');
-    if (maxwellLocal || maxwellSupa) {
-      const m = maxwellLocal || maxwellSupa;
-      allMap.set('MAT-1914', {
-        matricula: 'MAT-1914',
-        nome: 'Maxwell Philip da Cruz',
-        cargo: m.cargo || 'Planejador de Pátio e Navios',
-        codigo: m.codigo || m.codigo_individual || 'NX-1914-PL',
-        doc: 'Ficha Cadastral Oficial MAT-1914'
-      });
-    }
-
-    // Mantém exclusivamente Maxwell Philip da Cruz (MAT-1914) no sistema
-    const onlyMaxwell = Array.from(allMap.values()).filter(f => f.matricula.toUpperCase() === 'MAT-1914' || f.nome.includes('Maxwell'));
-    if (onlyMaxwell.length === 0) {
-      onlyMaxwell.push({
+    // Mantém TODOS os funcionários cadastrados sem filtros restritivos (Item 3 & Item 4)
+    mergedFuncList = Array.from(allMap.values());
+    if (!mergedFuncList.some(f => f.matricula.toUpperCase() === 'MAT-1914')) {
+      mergedFuncList.unshift({
         matricula: 'MAT-1914',
         nome: 'Maxwell Philip da Cruz',
         cargo: 'Planejador de Pátio e Navios',
@@ -226,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
         doc: 'Ficha Cadastral Oficial MAT-1914'
       });
     }
-    mergedFuncList = onlyMaxwell;
 
     // Atualiza local storage com a lista unificada
     localStorage.setItem('nexus_func_list', JSON.stringify(mergedFuncList));
@@ -250,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.excluirFuncionarioReal = async function(matricula) {
-    if (confirm(`Tem certeza que deseja excluir o funcionário de matrícula ${matricula}?`)) {
+    if (await window.nexusConfirm('Excluir Funcionário', `Tem certeza que deseja excluir o funcionário de matrícula ${matricula}?`)) {
       if (window.NexusRepository) {
         await window.NexusRepository.deleteFuncionario(matricula);
       }
@@ -412,23 +397,34 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         visTableBody.innerHTML = ativos.map(v => {
           const vKey = v.id || `${v.nome}_${v.documento}`;
+          const isAguardando = v.status === 'AGUARDANDO_AUTORIZACAO';
           return `
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
               <td class="p-3 font-bold">${v.nome}</td>
               <td class="p-3 font-mono text-xs">${v.documento}</td>
               <td class="p-3 text-slate-500">${v.motivo}</td>
               <td class="p-3">
-                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                  isAguardando ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                }">
                   ${v.status || 'EM_VISITA'}
                 </span>
               </td>
               <td class="p-3 font-mono text-xs text-slate-400">${v.data}</td>
               <td class="p-3 font-mono text-xs font-bold text-nexus-500">${v.por || session.matricula}</td>
               <td class="p-3 text-right whitespace-nowrap">
-                <button type="button" onclick="window.registrarSaidaVisitante('${vKey}')" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1 ml-auto shadow-sm transition-colors">
-                  <span class="material-symbols-outlined text-[16px]">logout</span>
-                  <span>Registrar Saída & Vistoria</span>
-                </button>
+                <div class="flex items-center justify-end gap-2">
+                  ${isAguardando ? `
+                    <button type="button" onclick="window.alterarStatusVisitante('${vKey}', 'EM_VISITA')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+                      <span>Autorizar (Entrar em Visita)</span>
+                    </button>
+                  ` : ''}
+                  <button type="button" onclick="window.registrarSaidaVisitante('${vKey}')" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">logout</span>
+                    <span>Registrar Saída & Vistoria</span>
+                  </button>
+                </div>
               </td>
             </tr>
           `;
@@ -464,15 +460,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Alterar Status do Visitante (ex: de AGUARDANDO_AUTORIZACAO para EM_VISITA - Item 5)
+  window.alterarStatusVisitante = async function(visitorKey, novoStatus) {
+    const visitor = visList.find(v => (v.id && v.id === visitorKey) || (`${v.nome}_${v.documento}` === visitorKey));
+    if (!visitor) return;
+
+    visitor.status = novoStatus;
+    localStorage.setItem('nexus_vis_list', JSON.stringify(visList));
+
+    if (window.nexusSupabase) {
+      try {
+        if (visitor.id) {
+          await window.nexusSupabase.from('visitantes').update({ status: novoStatus }).eq('id', visitor.id);
+        } else {
+          await window.nexusSupabase.from('visitantes').update({ status: novoStatus }).eq('documento', visitor.documento);
+        }
+      } catch (err) {
+        console.warn('[NexusPort] Erro ao atualizar status do visitante no Supabase:', err);
+      }
+    }
+
+    if (window.NexusRepository && window.NexusRepository.notifyChange) {
+      window.NexusRepository.notifyChange('visitantes');
+    }
+
+    renderVisTables();
+    alert(`Status do visitante ${visitor.nome} alterado para "${novoStatus}" com sucesso!`);
+  };
+
   // Registrar Saída do Visitante (Move do Ativo para o Histórico)
   window.registrarSaidaVisitante = async function(visitorKey) {
     const visitor = visList.find(v => (v.id && v.id === visitorKey) || (`${v.nome}_${v.documento}` === visitorKey));
     if (!visitor) return;
 
-    const dataSaidaStr = prompt(`Informe a data/hora de saída do visitante ${visitor.nome}:`, new Date().toLocaleString('pt-BR'));
+    const dataSaidaStr = await window.nexusPrompt('Registrar Saída', `Informe a data/hora de saída do visitante ${visitor.nome}:`, new Date().toLocaleString('pt-BR'));
     if (!dataSaidaStr) return;
 
-    const parecerVistoria = prompt(`Informe o parecer da vistoria para ${visitor.nome}:`, 'Vistoria em Ordem - Sem Anormalidades');
+    const parecerVistoria = await window.nexusPrompt('Parecer da Vistoria', `Informe o parecer da vistoria para ${visitor.nome}:`, 'Vistoria em Ordem - Sem Anormalidades');
 
     visitor.status = 'CONCLUIDO';
     visitor.data_saida = dataSaidaStr;
@@ -512,6 +536,41 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleVisBtn.addEventListener('click', () => visForm.classList.toggle('hidden'));
   }
 
+  function validarCPF(cpfStr) {
+    if (!cpfStr) return false;
+    const clean = String(cpfStr).replace(/\D/g, '');
+    if (clean.length !== 11 || /^(\d)\1{10}$/.test(clean)) return false;
+
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(clean.charAt(i)) * (10 - i);
+    let resto = 11 - (soma % 11);
+    const digito1 = resto >= 10 ? 0 : resto;
+    if (digito1 !== parseInt(clean.charAt(9))) return false;
+
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(clean.charAt(i)) * (11 - i);
+    resto = 11 - (soma % 11);
+    const digito2 = resto >= 10 ? 0 : resto;
+    return digito2 === parseInt(clean.charAt(10));
+  }
+
+  function aplicarMascaraCPF(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    return digits
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  }
+
+  const visDocInput = document.getElementById('visDocumento');
+  if (visDocInput) {
+    visDocInput.addEventListener('input', (e) => {
+      if (e.target.value.replace(/\D/g, '').length <= 11) {
+        e.target.value = aplicarMascaraCPF(e.target.value);
+      }
+    });
+  }
+
   if (visForm) {
     visForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -520,6 +579,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const motivo = document.getElementById('visMotivo').value.trim();
       const statusElem = document.getElementById('visStatus');
       const status = statusElem ? statusElem.value : 'EM_VISITA';
+
+      // Item 15: Validação do CPF com dígitos verificadores
+      const docClean = documento.replace(/\D/g, '');
+      if (docClean.length === 11 && !validarCPF(docClean)) {
+        alert('CPF INVÁLIDO (Item 15): O CPF informado é inválido de acordo com a validação dos dígitos verificadores. Digite um CPF válido.');
+        return;
+      }
 
       // C14: Impedir cadastro de visitantes com documento duplicado
       const docNormalizado = documento.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -584,4 +650,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Sincronização viva em tempo real (Item 2)
+  window.addEventListener('nexus_data_changed', () => {
+    carregarFuncionariosCompleto();
+    carregarVisitantesCompleto();
+  });
 });

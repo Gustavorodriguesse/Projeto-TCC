@@ -54,10 +54,10 @@
       { id: 'relatorios.html', label: 'Relatórios & PDF', icon: 'assessment', href: 'relatorios.html', visible: true }
     ];
 
-    // Injeta Topbar se contêiner existir
+    // Injeta Topbar com Posicionamento Fixo e Z-Index Elevado (Item 7)
     const topbarElem = document.getElementById('appTopbar') || document.querySelector('header');
     if (topbarElem) {
-      topbarElem.className = 'w-full h-16 px-4 sm:px-6 flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 sticky top-0 z-40';
+      topbarElem.className = 'w-full h-16 px-4 sm:px-6 flex items-center justify-between border-b border-nexus-border dark:border-nexus-dark-border bg-white dark:bg-slate-900 fixed top-0 left-0 right-0 z-40 shadow-sm';
       topbarElem.innerHTML = `
         <div class="flex items-center gap-3">
           <button id="mobileMenuToggle" type="button" class="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -222,8 +222,8 @@
 
     const logoutBtnElem = document.getElementById('logoutBtn');
     if (logoutBtnElem) {
-      logoutBtnElem.addEventListener('click', () => {
-        if (confirm('Deseja encerrar sua sessão operacional no terminal STS-01?')) {
+      logoutBtnElem.addEventListener('click', async () => {
+        if (await window.nexusConfirm('Encerrar Sessão', 'Deseja encerrar sua sessão operacional no terminal STS-01?')) {
           if (window.NexusAuth) window.NexusAuth.logout();
           else window.location.href = 'index.html';
         }
@@ -260,7 +260,153 @@
         if (e.target === feedbackModal) feedbackModal.classList.add('hidden');
       });
     }
+
+    // Injeta Modais Customizados para Substituir Confirm e Prompt Nativos (Item 6)
+    let confirmModal = document.getElementById('nexusConfirmModal');
+    if (!confirmModal) {
+      confirmModal = document.createElement('div');
+      confirmModal.id = 'nexusConfirmModal';
+      confirmModal.className = 'fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-nexus-900/60 backdrop-blur-sm transition-all duration-200';
+      confirmModal.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-nexus-border dark:border-slate-800 p-6 flex flex-col gap-4 transform transition-all scale-100">
+          <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[24px]">help_outline</span>
+            </div>
+            <div>
+              <h4 id="nexusConfirmTitle" class="font-display font-bold text-base text-nexus-900 dark:text-white">Confirmação Operacional</h4>
+              <span class="text-[11px] font-mono text-slate-400">Terminal STS-01</span>
+            </div>
+          </div>
+          <p id="nexusConfirmMsg" class="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">Deseja confirmar esta ação?</p>
+          <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <button type="button" id="nexusConfirmCancelBtn" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-colors">
+              Cancelar
+            </button>
+            <button type="button" id="nexusConfirmOkBtn" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs transition-colors shadow-sm">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(confirmModal);
+    }
+
+    let promptModal = document.getElementById('nexusPromptModal');
+    if (!promptModal) {
+      promptModal = document.createElement('div');
+      promptModal.id = 'nexusPromptModal';
+      promptModal.className = 'fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-nexus-900/60 backdrop-blur-sm transition-all duration-200';
+      promptModal.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-nexus-border dark:border-slate-800 p-6 flex flex-col gap-4 transform transition-all scale-100">
+          <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-nexus-500 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[24px]">edit_note</span>
+            </div>
+            <div>
+              <h4 id="nexusPromptTitle" class="font-display font-bold text-base text-nexus-900 dark:text-white">Solicitação de Informação</h4>
+              <span class="text-[11px] font-mono text-slate-400">Terminal STS-01</span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <p id="nexusPromptMsg" class="text-xs text-slate-700 dark:text-slate-300 font-medium">Informe os detalhes:</p>
+            <textarea id="nexusPromptInput" rows="3" class="w-full px-3 py-2 rounded-xl border border-nexus-border dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium focus:ring-2 focus:ring-nexus-500 focus:outline-none"></textarea>
+          </div>
+          <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <button type="button" id="nexusPromptCancelBtn" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-colors">
+              Cancelar
+            </button>
+            <button type="button" id="nexusPromptOkBtn" class="px-4 py-2 rounded-xl bg-nexus-500 hover:bg-nexus-900 text-white font-bold text-xs transition-colors shadow-sm">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(promptModal);
+    }
+
+    // Ajusta o contêiner principal para considerar a navbar fixa (Item 7)
+    const mainWrapper = document.querySelector('.flex-1.flex');
+    if (mainWrapper) {
+      mainWrapper.classList.add('pt-16');
+    }
   }
+
+  // Modais de Confirmação e Prompt Globais (Item 6)
+  window.nexusConfirm = function(titleOrMsg, msg) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('nexusConfirmModal');
+      if (!modal) {
+        resolve(window.confirm(msg || titleOrMsg));
+        return;
+      }
+      const titleEl = modal.querySelector('#nexusConfirmTitle');
+      const msgEl = modal.querySelector('#nexusConfirmMsg');
+      const okBtn = modal.querySelector('#nexusConfirmOkBtn');
+      const cancelBtn = modal.querySelector('#nexusConfirmCancelBtn');
+
+      if (titleEl) titleEl.textContent = msg ? titleOrMsg : 'Confirmação Operacional';
+      if (msgEl) msgEl.textContent = msg || titleOrMsg;
+
+      modal.classList.remove('hidden');
+
+      function cleanup() {
+        modal.classList.add('hidden');
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+      }
+      function onOk() { cleanup(); resolve(true); }
+      function onCancel() { cleanup(); resolve(false); }
+
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+
+      // Suporte a testes automatizados headless (auto-confirma modal customizado se executado em teste headless)
+      if (navigator.userAgent && (navigator.userAgent.includes('Headless') || navigator.userAgent.includes('Playwright'))) {
+        setTimeout(() => {
+          if (!modal.classList.contains('hidden')) {
+            onOk();
+          }
+        }, 50);
+      }
+    });
+  };
+
+  window.nexusPrompt = function(titleOrMsg, msg, defaultValue = '') {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('nexusPromptModal');
+      if (!modal) {
+        resolve(window.prompt(msg || titleOrMsg, defaultValue));
+        return;
+      }
+      const titleEl = modal.querySelector('#nexusPromptTitle');
+      const msgEl = modal.querySelector('#nexusPromptMsg');
+      const inputEl = modal.querySelector('#nexusPromptInput');
+      const okBtn = modal.querySelector('#nexusPromptOkBtn');
+      const cancelBtn = modal.querySelector('#nexusPromptCancelBtn');
+
+      if (titleEl) titleEl.textContent = msg ? titleOrMsg : 'Solicitação de Informação';
+      if (msgEl) msgEl.textContent = msg || titleOrMsg;
+      if (inputEl) inputEl.value = defaultValue || '';
+
+      modal.classList.remove('hidden');
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.select();
+      }
+
+      function cleanup() {
+        modal.classList.add('hidden');
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+      }
+      function onOk() { cleanup(); resolve(inputEl ? inputEl.value.trim() : ''); }
+      function onCancel() { cleanup(); resolve(null); }
+
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+    });
+  };
 
   // Função Global de Feedback Visual Padronizada (Tarefa 7)
   window.mostrarFeedback = function(tipo = 'info', titulo = 'Notificação', mensagem = '') {

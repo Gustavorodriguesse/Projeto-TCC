@@ -228,11 +228,40 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const emManutencao = osList.filter(o => o.status === 'EM_MANUTENCAO' || o.status === 'SOLICITADA').length;
-    const foraPorto = cargas.filter(c => c.status === 'EM_TRANSITO').length + dbNavios.filter(n => n.localizacao === 'FORA_DO_PORTO').length;
-    const armazenagem = cargas.filter(c => c.status === 'ARMAZENAGEM').length;
-    const prontas = cargas.filter(c => c.status === 'PRONTA_PARA_ENTREGA').length;
-    const recusadas = cargas.filter(c => c.status === 'RECUSADA').length;
+    let guindastes = JSON.parse(localStorage.getItem('nexus_guindastes_list') || '[]');
+    let containers = JSON.parse(localStorage.getItem('nexus_containers_list') || '[]');
+
+    if (window.nexusSupabase) {
+      try {
+        const { data: gData } = await window.nexusSupabase.from('guindastes').select('*');
+        if (gData && gData.length > 0) guindastes = gData;
+        const { data: contData } = await window.nexusSupabase.from('containers').select('*');
+        if (contData && contData.length > 0) containers = contData;
+      } catch (e) {}
+    }
+
+    const emManutencaoNavios = dbNavios.filter(n => n.estado_operacional === 'EM_MANUTENCAO' || n.estado_operacional === 'AGENDADO_PARA_REFORMA').length;
+    const emManutencaoOS = osList.filter(o => o.status === 'EM_MANUTENCAO').length;
+    const totalEmManutencao = emManutencaoNavios + emManutencaoOS;
+
+    const foraPortoNavios = dbNavios.filter(n => n.localizacao === 'FORA_DO_PORTO').length;
+    const armazenagem = cargas.filter(c => c.status === 'ARMAZENAGEM' || c.status_fluxo === 'ARMAZENAGEM').length;
+    const prontas = cargas.filter(c => c.status === 'PRONTA_PARA_ENTREGA' || c.status_fluxo === 'PRONTA_PARA_ENTREGA').length;
+    const recusadas = cargas.filter(c => c.status === 'RECUSADA' || c.status_fluxo === 'RECUSADA' || c.status === 'CANCELADA' || c.status_fluxo === 'CANCELADA').length;
+
+    // Cálculo exato da preventiva sugerida (equipamentos/navios com mais de 3 anos / 1095 dias)
+    const agora = Date.now();
+    const tresAnosMs = 3 * 365 * 24 * 60 * 60 * 1000;
+    let countPreventiva = 0;
+
+    containers.forEach(ct => {
+      const d = ct.data_ultima_manutencao || ct.dataManut || ct.data_fabricacao || ct.dataFabr;
+      if (d && (agora - new Date(d).getTime()) >= tresAnosMs) countPreventiva++;
+    });
+    guindastes.forEach(g => {
+      const d = g.data_ultima_manutencao || g.dataManut;
+      if (d && (agora - new Date(d).getTime()) >= tresAnosMs) countPreventiva++;
+    });
 
     const elNaviosManut = document.getElementById('cardNaviosManutencaoVal');
     const elNaviosFora = document.getElementById('cardNaviosForaVal');
@@ -242,13 +271,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const elOcupacao = document.getElementById('cardOcupacaoPatioVal');
     const elPreventiva = document.getElementById('cardPreventivaVal');
 
-    if (elNaviosManut) elNaviosManut.textContent = emManutencao;
-    if (elNaviosFora) elNaviosFora.textContent = foraPorto;
+    if (elNaviosManut) elNaviosManut.textContent = totalEmManutencao;
+    if (elNaviosFora) elNaviosFora.textContent = foraPortoNavios;
     if (elCargasArmaz) elCargasArmaz.textContent = armazenagem;
     if (elCargasProntas) elCargasProntas.textContent = prontas;
     if (elCargasRecusadas) elCargasRecusadas.textContent = recusadas;
     if (elOcupacao) elOcupacao.textContent = `${Math.min(100, Math.round((armazenagem / 20) * 100))}%`;
-    if (elPreventiva) elPreventiva.textContent = `${Math.max(1, emManutencao)} Equipamento(s)`;
+    if (elPreventiva) elPreventiva.textContent = `${countPreventiva} Equipamento(s)`;
   }
 
   renderCardsOperacionais();
@@ -421,12 +450,12 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  window.anexarRetificacaoTrail = function(idTrail) {
+  window.anexarRetificacaoTrail = async function(idTrail) {
     const trail = JSON.parse(localStorage.getItem('nexus_trail_decisoes') || '[]');
     const item = trail.find(t => t.id === idTrail);
     if (!item) return;
 
-    const textoRetificacao = prompt(`Informe a RETIFICAÇÃO a ser vinculada ao registro imutável ${idTrail}:\n(O registro original permanecerá inalterado)`);
+    const textoRetificacao = await window.nexusPrompt('Anexar Retificação', `Informe a RETIFICAÇÃO a ser vinculada ao registro imutável ${idTrail}:\n(O registro original permanecerá inalterado)`);
     if (textoRetificacao) {
       item.retificacao = `[Retificação em ${new Date().toLocaleString('pt-BR')} por ${session.codigo_individual}]: ${textoRetificacao}`;
       localStorage.setItem('nexus_trail_decisoes', JSON.stringify(trail));
@@ -548,4 +577,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
+
+  // Sincronização viva em tempo real (Item 2)
+  window.addEventListener('nexus_data_changed', () => {
+    renderCardsOperacionais();
+    renderIndicadoresExecutivosTable();
+    renderAuditLogTable();
+    renderTrailDecisoesTable();
+  });
 });

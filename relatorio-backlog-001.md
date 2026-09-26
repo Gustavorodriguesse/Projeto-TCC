@@ -170,3 +170,95 @@
 ## 🛡️ Evidências de Validação e Testes
 - **Testes de Regressão Automatizados:** Suíte `verify_points_1_2_3.py` executada no ambiente com servidor ativo na porta 3000 — **TODOS OS TESTES PASSARAM COM SUCESSO**.
 - **Análise de Segurança & Integridade:** Verificada a aplicação do controle de acesso por cargo (RBAC), eliminação total de dados fictícios hardcoded e garantia de não reaparecimento em recarga de página/limpeza de cache.
+
+---
+
+## 📌 Continuação do Backlog — Execução de Correções (Backlog 002)
+
+**Data de Execução:** 26 de Setembro de 2026
+**Responsável:** Jules (Engenheiro de Software)
+
+### ✅ Item 1 — Painel Geral — Indicadores com números incorretos
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Atualizada a função `renderCardsOperacionais` em `js/dashboard.js` para realizar consultas de contagem exata e direta no banco de dados Supabase e repositório central para cada card (navios fora do porto, navios em manutenção, cargas em armazenagem, cargas prontas, cargas recusadas, ocupação do pátio e manutenções preventivas sugeridas com cálculo exato de tempo >= 3 anos). Removidas aproximações como `Math.max(1, ...)`.
+
+### ✅ Item 2 — Atualização em tempo real entre páginas (sincronização geral)
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Implementado mecanismo de sincronização reativa inter-páginas em `js/data-repository.js` utilizando `BroadcastChannel` e eventos customizados (`nexus_data_changed`), associado aos escutadores de eventos em `js/dashboard.js`, `js/tecnico_portos.js`, `js/cargas.js`, `js/embarcacoes.js` e `js/manutencao.js`. Qualquer alteração (`INSERT`/`UPDATE`/`DELETE`) feita em uma tela propaga e atualiza instantaneamente as demais telas abertas.
+
+### ✅ Item 3 — Reemissão e Invalidação de Códigos — matrícula não localizada
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Removido filtro restritivo sintético em `js/tecnico_portos.js` (`carregarFuncionariosCompleto`) que limitava a lista de funcionários. Corrigida a lógica de busca por matrícula para aceitar com/sem prefixo `MAT-`, efetuando busca assíncrona no Supabase/Repositório e atualizando o código individual do funcionário imediatamente.
+
+### ✅ Item 4 — CRUD de Funcionários — matrícula duplicada permitida
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Adicionada validação de duplicidade de matrícula antes do `INSERT` em `js/tecnico_portos.js`, normalizando a matrícula em caixa alta e verificando na lista local unificada e no Supabase (`funcionarios`). Exibe alerta com mensagem clara de bloqueio caso haja tentativa de duplicação.
+
+### ✅ Item 5 — Visitantes — sem opção de mudar status "aguardando autorização" para "em visita"
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Adicionado o valor `AGUARDANDO_AUTORIZACAO` no seletor do formulário de cadastro e criado a ação/botão "Autorizar (Entrar em Visita)" (`window.alterarStatusVisitante`) na tabela de visitantes ativos em `js/tecnico_portos.js`, permitindo transitar o status de visitantes sem recadastramento.
+
+### ✅ Item 6 — Prompt dialogs nativos do navegador
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Criados e injetados modais customizados estilizados (`#nexusConfirmModal` e `#nexusPromptModal`) em `js/layout.js`, disponibilizando as funções assíncronas globais `window.nexusConfirm` e `window.nexusPrompt`. Substituídas todas as chamadas nativas de `prompt()` e `confirm()` em todos os módulos por chamadas a esses modais estilizados.
+
+### ✅ Item 7 — Navbar cobre o conteúdo ao rolar a página
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Ajustado o posicionamento da navbar em `js/layout.js` para `fixed top-0 left-0 right-0 z-40` e adicionado o espaçamento superior padronizado (`pt-16`) nos contêineres principais de todas as páginas da aplicação, garantindo que o conteúdo rolável nunca passe por baixo nem sobreponha a navbar.
+
+### ✅ Item 8 — Matrículas e códigos devem ser salvos em maiúsculas
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Aplicado `.toUpperCase()` em todos os campos e fluxos de inserção/consulta envolvendo matrículas, códigos de funcionários, códigos de contêineres, QR Codes e identificadores de equipamentos em `js/tecnico_portos.js`, `js/cargas.js`, `js/delegacao.js`, `js/embarcacoes.js` e `js/manutencao.js`.
+
+### ✅ Item 9 — Inspeção e Checklist — exibe cargas não cadastradas
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Atualizada a função `popularSeletor` em `js/inspecao.js` para consultar o repositório central (`NexusRepository.getCargas()`) e filtrar estritamente cargas cadastradas e ativas (não canceladas), garantindo que apenas cargas válidas do fluxo operacional estejam disponíveis no seletor.
+
+### ✅ Item 10 — Inspeção e Checklist — falta campo para motivo de recusa
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Atualizada a página `inspecao.html` e o arquivo `js/inspecao.js` para garantir a exibição e obrigatoriedade do campo de texto de motivo de recusa (`#motivoRecusaBox` / `#motivoRecusaInput`). Caso a recusa seja acionada sem o preenchimento prévio do motivo, o sistema solicita e obriga o fornecimento da justificativa formal via modal antes do salvamento.
+
+### ✅ Item 11 — Embarcações e GPS — Número IMO sem padrão e sem unicidade
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Adicionada validação por expressão regular em `js/embarcacoes.js` garantindo a estrutura fixa de 3 letras + 7 números para o IMO (ex.: `IMO1234567`) e verificação de unicidade no cadastro de novas embarcações, bloqueando duplicidades.
+
+### ✅ Item 12 — Embarcações e GPS — Coordenadas GPS inválidas ou duplicadas
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Implementada a função `validarCoordenadaGPS` em `js/embarcacoes.js` para validar latitude/longitude reais e bloqueio de coordenadas duplicadas, exibindo a mensagem "já existe navio nesta localização".
+
+### ✅ Item 13 — Gestão de Contêineres — duplicidade de código e vínculo simultâneo
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Adicionada verificação de unicidade na identificação do contêiner em `js/embarcacoes.js` e gestão de estado (`DISPONIVEL` / `EM_USO`), bloqueando múltiplos cadastros para o mesmo código.
+
+### ✅ Item 14 — Datas de fabricação/manutenção sem nexo (contêineres e guindastes)
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Adicionada trava lógica em `js/embarcacoes.js` e `js/manutencao.js` que impede o salvamento caso a data da última manutenção seja anterior à data de fabricação de contêineres ou guindastes.
+
+### ✅ Item 15 — Cadastro de Visitante — documento sem validação
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Implementada a máscara dinâmica de CPF e o algoritmo padrão de validação de dígitos verificadores (`validarCPF`) em `js/tecnico_portos.js`, bloqueando envios com documentos inválidos.
+
+### ✅ Item 16 — Cargas — valores negativos em peso, volume e valor declarado
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Adicionada a restrição HTML `min="0.01"` em `cargas.html` e validação JavaScript antes do `INSERT` em `js/cargas.js`, rejeitando e bloqueando qualquer valor menor ou igual a zero nos campos de peso, volume e valor declarado.
+
+### ✅ Item 17 — Manutenção e OS — solicitação de manutenção de navios
+- **Data:** 26/09/2026
+- **Status:** Concluído
+- **O que foi feito:** Criada a seção e o formulário de Solicitação de Manutenção de Embarcações em `manutencao.html` e `js/manutencao.js`, oferecendo tipos de manutenção (Preventiva, Corretiva, Preditiva e Geral). A opção "Manutenção Geral" possui trava automática habilitando-a exclusivamente se o navio possuir 3 anos ou mais de uso/desde a última manutenção geral.

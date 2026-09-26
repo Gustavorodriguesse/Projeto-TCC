@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const substitutoMatricula = document.getElementById('delegSubstitutoMatricula').value.trim();
+      const substitutoMatricula = document.getElementById('delegSubstitutoMatricula').value.trim().toUpperCase();
       const inicio = document.getElementById('delegDataInicio').value;
       const fim = document.getElementById('delegDataFim').value;
 
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (revogarBtn) {
     revogarBtn.addEventListener('click', async () => {
-      if (confirm('ATENÇÃO: Deseja REVOGAR IMEDIATAMENTE os poderes do substituto temporário?')) {
+      if (await window.nexusConfirm('Revogar Delegação', 'ATENÇÃO: Deseja REVOGAR IMEDIATAMENTE os poderes do substituto temporário?')) {
         const activeDeleg = JSON.parse(localStorage.getItem('nexus_active_delegation') || '{}');
         localStorage.removeItem('nexus_active_delegation');
 
