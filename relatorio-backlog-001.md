@@ -173,7 +173,7 @@
 
 ---
 
-## 📌 Continuação do Backlog — Execução de Correções (Backlog 002)
+## 📌 Continuação do Backlog 001 — Execução de Correções e Ajustes
 
 **Data de Execução:** 26 de Setembro de 2026
 **Responsável:** Jules (Engenheiro de Software)

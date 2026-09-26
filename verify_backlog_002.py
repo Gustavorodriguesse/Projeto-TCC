@@ -119,7 +119,7 @@ async def run_tests():
         print("✅ Regra de 3 anos para Manutenção Geral de Navio OK!")
 
         await browser.close()
-        print("\n=== TODOS OS TESTES AUTOMATIZADOS DO BACKLOG 002 PASSARAM COM SUCESSO! ===")
+        print("\n=== TODOS OS TESTES AUTOMATIZADOS DA CONTINUAÇÃO DO BACKLOG 001 PASSARAM COM SUCESSO! ===")
 
 if __name__ == "__main__":
     asyncio.run(run_tests())

@@ -169,7 +169,7 @@ Toda alteração feita no sistema deve ser documentada em um relatório do backl
 
 ---
 
-# Backlog 002 — Continuação do Backlog (Correções e Ajustes Adicionais)
+# Continuação do Backlog 001 — Correções e Ajustes Adicionais
 
 ## 1. Painel Geral — Indicadores com números incorretos
 
