@@ -165,8 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Exibe apenas cargas ativas com contêiner e navio vinculados (A6)
-    const cargasAtivas = cargasFluxoList.filter(c => c.status !== 'CANCELADA' && Boolean(c.container) && Boolean(c.navio));
+    // Exibe cargas ativas aplicando Visão Própria / Visão Operacional (RF 1.3)
+    let cargasAtivas = cargasFluxoList.filter(c => c.status !== 'CANCELADA' && Boolean(c.container) && Boolean(c.navio));
+    if (window.NexusVision && window.NexusVision.filterCargasForUser) {
+      cargasAtivas = window.NexusVision.filterCargasForUser(cargasAtivas, session);
+    }
     const cargasCanceladas = cargasFluxoList.filter(c => c.status === 'CANCELADA');
 
     const userItems = cargasAtivas.filter(c => {

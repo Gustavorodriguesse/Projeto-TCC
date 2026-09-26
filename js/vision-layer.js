@@ -63,6 +63,32 @@
     },
 
     /**
+     * Filtra lista de cargas para o usuário ativo com base no perfil de visão (RF 1.3 Visão Própria)
+     */
+    filterCargasForUser: function (cargasList, session) {
+      if (!session || !session.cargo) return cargasList;
+      const cargo = session.cargo;
+
+      // Visão Estratégica (Diretores) e Visão Operacional Ampla (Supervisor / Inspetor): enxergam todas as cargas
+      if (['DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO', 'SUPERVISOR_GERENTE_OPERACOES', 'INSPETOR'].includes(cargo)) {
+        return cargasList;
+      }
+
+      const userMat = session.matricula || session.codigo_individual;
+
+      // Visão Própria (Cargos Operacionais): enxergam apenas cargas de sua responsabilidade/atribuição
+      if (cargo === 'ESTIVADOR') {
+        return cargasList.filter(c => c.estivador_id === userMat || c.estivadorMatricula === userMat || c.estivador === session.nome || c.status === 'ARMAZENAGEM' || c.status === 'RECEBIMENTO_INSPECAO');
+      } else if (cargo === 'CONFERENTE_CARGA') {
+        return cargasList.filter(c => c.conferente_id === userMat || c.conferenteMatricula === userMat || c.conferente === session.nome || c.status === 'AGENDAMENTO' || c.status === 'RECEBIMENTO_INSPECAO');
+      } else if (cargo === 'ARRUMADOR_CONSERTADOR') {
+        return cargasList.filter(c => c.arrumador_id === userMat || c.arrumadorMatricula === userMat || c.arrumador === session.nome || c.status === 'ARMAZENAGEM' || c.status === 'PRONTA_PARA_ENTREGA');
+      }
+
+      return cargasList;
+    },
+
+    /**
      * Aplica o filtro de Visão no Supabase (Própria, Operacional ou Estratégica)
      */
     applyVisaoFilter: function (queryBuilder, entityType, session) {
