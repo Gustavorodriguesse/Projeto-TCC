@@ -180,9 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
           await window.nexusSupabase.from('manutencoes').insert({
             entidade_tipo: 'NAVIO',
             descricao: `[${newOsId}][${tipoManut}] Navio: ${navioNome} - ${descricao}`,
-            status: 'APROVADA'
+            status: 'SOLICITADA'
           });
-          await window.nexusSupabase.from('navios').update({ estado_operacional: 'EM_MANUTENCAO' }).eq('nome', navioNome);
+          await window.nexusSupabase.from('navios').update({ estado_operacional: 'AGENDADO_PARA_REFORMA' }).eq('nome', navioNome);
         } catch (err) {
           console.warn('[NexusPort] Erro ao sincronizar manutenção de navio no Supabase:', err);
         }
@@ -421,11 +421,14 @@ document.addEventListener('DOMContentLoaded', () => {
           .update({ status: supabaseStatus })
           .ilike('descricao', `%${idOS}%`);
 
-        if (acao === 'CONCLUIR') {
+        if (acao === 'APROVAR') {
+          await window.nexusSupabase.from('navios').update({ estado_operacional: 'EM_REFORMA' }).eq('nome', os.equipamento);
+        } else if (acao === 'CONCLUIR') {
           await window.nexusSupabase.from('historico_manutencoes').insert({
             data_manutencao: new Date().toISOString().split('T')[0],
             descricao_servicos: `Conclusão da Ordem de Serviço ${idOS} para ${os.equipamento}: ${os.descricao}`
           });
+          await window.nexusSupabase.from('navios').update({ estado_operacional: 'OPERANTE' }).eq('nome', os.equipamento);
         }
       } catch (err) {
         console.warn('[NexusPort] Erro ao atualizar status da OS no Supabase:', err);
