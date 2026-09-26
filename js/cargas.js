@@ -675,6 +675,10 @@ document.addEventListener('DOMContentLoaded', () => {
       carga.conferenteMatricula = session.matricula;
       alert(`Recebimento físico da carga ${idCarga} registrado pelo Conferente em ${carga.dataChegada}.`);
     } else if (acao === 'PRONTA') {
+      if (!isArrumadorRole) {
+        alert('Acesso Restrito (RF 1.8): Apenas Arrumadores e Consertadores (ou Supervisão/Direção) podem alterar o status da carga para Pronta para Entrega!');
+        return;
+      }
       carga.status = 'PRONTA_PARA_ENTREGA';
       alert(`Carga ${idCarga} marcada como Pronta para Entrega.`);
     } else if (acao === 'VINCULAR') {
