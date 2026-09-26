@@ -175,18 +175,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
       }
 
-      // C5, A4, A5: Ações exclusivas do Diretor de Operações e Logística
-      const isDiretorOperacoes = session.cargo === 'DIRETOR_OPERACOES_LOGISTICA';
+      // RN 3: Liberação de saída de navios é competência do Supervisor de Operações e Direção
+      const podeLiberarNavio = ['SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
       let acoesHtml = '';
 
-      if (isDiretorOperacoes) {
+      if (podeLiberarNavio) {
         if (n.localizacao === 'DENTRO_DO_PORTO') {
           acoesHtml = `<button type="button" onclick="window.liberarNavioPeloDiretor('${n.imo}')" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px]">Liberar Saída</button>`;
         } else if (n.localizacao === 'FORA_DO_PORTO' || n.localizacao === 'NO_PORTO_DE_DESTINO') {
           acoesHtml = `<button type="button" onclick="window.autorizarRetornoNavio('${n.imo}')" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">Autorizar Retorno</button>`;
         }
       } else {
-        acoesHtml = `<span class="text-slate-400 font-mono italic text-[10px]">Exclusivo Diretor</span>`;
+        acoesHtml = `<span class="text-slate-400 font-mono italic text-[10px]">Exclusivo Supervisor/Diretor</span>`;
       }
 
       return `
@@ -213,10 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  // C5 & A4: Função para Liberação de Saída de Navios Exclusiva do Diretor de Operações e Logística
+  // RN 3: Liberação de Saída de Navios pelo Supervisor de Operações / Diretor
   window.liberarNavioPeloDiretor = async function(imo) {
-    if (session.cargo !== 'DIRETOR_OPERACOES_LOGISTICA') {
-      alert('Acesso Negado (C5): Apenas o Diretor de Operações e Logística pode autorizar a liberação de navios!');
+    const podeLiberar = ['SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
+    if (!podeLiberar) {
+      alert('Acesso Negado: Apenas o Supervisor de Operações ou Diretor pode autorizar a liberação de navios!');
       return;
     }
 
@@ -241,18 +242,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Registra no Trail de Decisões Críticas
       if (window.registrarTrailDecisao) {
-        window.registrarTrailDecisao(`Liberou Navio ${navio.nome}`, 'NAVIO', `Horário de saída registrado pelo Diretor: ${new Date(horaSaida).toLocaleString('pt-BR')}`);
+        window.registrarTrailDecisao(`Liberou Navio ${navio.nome}`, 'NAVIO', `Horário de saída registrado por ${session.nome || session.cargo}: ${new Date(horaSaida).toLocaleString('pt-BR')}`);
       }
 
       renderGpsTable();
-      alert(`Navio ${navio.nome} liberado com sucesso pelo Diretor de Operações e Logística. Horário de saída: ${new Date(horaSaida).toLocaleString('pt-BR')}.`);
+      alert(`Navio ${navio.nome} liberado com sucesso pelo Supervisor/Direção. Horário de saída: ${new Date(horaSaida).toLocaleString('pt-BR')}.`);
     }
   };
 
-  // A5: Configuração de retorno do navio ao porto de origem
+  // Autorização de retorno do navio ao porto de origem
   window.autorizarRetornoNavio = async function(imo) {
-    if (session.cargo !== 'DIRETOR_OPERACOES_LOGISTICA') {
-      alert('Acesso Negado: Apenas o Diretor de Operações e Logística pode autorizar o retorno de navios!');
+    const podeLiberar = ['SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
+    if (!podeLiberar) {
+      alert('Acesso Negado: Apenas o Supervisor de Operações ou Diretor pode autorizar o retorno de navios!');
       return;
     }
 
