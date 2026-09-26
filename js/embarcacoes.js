@@ -208,6 +208,88 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
+  // Gestão de Rotas Marítimas (RN 9, RF 2.4)
+  const toggleRotaBtn = document.getElementById('toggleRotaFormBtn');
+  const rotaForm = document.getElementById('rotaForm');
+  const rotasTableBody = document.getElementById('rotasTableBody');
+  let rotasMaritimasList = [];
+
+  async function carregarRotasMaritimas() {
+    if (window.nexusSupabase) {
+      try {
+        const { data, error } = await window.nexusSupabase.from('rotas_maritimas').select('*');
+        if (!error && data && data.length > 0) {
+          rotasMaritimasList = data;
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar rotas marítimas do Supabase:', e);
+      }
+    }
+    if (rotasMaritimasList.length === 0) {
+      rotasMaritimasList = [
+        { origem: 'Porto de Santos', destino: 'Porto de Roterdã', distancia_km: 10200 },
+        { origem: 'Porto de Santos', destino: 'Porto de Xangai', distancia_km: 18500 },
+        { origem: 'Porto de Santos', destino: 'Porto de Hamburgo', distancia_km: 10100 }
+      ];
+    }
+    renderRotasTable();
+  }
+
+  function renderRotasTable() {
+    if (!rotasTableBody) return;
+    if (rotasMaritimasList.length === 0) {
+      rotasTableBody.innerHTML = `
+        <tr>
+          <td colspan="4" class="p-4 text-center text-slate-400 italic">Nenhuma rota marítima cadastrada no sistema.</td>
+        </tr>
+      `;
+      return;
+    }
+    rotasTableBody.innerHTML = rotasMaritimasList.map(r => {
+      const dist = parseFloat(r.distancia_km) || 10200;
+      const eta = calcularETA(dist);
+      return `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 font-mono text-xs">
+          <td class="p-3 font-bold">${r.origem}</td>
+          <td class="p-3 text-nexus-900 dark:text-white font-bold">${r.destino}</td>
+          <td class="p-3 text-emerald-600 font-bold">${dist.toLocaleString('pt-BR')} km</td>
+          <td class="p-3 text-indigo-600 font-bold">${eta}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  carregarRotasMaritimas();
+
+  if (toggleRotaBtn && rotaForm) {
+    toggleRotaBtn.addEventListener('click', () => rotaForm.classList.toggle('hidden'));
+  }
+
+  if (rotaForm) {
+    rotaForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const origem = document.getElementById('rotaOrigem').value.trim();
+      const destino = document.getElementById('rotaDestino').value.trim();
+      const distancia_km = parseFloat(document.getElementById('rotaDistancia').value) || 10200;
+
+      const novaRota = { origem, destino, distancia_km };
+      rotasMaritimasList.push(novaRota);
+
+      if (window.nexusSupabase) {
+        try {
+          await window.nexusSupabase.from('rotas_maritimas').insert(novaRota);
+        } catch (e) {
+          console.warn('Erro ao salvar rota marítima no Supabase:', e);
+        }
+      }
+
+      renderRotasTable();
+      rotaForm.reset();
+      rotaForm.classList.add('hidden');
+      alert(`Rota Marítima "${origem} ➔ ${destino}" (${distancia_km} km) cadastrada com sucesso pelo Supervisor!`);
+    });
+  }
+
   // RN 3: Liberação de Saída de Navios pelo Supervisor de Operações / Diretor
   window.liberarNavioPeloDiretor = async function(imo) {
     const podeLiberar = ['SUPERVISOR_GERENTE_OPERACOES', 'DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
@@ -219,7 +301,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const navio = naviosList.find(n => n.imo === imo);
     if (!navio) return;
 
-    if (await window.nexusConfirm('Liberar Saída de Navio', `Confirmar liberação de saída do navio ${navio.nome} (${navio.imo})?`)) {
+    // RN 9: Bloqueia saída se NÃO houver rota cadastrada entre a origem e o destino do navio
+    const origBusca = (navio.origem || 'Porto de Santos').trim().toLowerCase();
+    const destBusca = (navio.destino || '').trim().toLowerCase();
+
+    const rotaCadastrada = rotasMaritimasList.find(r =>
+      String(r.origem || '').trim().toLowerCase() === origBusca &&
+      String(r.destino || '').trim().toLowerCase() === destBusca
+    );
+
+    if (!rotaCadastrada) {
+      alert(`REGRA DE NEGÓCIO (RN 9): A saída do navio "${navio.nome}" foi BLOQUEADA pois não existe uma rota marítima cadastrada entre "${navio.origem || 'Porto de Santos'}" e "${navio.destino}". O Supervisor deve cadastrar a rota na seção "Gestão de Rotas Marítimas" antes da liberação!`);
+      return;
+    }
+
+    navio.distancia = parseFloat(rotaCadastrada.distancia_km) || 10200;
+
+    if (await window.nexusConfirm('Liberar Saída de Navio', `Confirmar liberação de saída do navio ${navio.nome} (${navio.imo}) pela rota cadastrada ${rotaCadastrada.origem} ➔ ${rotaCadastrada.destino} (${navio.distancia} km)?`)) {
       const horaSaida = new Date().toISOString();
       navio.localizacao = 'FORA_DO_PORTO';
       navio.dataSaida = horaSaida;
@@ -241,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       renderGpsTable();
-      alert(`Navio ${navio.nome} liberado com sucesso pelo Supervisor/Direção. Horário de saída: ${new Date(horaSaida).toLocaleString('pt-BR')}.`);
+      alert(`Navio ${navio.nome} liberado com sucesso pela Rota ${rotaCadastrada.origem} ➔ ${rotaCadastrada.destino} (${navio.distancia} km). Horário de saída: ${new Date(horaSaida).toLocaleString('pt-BR')}.`);
     }
   };
 
