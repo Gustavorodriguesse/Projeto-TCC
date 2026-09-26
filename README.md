@@ -62,6 +62,18 @@ Acesse `http://localhost:3000` no seu navegador.
 npm test
 ```
 
+## 🔒 Modelo de Segurança e Limitações da Arquitetura
+
+### 1. Modelo de Autenticação e Sessão Client-Side
+O NexusPort foi desenvolvido no contexto de um protótipo operacional portuário (TCC). A verificação de credenciais e permissões (RBAC) é validada no frontend (`js/tecnico_portos.js`, `js/vision-layer.js`), armazenando a sessão ativa em `sessionStorage`/`localStorage` (`nexus_session`).
+
+### 2. Camada de Segurança RLS (Row Level Security) no Supabase
+Para proteger a integridade dos dados no banco de dados contra solicitações maliciosas via API REST (`anon` key):
+- **Tabelas de Log e Auditoria (`logs_alteracoes`, `trail_decisoes`, `retificacoes_trail`):** Protegidas por políticas *Append-Only* (`SELECT` e `INSERT`). Operações de `UPDATE` e `DELETE` são totalmente bloqueadas no banco de dados.
+- **Tabelas Operacionais (`cargas`, `navios`, `containers`, `manutencoes`, etc.):** Permitem `SELECT`, `INSERT` e `UPDATE`, porém o comando `DELETE` (deleção física de registros) é restrito no banco para evitar perda indevida de dados.
+- **Tabelas de Configuração/Mestre (`cargo_niveis`, `tipos_carga`, etc.):** Acesso estritamente de leitura (`SELECT` apenas).
+- **Isolamento de Credenciais:** O arquivo `js/config.js` contém a chave publicável do Supabase e é ignorado pelo Git (`.gitignore`), mantendo apenas `js/config.example.js` com valores genéricos no repositório.
+
 ---
 
 ## 🔒 Banco de Dados e Schemas
