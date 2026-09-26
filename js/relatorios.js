@@ -60,22 +60,61 @@ document.addEventListener('DOMContentLoaded', () => {
         const { data: dbCarga } = await window.nexusSupabase
           .from('cargas')
           .select('*')
-          .or(`qr_code_url.eq.QR-${idCarga},qr_code_url.eq.${idCarga}`)
+          .or(`id.eq.${idCarga},qr_code_url.eq.QR-${idCarga},qr_code_url.eq.${idCarga}`)
           .maybeSingle();
 
         if (dbCarga) {
+          let navioNome = (c ? c.navio : 'Não Vinculado');
+          let navioImo = 'Não Informado';
+          let containerIdent = (c ? c.container : 'Não Alocado');
+
+          if (dbCarga.container_id) {
+            const { data: dbCont } = await window.nexusSupabase
+              .from('containers')
+              .select('id, numero_identificacao, navio_id')
+              .eq('id', dbCarga.container_id)
+              .maybeSingle();
+            if (dbCont) {
+              containerIdent = dbCont.numero_identificacao;
+              if (dbCont.navio_id) {
+                const { data: dbNav } = await window.nexusSupabase
+                  .from('navios')
+                  .select('id, nome, numero_imo')
+                  .eq('id', dbCont.navio_id)
+                  .maybeSingle();
+                if (dbNav) {
+                  navioNome = dbNav.nome;
+                  navioImo = dbNav.numero_imo;
+                }
+              }
+            }
+          }
+
+          if (navioImo === 'Não Informado' && navioNome && navioNome !== 'Não Vinculado') {
+            const { data: dbNav } = await window.nexusSupabase
+              .from('navios')
+              .select('nome, numero_imo')
+              .eq('nome', navioNome)
+              .maybeSingle();
+            if (dbNav) {
+              navioNome = dbNav.nome;
+              navioImo = dbNav.numero_imo;
+            }
+          }
+
           c = {
             id: idCarga,
-            tipo: dbCarga.natureza || 'Carga Geral',
+            tipo: dbCarga.natureza || (c ? c.tipo : 'Carga Geral'),
             peso: `${dbCarga.peso || 25} t`,
             volume: `${dbCarga.volume || 40} m³`,
             valor: `R$ ${(dbCarga.valor_declarado || 100000).toLocaleString('pt-BR')}`,
             natureza: dbCarga.natureza || 'Geral',
-            portoDescarga: dbCarga.porto_descarga || 'Porto de Santos',
-            destino: dbCarga.destino || 'Destino Internacional',
-            status: dbCarga.status_fluxo || 'ARMAZENAGEM',
-            container: dbCarga.container_id || 'CONT-991',
-            navio: 'MV Santos Star'
+            portoDescarga: dbCarga.porto_descarga || (c ? c.portoDescarga : 'Porto de Santos'),
+            destino: dbCarga.destino || (c ? c.destino : 'Destino Internacional'),
+            status: dbCarga.status_fluxo || (c ? c.status : 'ARMAZENAGEM'),
+            container: containerIdent,
+            navio: navioNome,
+            imo: navioImo
           };
         }
       } catch (err) { console.warn('Erro ao carregar carga no Supabase para PDF:', err); }
@@ -83,8 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!c) {
       c = {
-        id: idCarga, tipo: 'Grãos Soltos', peso: '25.5 t', volume: '40 m³', valor: 'R$ 80.000', natureza: 'Agrícola',
-        portoDescarga: 'Porto de Roterdã', destino: 'Amsterdã', status: 'ARMAZENAGEM', container: 'CONT-991', navio: 'MV Santos Star'
+        id: idCarga, tipo: 'Carga Geral', peso: '25.0 t', volume: '40 m³', valor: 'R$ 100.000', natureza: 'Geral',
+        portoDescarga: 'Porto de Santos', destino: 'Destino Internacional', status: 'ARMAZENAGEM', container: 'Não Alocado', navio: 'Não Vinculado', imo: 'Não Informado'
       };
     }
 
@@ -133,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.text(`Nome da Embarcação: ${c.navio || 'Não Vinculado'}`, 16, y);
-      doc.text(`Número IMO: IMO-9821034`, 110, y);
+      doc.text(`Número IMO: ${c.imo || 'Não Informado'}`, 110, y);
       y += 6;
       doc.text(`Porto de Origem: Porto de Santos (STS-01)`, 16, y);
       doc.text(`Porto de Destino da Viagem: ${c.destino || 'Destino Internacional'}`, 110, y);
