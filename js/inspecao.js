@@ -37,15 +37,28 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
   }
 
-  let cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+  let cargas = [];
   let cargaAtual = null;
   let itemsEstado = {};
 
-  // Popula seletor de cargas
-  function popularSeletor() {
+  // Item 9: Popula seletor apenas com cargas cadastradas e ativas na tabela de cargas
+  async function popularSeletor() {
     if (!selectCarga) return;
+
+    if (window.NexusRepository) {
+      try {
+        cargas = await window.NexusRepository.getCargas();
+      } catch (e) {
+        cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+      }
+    } else {
+      cargas = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+    }
+
+    const cargasAtivas = cargas.filter(c => c.status !== 'CANCELADA' && Boolean(c.id));
+
     selectCarga.innerHTML = '<option value="">Selecione uma Carga para Vistoria...</option>';
-    cargas.forEach(c => {
+    cargasAtivas.forEach(c => {
       selectCarga.innerHTML += `<option value="${c.id}">${c.id} — ${c.tipo} (${c.status})</option>`;
     });
 
@@ -243,15 +256,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Recusar Carga (RN 14)
+  // Recusar Carga (RN 14 & Item 10: campo obrigatório de motivo de recusa)
   if (recusarBtn) {
     recusarBtn.addEventListener('click', async () => {
       if (!cargaAtual) return;
 
-      const motivo = motivoInput.value.trim();
+      if (motivoBox) motivoBox.classList.remove('hidden');
+
+      let motivo = motivoInput ? motivoInput.value.trim() : '';
       if (!motivo) {
-        alert('ATENÇÃO: Informe obrigatoriamente o MOTIVO FORMAL da recusa no campo de texto.');
-        motivoInput.focus();
+        motivo = await window.nexusPrompt('Motivo de Recusa da Carga', 'Informe obrigatoriamente o MOTIVO FORMAL do cancelamento/recusa da carga:');
+        if (motivoInput && motivo) motivoInput.value = motivo;
+      }
+
+      if (!motivo) {
+        alert('ATENÇÃO: É obrigatório informar o MOTIVO FORMAL da recusa.');
+        if (motivoInput) motivoInput.focus();
         return;
       }
 
@@ -303,4 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'cargas.html';
     });
   }
+
+  // Sincronização viva em tempo real (Item 2)
+  window.addEventListener('nexus_data_changed', () => {
+    popularSeletor();
+  });
 });

@@ -286,7 +286,8 @@
   window.getNexusTipoCarga = function(nomeOuId) {
     if (!nomeOuId) return null;
     const busca = String(nomeOuId).toLowerCase().trim();
-    return (window.NEXUS_TIPOS_CARGA || TIPOS_CARGA).find(t =>
+    const list = (window.NEXUS_TIPOS_CARGA && window.NEXUS_TIPOS_CARGA.length > 0) ? window.NEXUS_TIPOS_CARGA : TIPOS_CARGA;
+    return list.find(t =>
       (t.id && String(t.id).toLowerCase() === busca) ||
       (t.nome && String(t.nome).toLowerCase() === busca)
     ) || null;
