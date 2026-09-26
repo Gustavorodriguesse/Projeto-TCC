@@ -268,8 +268,7 @@
       let list = JSON.parse(localStorage.getItem('nexus_vis_list') || '[]');
       list = list.filter(v => v.documento !== docOuId && v.id !== docOuId);
       localStorage.setItem('nexus_vis_list', JSON.stringify(list));
-    }
-  };
+    },
 
     /**
      * NOTIFICAÇÃO DE ALTERAÇÃO EM TEMPO REAL (Item 2)
