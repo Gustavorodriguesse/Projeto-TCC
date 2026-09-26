@@ -198,14 +198,60 @@
     },
 
     /**
-     * Exporta os dados históricos de operações em formato CSV para download (T1.6)
+     * Exporta os dados históricos reais de operações em formato CSV para download (T1.6 / Tarefa 6.3)
      */
-    exportDadosHistoricos: function () {
-      const allCargas = mockDatabase.cargas;
-      const headers = ['ID', 'Codigo Carga', 'Tipo', 'Peso', 'Status', 'Container', 'Data'];
-      const rows = allCargas.map(c => [c.id, c.codigo_carga, c.tipo, c.peso, c.status, c.container_id, c.data]);
+    exportDadosHistoricos: async function () {
+      let cargasData = [];
+      if (window.nexusSupabase) {
+        try {
+          const { data } = await window.nexusSupabase.from('cargas').select('*');
+          if (data && data.length > 0) {
+            cargasData = data.map(c => ({
+              id: c.id,
+              natureza: c.natureza || 'Carga Geral',
+              peso: c.peso || 0,
+              volume: c.volume || 0,
+              valor: c.valor_declarado || 0,
+              status: c.status_fluxo || 'ARMAZENAGEM',
+              container_id: c.container_id || 'N/A',
+              porto_descarga: c.porto_descarga || 'N/A',
+              data: c.created_at || c.data_entrada || new Date().toISOString()
+            }));
+          }
+        } catch (e) {
+          console.warn('Erro ao carregar histórico de cargas para exportação:', e);
+        }
+      }
 
-      let csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      if (cargasData.length === 0) {
+        const local = JSON.parse(localStorage.getItem('nexus_cargas_fluxo') || '[]');
+        cargasData = local.map(c => ({
+          id: c.id,
+          natureza: c.tipo || c.natureza || 'Carga Geral',
+          peso: c.peso || 0,
+          volume: c.volume || 0,
+          valor: c.valor || 0,
+          status: c.status || 'ARMAZENAGEM',
+          container_id: c.container || c.container_id || 'N/A',
+          porto_descarga: c.portoDescarga || c.porto_descarga || 'N/A',
+          data: c.dataChegada || new Date().toISOString()
+        }));
+      }
+
+      const headers = ['ID', 'Natureza/Tipo', 'Peso (t)', 'Volume (m3)', 'Valor Declarado (R$)', 'Status Fluxo', 'Container ID', 'Porto Descarga', 'Data Registro'];
+      const rows = cargasData.map(c => [
+        `"${c.id}"`,
+        `"${c.natureza}"`,
+        c.peso,
+        c.volume,
+        c.valor,
+        `"${c.status}"`,
+        `"${c.container_id}"`,
+        `"${c.porto_descarga}"`,
+        `"${c.data}"`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
