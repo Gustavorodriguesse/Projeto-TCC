@@ -179,29 +179,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Tabela de Produtividade (T6.9, T6.10)
-  function renderProdutividadeTable() {
+  // Tabela de Produtividade Real (T6.9, T6.10, Tarefa 4.1)
+  async function renderProdutividadeTable() {
     if (!prodTableBody) return;
 
-    const fullList = [
-      { matricula: 'MAT-8821', nome: 'Carlos Silva', cargo: 'Supervisor', volume: '142 Liberações / Despachos', ultima: 'Hoje às 14:30' },
-      { matricula: 'MAT-6090', nome: 'Patricia Rocha', cargo: 'Inspetora', volume: '98 Vistorias com Checklist', ultima: 'Hoje às 11:15' },
-      { matricula: 'MAT-2050', nome: 'Mariana Souza', cargo: 'Conferente', volume: '210 Registros de Recebimento', ultima: 'Ontem às 16:45' },
-      { matricula: 'MAT-1040', nome: 'João Pedro', cargo: 'Estivador', volume: '320 Movimentações de Pátio', ultima: 'Hoje às 09:10' }
-    ];
+    let funcionariosList = [];
+    let logsList = [];
+
+    if (window.nexusSupabase) {
+      try {
+        const { data: funcs } = await window.nexusSupabase.from('funcionarios').select('*').eq('ativo', true);
+        if (funcs && funcs.length > 0) funcionariosList = funcs;
+
+        const { data: logs } = await window.nexusSupabase.from('logs_alteracoes').select('*');
+        if (logs) logsList = logs;
+      } catch (e) {
+        console.warn('Erro ao carregar dados de produtividade do Supabase:', e);
+      }
+    }
+
+    if (funcionariosList.length === 0) {
+      funcionariosList = JSON.parse(localStorage.getItem('nexus_func_list') || '[]');
+    }
 
     const isDiretor = ['DIRETOR_OPERACOES_LOGISTICA', 'DIRETOR_PRESIDENTE_SUPERINTENDENTE', 'CONSELHO_ADMINISTRACAO'].includes(session.cargo);
     const isInspetor = session.cargo === 'INSPETOR';
 
-    let list = fullList;
+    let targetFuncs = funcionariosList;
     if (!isDiretor && !isInspetor) {
-      list = fullList.filter(f => f.matricula === session.matricula);
-      if (list.length === 0) {
-        list = [{ matricula: session.matricula, nome: session.nome || 'Operador', cargo: session.cargo_nome || session.cargo, volume: '15 Operações Realizadas', ultima: 'Hoje' }];
+      targetFuncs = funcionariosList.filter(f => f.matricula === session.matricula || f.codigo_individual === session.codigo_individual);
+      if (targetFuncs.length === 0) {
+        targetFuncs = [{ matricula: session.matricula, nome: session.nome || 'Operador', cargo: session.cargo_nome || session.cargo, codigo_individual: session.codigo_individual }];
       }
     }
 
-    prodTableBody.innerHTML = list.map(item => `
+    const prodData = targetFuncs.map(func => {
+      const userLogs = logsList.filter(l => l.codigo_individual === func.codigo_individual || l.funcionario_id === func.id);
+      const count = userLogs.length;
+      let lastOpStr = 'Sem operações no histórico';
+      if (userLogs.length > 0) {
+        const sorted = userLogs.sort((a, b) => new Date(b.created_at || b.data_hora || 0) - new Date(a.created_at || a.data_hora || 0));
+        const lastDate = sorted[0].created_at || sorted[0].data_hora;
+        if (lastDate) {
+          lastOpStr = new Date(lastDate).toLocaleString('pt-BR');
+        }
+      }
+      return {
+        matricula: func.matricula || 'MAT-0000',
+        nome: func.nome || 'Colaborador',
+        cargo: func.cargo || 'OPERACIONAL',
+        volume: `${count} Operação(ões) Registrada(s)`,
+        ultima: lastOpStr
+      };
+    });
+
+    if (prodData.length === 0) {
+      prodTableBody.innerHTML = `
+        <tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Nenhum registro de produtividade localizado.</td></tr>
+      `;
+      return;
+    }
+
+    prodTableBody.innerHTML = prodData.map(item => `
       <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
         <td class="p-3 font-mono font-bold text-nexus-500">${item.matricula}</td>
         <td class="p-3 font-bold">${item.nome}</td>
