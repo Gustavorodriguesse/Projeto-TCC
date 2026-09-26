@@ -232,13 +232,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }).select().maybeSingle();
 
             if (inspDb) {
-              const itemRows = Object.keys(itemsEstado).map(itemId => ({
-                inspecao_id: inspDb.id,
-                checklist_item_id: itemId,
-                conforme: itemsEstado[itemId].conforme,
-                observacao: itemsEstado[itemId].conforme ? 'Conforme' : 'Não Conforme'
-              }));
-              await window.nexusSupabase.from('inspecao_itens').insert(itemRows).catch(e => console.warn('Aviso inspecao_itens:', e));
+              const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+              const itemRows = Object.keys(itemsEstado)
+                .filter(itemId => uuidRegex.test(itemId))
+                .map(itemId => ({
+                  inspecao_id: inspDb.id,
+                  checklist_item_id: itemId,
+                  conforme: itemsEstado[itemId].conforme,
+                  observacao: itemsEstado[itemId].conforme ? 'Conforme' : 'Não Conforme'
+                }));
+              if (itemRows.length > 0) {
+                await window.nexusSupabase.from('inspecao_itens').insert(itemRows).catch(e => console.warn('Aviso inspecao_itens:', e));
+              }
             }
           }
         } catch (err) {
@@ -300,13 +305,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }).select().maybeSingle();
 
             if (inspDb) {
-              const itemRows = Object.keys(itemsEstado).map(itemId => ({
-                inspecao_id: inspDb.id,
-                checklist_item_id: itemId,
-                conforme: itemsEstado[itemId].conforme,
-                observacao: itemsEstado[itemId].conforme ? 'Conforme' : 'Não Conforme'
-              }));
-              await window.nexusSupabase.from('inspecao_itens').insert(itemRows).catch(e => console.warn('Aviso inspecao_itens:', e));
+              const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+              const itemRows = Object.keys(itemsEstado)
+                .filter(itemId => uuidRegex.test(itemId))
+                .map(itemId => ({
+                  inspecao_id: inspDb.id,
+                  checklist_item_id: itemId,
+                  conforme: itemsEstado[itemId].conforme,
+                  observacao: itemsEstado[itemId].conforme ? 'Conforme' : 'Não Conforme'
+                }));
+              if (itemRows.length > 0) {
+                await window.nexusSupabase.from('inspecao_itens').insert(itemRows).catch(e => console.warn('Aviso inspecao_itens:', e));
+              }
             }
           }
         } catch (err) {
