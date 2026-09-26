@@ -463,12 +463,13 @@ document.addEventListener('DOMContentLoaded', () => {
     vincularContainerSelect.innerHTML = '<option value="">Selecione o Contêiner...</option>';
     containers.forEach(cont => {
       const volCargasNoCont = cargasFluxoList
-        .filter(c => c.container === cont.identificacao || c.container === cont.id)
+        .filter(c => c.container === cont.identificacao || c.container === cont.id || c.container_id === cont.id || c.container_id === cont.rawDbId)
         .reduce((sum, c) => sum + (parseFloat(c.volume) || 0), 0);
       const dispVol = 75 - volCargasNoCont;
       const statusText = cont.estado !== 'OPERANTE' ? ` [INDISPONÍVEL: ${cont.estado}]` : '';
+      const containerUuid = cont.rawDbId || cont.id;
       vincularContainerSelect.innerHTML += `
-        <option value="${cont.identificacao}" data-disp="${dispVol}" data-estado="${cont.estado}" ${dispVol <= 0 ? 'disabled' : ''}>
+        <option value="${containerUuid}" data-identificacao="${cont.identificacao}" data-disp="${dispVol}" data-estado="${cont.estado}" ${dispVol <= 0 ? 'disabled' : ''}>
           ${cont.identificacao} (${cont.tipo}) - Disp: ${dispVol.toFixed(1)} m³ / 75 m³${statusText}
         </option>
       `;
@@ -516,10 +517,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!targetCargaParaVinculacao) return;
 
       const selectedContOpt = vincularContainerSelect.options[vincularContainerSelect.selectedIndex];
-      const contVal = vincularContainerSelect.value;
+      const contUuid = vincularContainerSelect.value;
+      const contIdentificacao = selectedContOpt ? (selectedContOpt.getAttribute('data-identificacao') || contUuid) : contUuid;
       const navVal = vincularNavioSelect.value;
 
-      if (!contVal || !navVal) {
+      if (!contUuid || !navVal) {
         alert('A6 REGRA OBRIGATÓRIA: Todas as cargas devem obrigatoriamente estar vinculadas a um contêiner e a um navio!');
         return;
       }
@@ -538,22 +540,37 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      targetCargaParaVinculacao.container = contVal;
+      targetCargaParaVinculacao.container = contIdentificacao;
+      targetCargaParaVinculacao.container_id = contUuid;
       targetCargaParaVinculacao.navio = navVal;
 
       localStorage.setItem('nexus_cargas_fluxo', JSON.stringify(cargasFluxoList));
 
       if (window.nexusSupabase) {
         try {
-          await window.nexusSupabase.from('cargas')
-            .update({ container_id: contVal })
-            .eq('qr_code_url', targetCargaParaVinculacao.qrCode || `QR-${targetCargaParaVinculacao.id}`);
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(contUuid);
+          if (isUuid) {
+            const targetQr = targetCargaParaVinculacao.qrCode || `QR-${targetCargaParaVinculacao.id}`;
+            const targetDbId = targetCargaParaVinculacao.rawDbId || targetCargaParaVinculacao.id;
+            const targetIsUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetDbId);
+            
+            let query = window.nexusSupabase.from('cargas').update({ container_id: contUuid });
+            if (targetIsUuid) {
+              query = query.eq('id', targetDbId);
+            } else {
+              query = query.eq('qr_code_url', targetQr);
+            }
+            const { error: upErr } = await query;
+            if (upErr) {
+              console.error('[NexusPort] Erro ao atualizar container_id no Supabase:', upErr);
+            }
+          }
         } catch (e) { console.warn('Erro ao atualizar vinculação no Supabase:', e); }
       }
 
       renderTable();
       fecharVincularModal();
-      alert(`Carga ${targetCargaParaVinculacao.id} vinculada ao Contêiner ${contVal} e Navio ${navVal} com sucesso!`);
+      alert(`Carga ${targetCargaParaVinculacao.id} vinculada ao Contêiner ${contIdentificacao} e Navio ${navVal} com sucesso!`);
     });
   }
 
